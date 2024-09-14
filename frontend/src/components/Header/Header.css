@@ -1,0 +1,114 @@
+
+.header {
+    width: 100%;
+  }
+  
+  .progad {
+    color: rgba(192, 192, 192, 0.70);
+    text-align: center;
+    font-family: "Istok Web";
+    font-weight: 700;
+    letter-spacing: 17.5px;
+    text-align: center;
+  }
+  
+  .navbar-div {
+    display: flex;
+  }
+  
+  .nav-progad {
+    color: #ffffff;
+    text-align: center;
+    font-family: "Istok Web";
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 8.75px;
+  }
+  
+  .nav-items {
+    color: #000000;
+    font-family: Inter;
+    /* font-size: 25px; */
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+  
+  .nav-items-div{
+      background-color: #ffffff;
+      border-radius: 40px;
+      padding: 10px 30px 0px 30px;
+      gap: 25px;
+  }
+  
+  .nav-icons{
+      gap: 10px;
+      display: flex;
+  }
+  
+  .navbar{
+    padding-left: 50px;
+    padding-right:50px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .nav-progad-box {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .navbar-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+  }
+  
+  .navbar-toggler {
+    border-color: rgb(255, 255, 255);
+  }
+  
+  .nav-link-chakra{
+    display: flex;
+  }
+  
+  .nav-link-chakra i{
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    
+    .nav-link-chakra i{
+      display: contents;
+    }
+    .nav-items-div {
+      gap: 5px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+  
+    .navbar {
+      padding-left: 20px; /* Adjust padding for mobile */
+      padding-right: 20px; /* Adjust padding for mobile */
+    }
+  
+    .nav-progad {
+      letter-spacing: 5px; /* Adjust letter-spacing for mobile */
+    }
+  
+    .nav-items {
+      font-size: 30px; /* Adjust font size for nav items on mobile */
+      margin-left: 10px;
+    }
+  
+    .nav-icons {
+      gap: 5px; /* Decrease the gap between icons */
+    }
+  
+    .nav-progad-box {
+      height: 40px; /* Adjust the height for mobile */
+    }
+  }
+  
+  
