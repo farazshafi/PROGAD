@@ -78,7 +78,7 @@ const Header = () => {
             </Nav>
           </Navbar.Collapse>
         </Box>
-        <Box id="box3" display={{ base: "none", md: "flex" }}>
+        <Box id="box3" display={{ base: "none", lg: "flex" }}>
           <Box className="nav-icons">
             <Center style={{ width: "50px", height: "50px", borderRadius: '50%', backgroundColor: "#262626" }}>
               <i style={{ color: "white", alignItems: "center", textAlign: "center" }} className="fa-solid fa-magnifying-glass"></i>

@@ -13,16 +13,19 @@ const LoginPage = () => {
       <Box
         className="signIn-main-div"
         mt={{ base: "50px", md: "30px", lg: "50px" }}
+        mb={{ base: "50px", md: "30px", lg: "50px" }}
+
       >
         <Text
           fontSize={{ base: "30px", md: "20", lg: "30px" }}
+          mb={{base:"50px", md:"50px", lg:"50px" }}
           className="signIn-heading"
         >
           SignIn
         </Text>
         <Center>
           <Box
-            padding={{ lg: "5%", md: "5%", base: "5% 10%" }}
+            padding={{ lg: "5% 7%", md: "5% 7%", base: "5% 10%" }}
             className="content-wrapper"
           >
             <Box
@@ -31,7 +34,6 @@ const LoginPage = () => {
             >
               <Image
                 borderRadius={"20px"}
-                width={{ lg: "260px" }}
                 src={headphoneImg}
                 alt="sign-in"
               />
