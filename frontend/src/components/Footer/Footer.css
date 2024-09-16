@@ -1,0 +1,20 @@
+@media (max-width: 768px) {
+  .tab-items {
+    font-size: 7px;
+  }
+}
+
+.footer-main-div {
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  padding: 5% 5%;
+}
+
+.footer-nav-div {
+  width: 100%;
+  padding: 2% 2%;
+}
+
+.tab-items {
+  font-size: 12px;
+}

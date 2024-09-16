@@ -1,8 +1,10 @@
 import React from "react";
 import "./LoginPage.css";
 import Header from "../../../components/Header/Header";
-import { Box, Button, Center, Image, Text } from "@chakra-ui/react";
+import { Box, Center, Image, Text } from "@chakra-ui/react";
 import headphoneImg from "../../../assets/images/walpaper/headphone.jpeg";
+import Footer from "../../../components/Footer/Footer";
+import OurButton from "../../../components/OurButton/OurButton";
 
 const LoginPage = () => {
   return (
@@ -19,27 +21,58 @@ const LoginPage = () => {
           SignIn
         </Text>
         <Center>
-          <Box padding={{lg:"5% 3% 5% 3%",md:"5% 3% 5% 3%", base:"5% 10%"}} className="content-wrapper">
+          <Box
+            padding={{ lg: "5%", md: "5%", base: "5% 10%" }}
+            className="content-wrapper"
+          >
             <Box
-              display={{base:"none",lg:"inline",md:'inline'}}
-              width={{lg:"50%",md:"50%",base:"80%"}}
+              display={{ base: "none", lg: "inline", md: "inline" }}
+              width={{ lg: "50%", md: "50%", base: "80%" }}
             >
-              <Image borderRadius={"20px"} width={{lg:"260px"}} src={headphoneImg} alt="sign-in" />
+              <Image
+                borderRadius={"20px"}
+                width={{ lg: "260px" }}
+                src={headphoneImg}
+                alt="sign-in"
+              />
             </Box>
-            <Box
-              width={{lg:"50%",md:"50%",base:"100%"}}
-            >
+            <Box width={{ lg: "50%", md: "50%", base: "100%" }}>
               <form>
-                <input style={{marginBottom:"20px"}} className="form-input" placeholder="Enter your gmail" type="text" name="gmail"/><br />
-                <input className="form-input" placeholder="Enter your password" type="text" name="passwrod"/>
-                <Text mt={"10px"} fontSize={{base:"10px",md:"20px",lg:"15px"}} className="forgot-password">forgot password?</Text>
-                <Button color={"white"} bg={"#FF7F11"} mt={"30px"} width={"100%"}>SignIn</Button>
-                <Text fontSize={{base:"10px",md:"20px",lg:"15px"}} mt={"10px"}><a href="/register">Create an Account</a></Text>
+                <input
+                  style={{ marginBottom: "20px" }}
+                  className="form-input"
+                  placeholder="Enter your gmail"
+                  type="text"
+                  name="gmail"
+                />
+                <br />
+                <input
+                  className="form-input"
+                  placeholder="Enter your password"
+                  type="text"
+                  name="passwrod"
+                />
+                <Text
+                  mt={"10px"}
+                  mb={{base:'20px',md:"30px"}}
+                  fontSize={{ base: "10px", md: "20px", lg: "15px" }}
+                  className="forgot-password"
+                >
+                  forgot password?
+                </Text>
+                <OurButton text={"SIGN IN"}/> 
+                <Text
+                  fontSize={{ base: "10px", md: "20px", lg: "15px" }}
+                  mt={"10px"}
+                >
+                  <a href="/register">Create an Account</a>
+                </Text>
               </form>
             </Box>
           </Box>
         </Center>
       </Box>
+      <Footer />
     </>
   );
 };

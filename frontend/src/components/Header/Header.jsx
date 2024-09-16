@@ -45,7 +45,7 @@ const Header = () => {
               </Box>
                 <Nav.Link className="nav-link-chakra" href="#link">
                   <i class="fa-solid fa-user"></i>
-                <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>Accounts</Text>
+                <Text display={{ base: "block", lg: "none" }} className="nav-items" color={"black"} fontSize={{ base: "15px", md: "0px", lg: "0px" }}>Accounts</Text>
               </Nav.Link>
               <Nav.Link className="nav-link-chakra" href="#link">
                 <i class="fa-solid fa-house"></i>
