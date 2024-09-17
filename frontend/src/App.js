@@ -1,14 +1,21 @@
-// import LoginPage from "./pages/user/LoginPage/LoginPage";
-// import RegisterPage from "./pages/user/RegisterPage/RegisterPage";
+import LoginPage from "./pages/user/LoginPage/LoginPage";
+import OtpPage from "./pages/user/OtpPage/OtpPage";
+import RegisterPage from "./pages/user/RegisterPage/RegisterPage";
 import {ChakraProvider } from "@chakra-ui/react";
 import "./App.css";
-import OtpPage from "./pages/user/OtpPage/OtpPage";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Import routing components
+
 
 function App() {
   return (
     <ChakraProvider>
-      {/* <LoginPage /> */}
-      {/* <RegisterPage /> */}
+      <Router>
+        <Routes>
+          <Route exact path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/otp" element={<OtpPage />} />
+        </Routes>
+      </Router>
       <OtpPage />
     </ChakraProvider>
   );
