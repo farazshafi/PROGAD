@@ -1,0 +1,21 @@
+@media (max-width: 768px) {
+}
+
+.Otp-heading{
+  color: #fff;
+  font-family: "Istok Web";
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+}
+
+.otp-box{
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+html, body{
+    height: 100%;
+}

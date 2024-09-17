@@ -15,12 +15,12 @@ import {
 const Footer = () => {
   return (
     <>
-      <Box className="footer-main-div">
+      <Box
+        mt={{ base: "50px", md: "50px", lg: "50px" }}
+        className="footer-main-div"
+      >
         <Box className="row">
-          <Box
-            padding={{ base: "10px 20px" }}
-            className="col-md-4"
-          >
+          <Box padding={{ base: "10px 20px" }} className="col-md-4">
             <Center display={"inline"}>
               <Text
                 fontSize={{ base: "15px" }}
@@ -33,12 +33,13 @@ const Footer = () => {
               <br />
               <Text fontSize={{ base: "15px" }}>
                 Welcome to PROGAD, your go-to destination for premium headphones
-                and audio products. Founded in 2023, our mission is to deliver the
-                best quality sound experience to all customers. We specialize in a
-                wide range of headphones and audio accessories, catering to music
-                lovers, audiophiles, and everyday users alike. With a commitment
-                to quality and customer satisfaction, we aim to bring the latest
-                and greatest in audio technology to your doorstep.
+                and audio products. Founded in 2023, our mission is to deliver
+                the best quality sound experience to all customers. We
+                specialize in a wide range of headphones and audio accessories,
+                catering to music lovers, audiophiles, and everyday users alike.
+                With a commitment to quality and customer satisfaction, we aim
+                to bring the latest and greatest in audio technology to your
+                doorstep.
               </Text>
             </Center>
           </Box>
@@ -51,13 +52,13 @@ const Footer = () => {
               }}
             >
               <Table
-                style={{
-                  // borderRadius:"20px"
-                }}
+                style={
+                  {
+                    // borderRadius:"20px"
+                  }
+                }
               >
-                <Thead
-                backgroundColor={"#262626"}
-                >
+                <Thead backgroundColor={"#262626"}>
                   <Tr>
                     <Th color="white">Navigation</Th>
                     <Th color="white">Category</Th>
@@ -74,7 +75,10 @@ const Footer = () => {
                       </a>
                     </Td>
                     <Td className="tab-items" color="white">
-                      <a href="/categories/headphones" style={{ color: "black" }}>
+                      <a
+                        href="/categories/headphones"
+                        style={{ color: "black" }}
+                      >
                         Headphones
                       </a>
                     </Td>
@@ -84,7 +88,10 @@ const Footer = () => {
                       </a>
                     </Td>
                     <Td className="tab-items" color="white">
-                      <a href="/help/forgot-password" style={{ color: "black" }}>
+                      <a
+                        href="/help/forgot-password"
+                        style={{ color: "black" }}
+                      >
                         Forgot Password
                       </a>
                     </Td>
@@ -210,7 +217,10 @@ const Footer = () => {
                       </a>
                     </Td>
                     <Td className="tab-items" color="white">
-                      <a href="/help/change-password" style={{ color: "black" }}>
+                      <a
+                        href="/help/change-password"
+                        style={{ color: "black" }}
+                      >
                         Change Password
                       </a>
                     </Td>
@@ -220,14 +230,22 @@ const Footer = () => {
                       </a>
                     </Td>
                   </Tr>
-                  
                 </Tbody>
               </Table>
             </Box>
           </Box>
         </Box>
       </Box>
-      <Box padding={"10px 10px 5px 10px"} width={"100%"} bg={"black"} color={"white"}><p style={{textAlign:"center",fontSize:"10px"}}>Copyright &copy; ProGad 2024</p></Box>
+      <Box
+        padding={"10px 10px 5px 10px"}
+        width={"100%"}
+        bg={"black"}
+        color={"white"}
+      >
+        <p style={{ textAlign: "center", fontSize: "10px" }}>
+          Copyright &copy; ProGad 2024
+        </p>
+      </Box>
     </>
   );
 };

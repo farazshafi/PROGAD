@@ -12,9 +12,6 @@ const LoginPage = () => {
       <Header />
       <Box
         className="signIn-main-div"
-        mt={{ base: "50px", md: "30px", lg: "50px" }}
-        mb={{ base: "50px", md: "30px", lg: "50px" }}
-
       >
         <Text
           fontSize={{ base: "30px", md: "20", lg: "30px" }}

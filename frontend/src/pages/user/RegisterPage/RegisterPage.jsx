@@ -23,10 +23,7 @@ const RegisterPage = () => {
       <Header />
       <Box
         className="signIn-main-div"
-        mt={{ base: "50px", md: "30px", lg: "50px" }}
-        mb={{ base: "50px", md: "30px", lg: "50px" }}
-
-
+        p={{base:"0 10% 0 10%", md: "0 5% 0 5%", lg: "0 20% 0 20%",}}
       >
         <Text
           fontSize={{ base: "15px", md: "20", lg: "20px" }}
