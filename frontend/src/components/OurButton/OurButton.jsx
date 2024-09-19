@@ -7,7 +7,7 @@ const OurButton = ({text,type}) => {
       color="white"
       type={type==="submit" ? "submit" : " "}
       bg="#FF7F11"
-      width="100%"
+      // width="100%"
       transition="background-color 0.5s ease, color 0.5s ease"
       _hover={{
         bg: "#262626",
