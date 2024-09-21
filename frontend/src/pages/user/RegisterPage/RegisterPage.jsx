@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Center,
+  ChakraProvider,
   Image,
   Input,
   InputGroup,
@@ -19,18 +20,17 @@ const RegisterPage = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   return (
-    <>
+    <ChakraProvider>
       <Header />
       <Box
         className="signIn-main-div"
-        p={{base:"0 10% 0 10%", md: "0 5% 0 5%", lg: "0 20% 0 20%",}}
+        p={{ base: "0 10% 0 10%", md: "0 5% 0 5%", lg: "0 20% 0 20%" }}
       >
         <Text
           fontSize={{ base: "15px", md: "20", lg: "20px" }}
           mb={{ base: "50px", md: "50px", lg: "50px" }}
           className="signIn-heading"
         >
-            
           CREATE AN ACCOUNT
         </Text>
         <Center>
@@ -42,11 +42,7 @@ const RegisterPage = () => {
               display={{ base: "none", lg: "inline", md: "inline" }}
               width={{ lg: "50%", md: "50%", base: "80%" }}
             >
-              <Image
-                borderRadius={"20px"}
-                src={headphoneImg}
-                alt="sign-in"
-              />
+              <Image borderRadius={"20px"} src={headphoneImg} alt="sign-in" />
             </Box>
             <Box width={{ lg: "50%", md: "50%", base: "100%" }}>
               <form>
@@ -85,12 +81,16 @@ const RegisterPage = () => {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <InputGroup mt={{base:"20px"}} mb={{base:"20px",lg:'30px'}} size="md">
+                <InputGroup
+                  mt={{ base: "20px" }}
+                  mb={{ base: "20px", lg: "30px" }}
+                  size="md"
+                >
                   <Input
                     pr="4.5rem"
                     type={show ? "text" : "password"}
                     placeholder="confirm password"
-                    name="confirmPassword" 
+                    name="confirmPassword"
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -111,7 +111,7 @@ const RegisterPage = () => {
         </Center>
       </Box>
       <Footer />
-    </>
+    </ChakraProvider>
   );
 };
 

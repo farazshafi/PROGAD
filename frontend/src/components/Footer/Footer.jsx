@@ -10,11 +10,12 @@ import {
   Th,
   Tbody,
   Td,
+  ChakraProvider,
 } from "@chakra-ui/react"; // MODIFIED
 
 const Footer = () => {
   return (
-    <>
+    <ChakraProvider>
       <Box
         mt={{ base: "50px", md: "50px", lg: "50px" }}
         className="footer-main-div"
@@ -246,7 +247,7 @@ const Footer = () => {
           Copyright &copy; ProGad 2024
         </p>
       </Box>
-    </>
+    </ChakraProvider>
   );
 };
 

@@ -1,9 +1,10 @@
-import { Button } from "@chakra-ui/react";
+import { Button, ChakraProvider } from "@chakra-ui/react";
 import React from "react";
 
 const OurButton = ({text,type}) => {
   return (
-    <Button
+    <ChakraProvider>
+       <Button
       color="white"
       type={type==="submit" ? "submit" : " "}
       bg="#FF7F11"
@@ -16,6 +17,8 @@ const OurButton = ({text,type}) => {
     >
       {text}
     </Button>
+    </ChakraProvider>
+   
   );
 };
 

@@ -1,21 +1,19 @@
 import React from "react";
 import "./LoginPage.css";
 import Header from "../../../components/Header/Header";
-import { Box, Center, Image, Text } from "@chakra-ui/react";
+import { Box, Center, ChakraProvider, Image, Text } from "@chakra-ui/react";
 import headphoneImg from "../../../assets/images/walpaper/headphone.jpeg";
 import Footer from "../../../components/Footer/Footer";
 import OurButton from "../../../components/OurButton/OurButton";
 
 const LoginPage = () => {
   return (
-    <>
+    <ChakraProvider>
       <Header />
-      <Box
-        className="signIn-main-div"
-      >
+      <Box className="signIn-main-div">
         <Text
           fontSize={{ base: "30px", md: "20", lg: "30px" }}
-          mb={{base:"50px", md:"50px", lg:"50px" }}
+          mb={{ base: "50px", md: "50px", lg: "50px" }}
           className="signIn-heading"
         >
           SignIn
@@ -29,11 +27,7 @@ const LoginPage = () => {
               display={{ base: "none", lg: "inline", md: "inline" }}
               width={{ lg: "50%", md: "50%", base: "80%" }}
             >
-              <Image
-                borderRadius={"20px"}
-                src={headphoneImg}
-                alt="sign-in"
-              />
+              <Image borderRadius={"20px"} src={headphoneImg} alt="sign-in" />
             </Box>
             <Box width={{ lg: "50%", md: "50%", base: "100%" }}>
               <form>
@@ -53,13 +47,13 @@ const LoginPage = () => {
                 />
                 <Text
                   mt={"10px"}
-                  mb={{base:'20px',md:"30px"}}
+                  mb={{ base: "20px", md: "30px" }}
                   fontSize={{ base: "10px", md: "20px", lg: "15px" }}
                   className="forgot-password"
                 >
                   forgot password?
                 </Text>
-                <OurButton text={"SIGN IN"}/> 
+                <OurButton text={"SIGN IN"} />
                 <Text
                   fontSize={{ base: "10px", md: "20px", lg: "15px" }}
                   mt={"10px"}
@@ -72,7 +66,7 @@ const LoginPage = () => {
         </Center>
       </Box>
       <Footer />
-    </>
+    </ChakraProvider>
   );
 };
 
