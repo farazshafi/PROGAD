@@ -19,7 +19,7 @@ const ProductCard = () => {
 
   return (
     <React.Fragment>
-      <Container fluid>
+      <Container>
         <Row>
           <Col className="mb-5" sm={12} md={4} lg={3}>
             <Card sx={{ maxWidth: 345, backgroundColor: "transparent" }}>
