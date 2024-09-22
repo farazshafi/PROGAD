@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Button, Center, ChakraProvider, Text } from "@chakra-ui/react";
+import { Box, Center, ChakraProvider, Text } from "@chakra-ui/react";
+import { Link } from "react-router-dom";  // Import Link from react-router-dom
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import "./Header.css";
@@ -23,7 +24,7 @@ const Header = () => {
           </Text>
           <Navbar expand="lg" className="navbar">
             <Box id="box1" className="nav-progad-box">
-              <Navbar.Brand href="#home">
+              <Navbar.Brand>
                 <Text
                   fontSize={{ base: "15px" }}
                   pt={{ md: "20px" }}
@@ -37,114 +38,52 @@ const Header = () => {
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="me-auto nav-items-div">
-                  <Box
-                    style={{
-                      borderBottom: "1px solid black",
-                      marginBottom: "10px",
-                    }}
-                    display={{ base: "block", md: "none" }}
-                    mt="20px"
-                  >
-                    <Box display="flex" alignItems="center" mb="10px">
-                      <input
-                        type="text"
-                        placeholder="Search"
-                        style={{
-                          width: "100%",
-                          padding: "5px",
-                          borderRadius: "5px",
-                          border: "1px solid #ccc",
-                        }}
-                      />
-                      <Button
-                        ml="10px"
-                        variant="outline"
-                        colorScheme="teal"
-                        size="sm"
-                        leftIcon={<i className="fa-solid fa-search"></i>}
-                      >
-                        Find
-                      </Button>
-                    </Box>
-                  </Box>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-user"></i>
-                    <Text
-                      display={{ base: "block", lg: "none" }}
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "0px", lg: "0px" }}
-                    >
+                  {/* Using Link from react-router-dom */}
+                  <Nav.Link as={Link} to="/accounts" className="nav-link-chakra">
+                    <i className="fa-solid fa-user"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "0px", lg: "0px" }}>
                       Accounts
                     </Text>
                   </Nav.Link>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-house"></i>
-                    <Text
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                    >
+                  <Nav.Link as={Link} to="/" className="nav-link-chakra">
+                    <i className="fa-solid fa-house"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>
                       Home
                     </Text>
                   </Nav.Link>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-headphones"></i>
-                    <Text
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                    >
+                  <Nav.Link as={Link} to="/products" className="nav-link-chakra">
+                    <i className="fa-solid fa-headphones"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>
                       Products
                     </Text>
                   </Nav.Link>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-heart"></i>
-                    <Text
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                    >
+                  <Nav.Link as={Link} to="/wishlist" className="nav-link-chakra">
+                    <i className="fa-solid fa-heart"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>
                       Wishlist
                     </Text>
                   </Nav.Link>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-box"></i>
-                    <Text
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                    >
+                  <Nav.Link as={Link} to="/orders" className="nav-link-chakra">
+                    <i className="fa-solid fa-box"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>
                       Orders
                     </Text>
                   </Nav.Link>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <Text
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                    >
+                  <Nav.Link as={Link} to="/cart" className="nav-link-chakra">
+                    <i className="fa-solid fa-cart-shopping"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>
                       Cart
                     </Text>
                   </Nav.Link>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-message"></i>
-                    <Text
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                    >
+                  <Nav.Link as={Link} to="/contact" className="nav-link-chakra">
+                    <i className="fa-solid fa-message"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>
                       Contact us
                     </Text>
                   </Nav.Link>
-                  <Nav.Link className="nav-link-chakra" href="#link">
-                    <i class="fa-solid fa-address-card"></i>
-                    <Text
-                      className="nav-items"
-                      color={"black"}
-                      fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                    >
+                  <Nav.Link as={Link} to="/about" className="nav-link-chakra">
+                    <i className="fa-solid fa-address-card"></i>
+                    <Text className="nav-items" color={"black"} fontSize={{ base: "15px", md: "20px", lg: "15px" }}>
                       About us
                     </Text>
                   </Nav.Link>

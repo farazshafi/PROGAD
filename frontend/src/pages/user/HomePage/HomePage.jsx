@@ -14,15 +14,15 @@ const HomePage = () => {
     <React.Fragment>
       <div style={{padding:"2%"}}>
         <Header />
-        <OfferBanner brand={["Boat, JBL"]} title={"Eid Offer"} />
-        <HilightSection text={"New Arrivals"} />
+        <OfferBanner hide={"false"} brand={["Boat, JBL"]} title={"Eid Offer"} />
+        <HilightSection nav={"newarrivals"} text={"New Arrivals"} />
         <ProductGrid
           img1={headphoneImg}
           img2={boatImg}
           img3={jblImg}
           img4={podImg}
         />
-        <HilightSection text={"Best Products"} />
+        <HilightSection text={"Top Products"} />
         <ProductCard />
       </div>
     </React.Fragment>

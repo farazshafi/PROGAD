@@ -2,8 +2,18 @@ import { Box, ChakraProvider, HStack, Text } from "@chakra-ui/react";
 import React from "react";
 import OurButton from "../OurButton/OurButton";
 import "./HilightSection.css";
+import { useNavigate } from "react-router-dom";
 
-const HilightSection = ({ text }) => {
+const HilightSection = ({ nav,text }) => {
+
+  const navigate = useNavigate()
+  const navigateText = text.split(" ").join("").toLowerCase()
+
+  const handleClick = (wow) => {
+    console.log(wow)
+    navigate(`/${navigateText}`)
+  }
+
   return (
     <ChakraProvider>
       <Box
@@ -31,7 +41,7 @@ const HilightSection = ({ text }) => {
             </Text>
           </Box>
           <Box ml={"auto"}>
-            <OurButton text={"Shop Now"} />
+            <OurButton handleClick={handleClick} text={"Show More"} />
           </Box>
         </HStack>
         <Text

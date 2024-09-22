@@ -1,9 +1,17 @@
 import React from 'react'
 import { Box, ChakraProvider, Heading, Text } from '@chakra-ui/react';
 import OurButton from '../OurButton/OurButton';
+import { useNavigate } from 'react-router-dom';
 
 
-const OfferBanner = ({title,brand,bgImage}) => {
+const OfferBanner = ({title,brand,bgImage,hide}) => {
+  const navigate = useNavigate()
+  
+
+  const handleClick = () => {
+    navigate("/offerpage")
+  }
+
   return (
     <ChakraProvider>
       <Box
@@ -22,7 +30,7 @@ const OfferBanner = ({title,brand,bgImage}) => {
         <Text fontSize="lg" mb={4} color="black">
           Offer expires on <Text as="span" color="#FF7F11" fontWeight="bold">September 30, 2024</Text>.
         </Text>
-        <OurButton text={"Shop Now"}/>
+        {hide === "false" ? <OurButton handleClick={handleClick} text={"Shop Now"}/> : <></>}
       </Box>
     </ChakraProvider>
   )
