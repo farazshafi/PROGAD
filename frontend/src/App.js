@@ -8,6 +8,7 @@ import HomePage from "./pages/user/HomePage/HomePage"
 import NewArrivalsPage from "./pages/user/NewArrivalsPage/NewArrivalsPage";
 import TopProducts from "./pages/user/TopProducts/TopProducts";
 import OfferPage from "./pages/user/OfferPage/OfferPage";
+import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/newarrivals" element={<NewArrivalsPage />} />
           <Route path="/topproducts" element={<TopProducts />} /> 
           <Route path="/offerpage" element={<OfferPage />} /> 
+          <Route path="/products" element={<ProductsPage />} /> 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>

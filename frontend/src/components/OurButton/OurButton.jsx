@@ -16,7 +16,13 @@ const OurButton = ({ text, type, handleClick }) => {
           color: "white",
         }}
       >
-        {text}
+        {type === "rupees" ? (
+          <>
+            <i class="fa-solid fa-indian-rupee-sign"></i> {text}
+          </>
+        ) : (
+          <>{text}</>
+        )}
       </Button>
     </ChakraProvider>
   );
