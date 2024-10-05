@@ -9,6 +9,8 @@ import NewArrivalsPage from "./pages/user/NewArrivalsPage/NewArrivalsPage";
 import TopProducts from "./pages/user/TopProducts/TopProducts";
 import OfferPage from "./pages/user/OfferPage/OfferPage";
 import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
+import ProductCard from "./components/ProductCard/ProductCard";
+import ProductDetailsPage from "./pages/user/ProductDetailsPage/ProductDetailsPage";
 
 
 function App() {
@@ -23,6 +25,7 @@ function App() {
           <Route path="/topproducts" element={<TopProducts />} /> 
           <Route path="/offerpage" element={<OfferPage />} /> 
           <Route path="/products" element={<ProductsPage />} /> 
+          <Route path="/product_details/:id" element={<ProductDetailsPage />} /> 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
