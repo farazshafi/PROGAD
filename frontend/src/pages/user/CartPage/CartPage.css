@@ -1,0 +1,105 @@
+.cart-container {
+  width: 100%;
+  padding: 5px 50px;
+}
+
+/* Cart item container */
+.cart-item-div {
+  display: flex;
+  flex-wrap: wrap; /* Allows content to wrap on small screens */
+  background-color: rgb(89, 0, 255);
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* Image styles */
+.cart-item-img {
+  border-radius: 10px;
+  background-color: white;
+}
+
+/* Name and description styles */
+.cart-item-name {
+  padding: 10px 30px;
+  width: 350px;
+  flex-grow: 1;
+}
+
+.cart-item-qty-div {
+  /* display: flex; */
+  align-items: center;
+}
+
+.cart-item-qty-div p {
+  text-align: center;
+  font-family: "Istok Web";
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.cart-item-qty-div button {
+  background-color: #ff7f11;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.cart-item-price {
+  padding: 0px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.cart-item-close_btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cart-item-price_remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Media query for small devices */
+@media (max-width: 768px) {
+  .cart-item-div {
+    flex-direction: column; /* Stack items vertically */
+    align-items: center;
+  }
+
+  .cart-item-img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .cart-item-name {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .cart-item-qty-div {
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .cart-item-price {
+    text-align: center;
+    justify-content: center; /* Ensure centering on mobile */
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .cart-item-close_btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
