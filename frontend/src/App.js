@@ -11,6 +11,7 @@ import OfferPage from "./pages/user/OfferPage/OfferPage";
 import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage/ProductDetailsPage";
 import CartPage from "./pages/user/CartPage/CartPage";
+import CartProcess from "./pages/user/CartProcess/CartProcess";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/product_details/:id" element={<ProductDetailsPage />} />
+        <Route path="/cart_process" element={<CartProcess />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
