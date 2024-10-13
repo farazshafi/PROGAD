@@ -19,7 +19,7 @@ const CartProcess = () => {
 
   return (
     <>
-      <Header />
+      <Header navbar={false}/>
       <Box
         sx={{
           backgroundColor: "#262626",
