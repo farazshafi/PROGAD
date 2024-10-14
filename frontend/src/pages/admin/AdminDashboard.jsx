@@ -16,42 +16,48 @@ import { BiSolidOffer } from "react-icons/bi";
 import { FaDownload } from "react-icons/fa6";
 import { GoGraph } from "react-icons/go";
 
+// Components
+import ListUsers from "./ListUsers";
 
+// Navigation menu items
 const NAVIGATION = [
   {
     kind: "header",
     title: "Main items",
   },
+  // dashboard
   {
     segment: "dashboard",
     title: "Dashboard",
     icon: <MdDashboard fontSize={"20px"} />,
   },
+  // users
   {
     segment: "users",
     title: "Users",
     icon: <GroupIcon />,
     children: [
       {
-        segment: "add brand",
-        title: "Add Brand",
+        segment: "add_user",
+        title: "Add User",
         icon: <IoMdAdd />,
       },
       {
-        segment: "list brand",
-        title: "List Brand",
+        segment: "",
+        title: "List User",
         icon: <FaListUl />,
       },
     ],
   },
+  // products
   {
     segment: "products",
     title: "Products",
     icon: <ImHeadphones fontSize={"20px"} />,
     children: [
       {
-        segment: "add brand",
-        title: "Add Brand",
+        segment: "add_product",
+        title: "Add Product",
         icon: <IoMdAdd />,
       },
       {
@@ -61,19 +67,21 @@ const NAVIGATION = [
       },
     ],
   },
+  // orders
   {
     segment: "orders",
     title: "Orders",
     icon: <FaShoppingCart fontSize={"20px"} />,
   },
+  // coupons
   {
     segment: "coupons",
     title: "Coupons",
     icon: <RiCoupon2Fill fontSize={"20px"} />,
     children: [
       {
-        segment: "add brand",
-        title: "Add Brand",
+        segment: "add_coupon",
+        title: "Add Coupon",
         icon: <IoMdAdd />,
       },
       {
@@ -83,6 +91,7 @@ const NAVIGATION = [
       },
     ],
   },
+  // brands
   {
     segment: "brands",
     title: "Brands",
@@ -94,20 +103,21 @@ const NAVIGATION = [
         icon: <IoMdAdd />,
       },
       {
-        segment: "list brand",
+        segment: "list_brand",
         title: "List Brand",
         icon: <FaListUl />,
       },
     ],
   },
+  // offers
   {
     segment: "offers",
     title: "Offers",
     icon: <BiSolidOffer fontSize={"20px"} />,
     children: [
       {
-        segment: "add brand",
-        title: "Add Brand",
+        segment: "add_offer",
+        title: "Add Offer",
         icon: <IoMdAdd />,
       },
       {
@@ -132,17 +142,18 @@ const NAVIGATION = [
       {
         segment: "download",
         title: "Download",
-        icon: <FaDownload fontSize={"20px"}/>,
+        icon: <FaDownload fontSize={"20px"} />,
       },
       {
         segment: "traffic",
         title: "Traffic",
-        icon: <GoGraph fontSize={"20px"}/>,
+        icon: <GoGraph fontSize={"20px"} />,
       },
     ],
-  }
+  },
 ];
 
+// Theme configuration
 const demoTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: "data-toolpad-color-scheme",
@@ -161,33 +172,31 @@ const demoTheme = createTheme({
 
 function DemoPageContent({ pathname }) {
   let content;
+
   switch (pathname) {
-    case "/":
-      content = <>dfdfd</>;
-      break;
     case "/users":
-      content = <></>;
+      content = <ListUsers />;
+      break;
+    case "/dashboard":
+      content = <div>Dashboard Content Here</div>;
       break;
     case "/products":
-      content = <></>;
+      content = <div>Products Content Here</div>;
       break;
     default:
-      content = "dashboard "
+      content = <div>Default Content</div>;
   }
 
-  return (
-    <Box>
-      {content}
-    </Box>
-  );
+  return <Box>{content}</Box>;
 }
-
 
 function AdminDashboard(props) {
   const { window } = props;
 
+  // Define state to manage the current route
   const [pathname, setPathname] = React.useState("/dashboard");
 
+  // Router object to manage path navigation
   const router = React.useMemo(() => {
     return {
       pathname,
@@ -199,7 +208,6 @@ function AdminDashboard(props) {
   const demoWindow = window !== undefined ? window() : undefined;
 
   return (
-    // preview-start
     <AppProvider
       navigation={NAVIGATION}
       router={router}
@@ -210,7 +218,6 @@ function AdminDashboard(props) {
         <DemoPageContent pathname={pathname} />
       </DashboardLayout>
     </AppProvider>
-    // preview-end
   );
 }
 
