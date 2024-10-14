@@ -12,11 +12,13 @@ import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage/ProductDetailsPage";
 import CartPage from "./pages/user/CartPage/CartPage";
 import CartProcess from "./pages/user/CartProcess/CartProcess";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* user route */}
         <Route exact path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -28,6 +30,10 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/product_details/:id" element={<ProductDetailsPage />} />
         <Route path="/cart_process" element={<CartProcess />} />
+        {/* admin route */}
+        <Route path="/admin_dashboard" element={<AdminDashboard />} />
+
+        {/* 404 page */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
