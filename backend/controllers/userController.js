@@ -20,3 +20,20 @@ export const userRegistration = asyncHandler(async (req, res) => {
     res.status(201).json({ message: "User registered successfully" });
   }
 });
+
+// @desc    user validation
+// @route   POST /api/user/login
+// @access  public
+export const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const userExist = await User.findOne({ email })
+  if(!userExist){
+    return res.status(400).json({ message: "User does not exist" });
+  }
+  const isMatch = await userExist.matchPassword(password);
+  if(!isMatch){
+    return res.status(400).json({ message: "Invalid email or password" });
+  }
+  const userWithoutPassword = await User.findOne({ email }).select("-password")
+  res.json(userWithoutPassword);
+});
