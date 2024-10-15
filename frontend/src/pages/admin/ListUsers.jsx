@@ -16,8 +16,6 @@ import {
   Box,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
-import EditIcon from '@mui/icons-material/Edit'; // Import the Edit icon
-
 const ListUsers = () => {
   const [users] = useState([
     {
