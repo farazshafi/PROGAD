@@ -18,6 +18,7 @@ import { GoGraph } from "react-icons/go";
 
 // Components
 import ListUsers from "./ListUsers";
+import ListProduct from "./ListProducts";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -181,7 +182,7 @@ function DemoPageContent({ pathname }) {
       content = <div>Dashboard Content Here</div>;
       break;
     case "/products":
-      content = <div>Products Content Here</div>;
+      content = <ListProduct />;
       break;
     default:
       content = <div>Default Content</div>;

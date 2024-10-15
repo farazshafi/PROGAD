@@ -15,6 +15,8 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import { IoMdMore } from "react-icons/io";
+import EditIcon from '@mui/icons-material/Edit'; // Import the Edit icon
 
 const ListUsers = () => {
   const [users] = useState([
@@ -67,7 +69,7 @@ const ListUsers = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("All");
-  const [showBannedOnly, setShowBannedOnly] = useState(false); 
+  const [showBannedOnly, setShowBannedOnly] = useState(false);
 
   // Filter users based on search term, role, and banned status
   const filteredUsers = users.filter((user) => {
@@ -194,6 +196,7 @@ const ListUsers = () => {
               <TableCell sx={{ color: "white" }}>Email</TableCell>
               <TableCell sx={{ color: "white" }}>Role</TableCell>
               <TableCell sx={{ color: "white" }}>Status</TableCell>
+              <TableCell sx={{ color: "white" }}>Edit</TableCell> {/* New Edit Column */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -224,6 +227,15 @@ const ListUsers = () => {
                     {user.status}
                   </Box>
                 </TableCell>
+                <TableCell>
+                  <IoMdMore
+                   fontSize={"25px"}
+                    sx={{ color: "white", cursor: "pointer" }} 
+                    onClick={() => {
+                      console.log(`Edit user: ${user.name}`);
+                    }} 
+                  />
+                </TableCell> {/* Edit Icon */}
               </TableRow>
             ))}
           </TableBody>
