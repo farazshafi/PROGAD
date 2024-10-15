@@ -2,7 +2,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import userRoute from "./routes/userRoutes.js";
+import adminRoute from "./routes/adminRouter.js";
 import connectDB from "./config/db.js";
+import cors from "cors"
 
 // configuration
 dotenv.config();
@@ -14,9 +16,15 @@ const port = process.env.PORT || 2000;
 
 // middlewares
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 // routers
 app.use("/api/user/", userRoute);
+app.use("/api/admin/", adminRoute);
 
 app.get("/", (req, res) => {
   res.send("Api is running...");
@@ -37,7 +45,6 @@ app.listen(port, () => {
 // Images should be cropped and resized properly before upload.
 // .
 // User side :
-// Users sign up & login with validation.
 // Sign up using OTP with OTP timer and Resend Otp
 // Login or signup with single sign on (google , facebook …)
 // List products on the user side.
