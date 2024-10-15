@@ -20,8 +20,8 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    phone: {
-      type: String,
+    phoneNumber: {
+      type: Number,
       required: true,
     },
     isBlocked: {
@@ -30,7 +30,6 @@ const userSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
       enum: ["customer", "admin", "delivery"],
       default: "customer",
     },
