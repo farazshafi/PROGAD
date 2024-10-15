@@ -14,15 +14,23 @@ import {
   MenuItem,
   Typography,
   Box,
+  IconButton,
+  Menu,
+  Divider,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
-import { getAllUsers } from "../../api/adminApi";
-const ListUsers = () => {
-  const [users,setUsers] = useState([]);
+import { getAllUsers, blockUnblockUser } from "../../api/adminApi";
+import { MdEdit, MdBlock } from "react-icons/md";
+import { FaEye } from "react-icons/fa";
 
+const ListUsers = () => {
+  const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("All");
   const [showBannedOnly, setShowBannedOnly] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   // Filter users based on search term, role, and banned status
   const filteredUsers = users.filter((user) => {
@@ -30,21 +38,59 @@ const ListUsers = () => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBanned = !showBannedOnly || user.status === "Banned";
+    const matchesBanned = !showBannedOnly || user.isBlocked;
 
     return matchesRole && matchesSearch && matchesBanned;
   });
 
   const totalUsers = users.length;
-  const bannedUsers = users.filter((user) => user.status === "Banned").length;
+  const bannedUsers = users.filter((user) => user.isBlocked).length;
 
   useEffect(() => {
     const fetchUsers = async () => {
       const data = await getAllUsers();
-      setUsers(data)
+      setUsers(data);
     };
     fetchUsers();
-  });
+  }, []);
+
+  const handleMenuClick = (event, user) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedUser(user);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedUser(null);
+  };
+
+  const handleBlock = async () => {
+    try {
+      const isBlocked = !selectedUser.isBlocked;
+      const updatedUser = await blockUnblockUser(selectedUser._id, isBlocked);
+      if (updatedUser) {
+        setUsers((prevUser) =>
+          prevUser.map((user) =>
+            user._id === selectedUser._id ? { ...user, isBlocked } : user
+          )
+        );
+      }
+
+      handleClose();
+    } catch (error) {
+      console.error("Error blocking/unblocking user:", error);
+    }
+  };
+
+  const handleEdit = () => {
+    console.log(`Edit user: ${selectedUser.name}`);
+    handleClose();
+  };
+
+  const handleView = () => {
+    console.log(`View user: ${selectedUser.name}`);
+    handleClose();
+  };
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
@@ -157,13 +203,12 @@ const ListUsers = () => {
               <TableCell sx={{ color: "white" }}>Email</TableCell>
               <TableCell sx={{ color: "white" }}>Role</TableCell>
               <TableCell sx={{ color: "white" }}>Status</TableCell>
-              <TableCell sx={{ color: "white" }}>Edit</TableCell>{" "}
-              {/* New Edit Column */}
+              <TableCell sx={{ color: "white" }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredUsers.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user._id}>
                 <TableCell>
                   <Checkbox sx={{ color: "white" }} />
                 </TableCell>
@@ -173,7 +218,9 @@ const ListUsers = () => {
                     {user.name}
                   </Box>
                 </TableCell>
-                <TableCell sx={{ color: "white" }}>{user.phoneNumber}</TableCell>
+                <TableCell sx={{ color: "white" }}>
+                  {user.phoneNumber}
+                </TableCell>
                 <TableCell sx={{ color: "white" }}>{user.email}</TableCell>
                 <TableCell sx={{ color: "white" }}>{user.role}</TableCell>
                 <TableCell>
@@ -181,24 +228,52 @@ const ListUsers = () => {
                     sx={{
                       padding: "5px 10px",
                       borderRadius: "5px",
-                      backgroundColor:
-                        user.isBlocked ? "red" : "green",
-                      color: user.isBlocked ? "#fff" : "white",
+                      backgroundColor: user.isBlocked ? "red" : "green",
+                      color: "white",
                     }}
                   >
-                    {user.isBlocked ? "Blocked": "Active" }
+                    {user.isBlocked ? "Blocked" : "Active"}
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <IoMdMore
-                    fontSize={"25px"}
-                    sx={{ color: "white", cursor: "pointer" }}
-                    onClick={() => {
-                      console.log(`Edit user: ${user.name}`);
-                    }}
-                  />
-                </TableCell>{" "}
-                {/* Edit Icon */}
+                  <IconButton
+                    onClick={(e) => handleMenuClick(e, user)}
+                    sx={{ color: "white" }}
+                  >
+                    <IoMdMore fontSize={"25px"} />
+                  </IconButton>
+
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    sx={{ "& .MuiPaper-root": { backgroundColor: "white" } }}
+                  >
+                    <MenuItem
+                      onClick={handleBlock}
+                      sx={{ color: "red", gap: "15px" }}
+                    >
+                      <MdBlock fontSize={"25px"} />
+                      {selectedUser?.isBlocked ? "Unblock" : "Block"}
+                    </MenuItem>
+                    <Divider sx={{ height: "1px", background: "black" }} />
+                    <MenuItem
+                      onClick={handleEdit}
+                      sx={{ color: "black", gap: "15px" }}
+                    >
+                      <MdEdit fontSize={"25px"} />
+                      Edit
+                    </MenuItem>
+                    <Divider sx={{ height: "1px", background: "black" }} />
+                    <MenuItem
+                      onClick={handleView}
+                      sx={{ color: "blue", gap: "15px" }}
+                    >
+                      <FaEye fontSize={"25px"} />
+                      View
+                    </MenuItem>
+                  </Menu>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
