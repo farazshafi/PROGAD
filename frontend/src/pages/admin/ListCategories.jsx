@@ -25,9 +25,14 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { IoMdMore } from "react-icons/io";
-import { MdEdit, MdPublish } from "react-icons/md"; 
+import { MdEdit, MdPublish } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
-import { getAllCategories, onCreateCategory, onDeleteCategory } from "../../api/categoryApi";
+import {
+  getAllCategories,
+  handlePublishCategory,
+  onCreateCategory,
+  onDeleteCategory,
+} from "../../api/categoryApi";
 
 const ListCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -81,7 +86,16 @@ const ListCategories = () => {
   };
 
   const handlePublish = async () => {
-    //
+    try {
+        console.log(selectedCategory._id)
+      await handlePublishCategory(
+        selectedCategory._id,
+        !selectedCategory.isPublished
+      );
+      fetchCategories();
+    } catch (e) {
+      console.error("Error publishing category:", e);
+    }
   };
 
   const handleEdit = () => {
@@ -89,12 +103,12 @@ const ListCategories = () => {
     handleClose();
   };
 
-  const handleDelete = async() => {
-    try{
-        await onDeleteCategory(selectedCategory._id)
-        fetchCategories()
-    }catch(err){
-        console.error("Error deleting category:", err);
+  const handleDelete = async () => {
+    try {
+      await onDeleteCategory(selectedCategory._id);
+      fetchCategories();
+    } catch (err) {
+      console.error("Error deleting category:", err);
     }
     handleClose();
   };
@@ -108,10 +122,10 @@ const ListCategories = () => {
     setNewCategory({ name: "", description: "", isPublished: false });
   };
 
-  const handleSubmitCategory = async() => {
+  const handleSubmitCategory = async () => {
     try {
-        await onCreateCategory(newCategory)
-        fetchCategories()
+      await onCreateCategory(newCategory);
+      fetchCategories();
     } catch (err) {
       console.error("Error creating category:", err);
     }
@@ -264,10 +278,11 @@ const ListCategories = () => {
 
                   <Menu
                     anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
+                    open={Boolean(anchorEl && selectedCategory === category)}
                     onClose={handleClose}
                     sx={{ "& .MuiPaper-root": { backgroundColor: "white" } }}
                   >
+                    {/* Publish/Unpublish action */}
                     <MenuItem
                       onClick={handlePublish}
                       sx={{
@@ -278,23 +293,25 @@ const ListCategories = () => {
                       <MdPublish fontSize={"25px"} />
                       {category.isPublished ? "Unpublish" : "Publish"}
                     </MenuItem>
-                    <Divider sx={{ height: "1px", background: "black" }} />
+                    <Divider sx={{ height: "1px", background: "grey" }} />{" "}
+                    {/* Divider to separate menu items */}
+                    {/* Edit action */}
                     <MenuItem
                       onClick={handleEdit}
-                      sx={{ color: "black", gap: "15px" }}
+                      sx={{ gap: "15px", color: "black" }}
                     >
                       <MdEdit fontSize={"25px"} />
                       Edit
                     </MenuItem>
-                    <Divider sx={{ height: "1px", background: "black" }} />
+                    {/* Delete action */}
                     <MenuItem
                       onClick={handleDelete}
-                      sx={{ color: "black", gap: "15px" }}
+                      sx={{ gap: "15px", color: "black" }}
                     >
                       <FaTrash fontSize={"25px"} />
                       Delete
                     </MenuItem>
-                  </Menu> 
+                  </Menu>
                 </TableCell>
               </TableRow>
             ))}
@@ -302,27 +319,26 @@ const ListCategories = () => {
         </Table>
       </TableContainer>
 
+      {/* Create Category Modal */}
       <Dialog open={openModal} onClose={handleModalClose}>
-        <DialogTitle>Create New Category</DialogTitle>
+        <DialogTitle>Create a New Category</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
+            name="name"
             label="Name"
             type="text"
             fullWidth
-            variant="outlined"
-            name="name"
             value={newCategory.name}
             onChange={handleChange}
           />
           <TextField
             margin="dense"
+            name="description"
             label="Description"
             type="text"
             fullWidth
-            variant="outlined"
-            name="description"
             value={newCategory.description}
             onChange={handleChange}
           />
@@ -331,19 +347,14 @@ const ListCategories = () => {
               <Switch
                 checked={newCategory.isPublished}
                 onChange={handleSwitchChange}
-                color="primary"
               />
             }
-            label="Published"
+            label={newCategory.isPublished ? "Public" : "Private"}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleModalClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmitCategory} color="primary">
-            Submit
-          </Button>
+          <Button onClick={handleModalClose}>Cancel</Button>
+          <Button onClick={handleSubmitCategory}>Submit</Button>
         </DialogActions>
       </Dialog>
     </Box>

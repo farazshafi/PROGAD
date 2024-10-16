@@ -33,3 +33,13 @@ export const onDeleteCategory = async (id) => {
   }
 };
 
+export const handlePublishCategory = async (id,isPublished) => {
+  try {
+    const { data } = await axios.patch(`${API_URL}//publish_unpublish/${id}`,{isPublished});       
+    return data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
