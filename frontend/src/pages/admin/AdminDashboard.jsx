@@ -15,10 +15,13 @@ import { FaListUl } from "react-icons/fa";
 import { BiSolidOffer } from "react-icons/bi";
 import { FaDownload } from "react-icons/fa6";
 import { GoGraph } from "react-icons/go";
+import { MdCategory } from "react-icons/md";
+
 
 // Components
 import ListUsers from "./ListUsers";
 import ListProduct from "./ListProducts";
+import ListCategories from "./ListCategories";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -74,20 +77,20 @@ const NAVIGATION = [
     title: "Orders",
     icon: <FaShoppingCart fontSize={"20px"} />,
   },
-  // coupons
+  // categories
   {
-    segment: "coupons",
-    title: "Coupons",
-    icon: <RiCoupon2Fill fontSize={"20px"} />,
+    segment: "categories",
+    title: "Categories",
+    icon: <MdCategory fontSize={"20px"} />,
     children: [
       {
-        segment: "add_coupon",
-        title: "Add Coupon",
+        segment: "add category",
+        title: "Add Category",
         icon: <IoMdAdd />,
       },
       {
-        segment: "list brand",
-        title: "List Brand",
+        segment: "",
+        title: "List Categories",
         icon: <FaListUl />,
       },
     ],
@@ -105,6 +108,24 @@ const NAVIGATION = [
       },
       {
         segment: "list_brand",
+        title: "List Brand",
+        icon: <FaListUl />,
+      },
+    ],
+  },
+  // coupons
+  {
+    segment: "coupons",
+    title: "Coupons",
+    icon: <RiCoupon2Fill fontSize={"20px"} />,
+    children: [
+      {
+        segment: "add_coupon",
+        title: "Add Coupon",
+        icon: <IoMdAdd />,
+      },
+      {
+        segment: "list brand",
         title: "List Brand",
         icon: <FaListUl />,
       },
@@ -183,6 +204,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/products":
       content = <ListProduct />;
+      break;
+    case "/categories":
+      content = <ListCategories />;
       break;
     default:
       content = <div>Default Content</div>;
