@@ -26,8 +26,8 @@ import {
 import { format } from "date-fns";
 import { IoMdMore } from "react-icons/io";
 import { MdEdit, MdPublish } from "react-icons/md"; 
-import { FaEye } from "react-icons/fa";
-import { getAllCategories, onCreateCategory } from "../../api/categoryApi";
+import { FaTrash } from "react-icons/fa";
+import { getAllCategories, onCreateCategory, onDeleteCategory } from "../../api/categoryApi";
 
 const ListCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -89,8 +89,13 @@ const ListCategories = () => {
     handleClose();
   };
 
-  const handleView = () => {
-    console.log(`View category: ${selectedCategory.name}`);
+  const handleDelete = async() => {
+    try{
+        await onDeleteCategory(selectedCategory._id)
+        fetchCategories()
+    }catch(err){
+        console.error("Error deleting category:", err);
+    }
     handleClose();
   };
 
@@ -283,13 +288,13 @@ const ListCategories = () => {
                     </MenuItem>
                     <Divider sx={{ height: "1px", background: "black" }} />
                     <MenuItem
-                      onClick={handleView}
-                      sx={{ color: "blue", gap: "15px" }}
+                      onClick={handleDelete}
+                      sx={{ color: "black", gap: "15px" }}
                     >
-                      <FaEye fontSize={"25px"} />
-                      View
+                      <FaTrash fontSize={"25px"} />
+                      Delete
                     </MenuItem>
-                  </Menu>
+                  </Menu> 
                 </TableCell>
               </TableRow>
             ))}

@@ -23,3 +23,13 @@ export const onCreateCategory = async (obj) => {
   }
 };
 
+export const onDeleteCategory = async (id) => {
+  try {
+    const { data } = await axios.delete(`${API_URL}/delete_category/${id}`);       
+    return data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
