@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import userRoute from "./routes/userRoutes.js";
 import adminRoute from "./routes/adminRouter.js";
+import categoryRoute from "./routes/categoryRouter.js";
 import connectDB from "./config/db.js";
 import cors from "cors"
 
@@ -25,6 +26,7 @@ app.use(
 // routers
 app.use("/api/user/", userRoute);
 app.use("/api/admin/", adminRoute);
+app.use("/api/category/", categoryRoute);
 
 app.get("/", (req, res) => {
   res.send("Api is running...");
@@ -38,8 +40,7 @@ app.listen(port, () => {
 
 // Admin side :
 // Admin sign in
-// Category management (Add, Edit and Delete (soft delete))
-// Product management(add, edit & delete(soft delete) products).
+ // Product management(add, edit & delete(soft delete) products).
 // Products must have multiple images (minimum 3 images).
 // Images should be cropped and resized properly before upload.
 // .
