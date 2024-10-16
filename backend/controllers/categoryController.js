@@ -5,12 +5,12 @@ import asyncHandler from "express-async-handler";
 // @route   POST /api/category/create_category
 // @access  private admin
 export const createCategory = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, isPublished } = req.body;
   const categoryExist = await Category.findOne({ name });
   if (categoryExist) {
     return res.status(400).json({ message: "Category already exists" });
   }
-  const category = await Category.create({ name, description });
+  const category = await Category.create({ name, description, isPublished });
   if (Category) {
     res.status(201).json({ category });
   }

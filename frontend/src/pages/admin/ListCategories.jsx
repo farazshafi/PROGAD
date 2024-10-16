@@ -15,20 +15,41 @@ import {
   Menu,
   Divider,
   MenuItem,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
-import { format } from 'date-fns'; 
+import { format } from "date-fns";
 import { IoMdMore } from "react-icons/io";
-import { MdEdit, MdPublish } from "react-icons/md";
+import { MdEdit, MdPublish } from "react-icons/md"; 
 import { FaEye } from "react-icons/fa";
-import { getAllCategories } from "../../api/categoryApi";
+import { getAllCategories, onCreateCategory } from "../../api/categoryApi";
 
 const ListCategories = () => {
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showUnpublishedOnly, setShowUnpublishedOnly] = useState(false);
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    description: "",
+    isPublished: false,
+  });
+
+  const fetchCategories = async () => {
+    try {
+      const categories = await getAllCategories();
+      setCategories(categories);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
 
   // Filter categories based on search term and unpublished status
   const filteredCategories = categories.filter((category) => {
@@ -46,14 +67,6 @@ const ListCategories = () => {
   ).length;
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const categories = await getAllCategories();
-        setCategories(categories);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-      }
-    };
     fetchCategories();
   }, []);
 
@@ -79,6 +92,33 @@ const ListCategories = () => {
   const handleView = () => {
     console.log(`View category: ${selectedCategory.name}`);
     handleClose();
+  };
+
+  const handleCreateCategory = () => {
+    setOpenModal(true);
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+    setNewCategory({ name: "", description: "", isPublished: false });
+  };
+
+  const handleSubmitCategory = async() => {
+    try {
+        await onCreateCategory(newCategory)
+        fetchCategories()
+    } catch (err) {
+      console.error("Error creating category:", err);
+    }
+    handleModalClose();
+  };
+
+  const handleChange = (e) => {
+    setNewCategory({ ...newCategory, [e.target.name]: e.target.value });
+  };
+
+  const handleSwitchChange = (e) => {
+    setNewCategory({ ...newCategory, isPublished: e.target.checked });
   };
 
   return (
@@ -132,9 +172,22 @@ const ListCategories = () => {
             {unpublishedCategories}
           </span>
         </Typography>
+        <Button
+          style={{ marginLeft: "auto" }}
+          sx={{
+            backgroundColor: "white",
+            color: "black",
+            "&:hover": {
+              backgroundColor: "grey",
+              color: "white",
+            },
+          }}
+          onClick={handleCreateCategory}
+        >
+          Create Category
+        </Button>
       </Box>
 
-      {/* Search */}
       <TextField
         variant="outlined"
         placeholder="Search by name or description"
@@ -243,6 +296,51 @@ const ListCategories = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Dialog open={openModal} onClose={handleModalClose}>
+        <DialogTitle>Create New Category</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Name"
+            type="text"
+            fullWidth
+            variant="outlined"
+            name="name"
+            value={newCategory.name}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="dense"
+            label="Description"
+            type="text"
+            fullWidth
+            variant="outlined"
+            name="description"
+            value={newCategory.description}
+            onChange={handleChange}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={newCategory.isPublished}
+                onChange={handleSwitchChange}
+                color="primary"
+              />
+            }
+            label="Published"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmitCategory} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

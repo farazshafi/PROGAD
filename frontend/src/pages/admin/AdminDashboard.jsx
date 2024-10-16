@@ -17,11 +17,11 @@ import { FaDownload } from "react-icons/fa6";
 import { GoGraph } from "react-icons/go";
 import { MdCategory } from "react-icons/md";
 
-
 // Components
 import ListUsers from "./ListUsers";
 import ListProduct from "./ListProducts";
 import ListCategories from "./ListCategories";
+import AddCategory from "./AddCategory";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -84,7 +84,7 @@ const NAVIGATION = [
     icon: <MdCategory fontSize={"20px"} />,
     children: [
       {
-        segment: "add category",
+        segment: "add_category",
         title: "Add Category",
         icon: <IoMdAdd />,
       },
@@ -207,6 +207,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/categories":
       content = <ListCategories />;
+      break;
+    case "/categories/add_category":
+      content = <AddCategory />;
       break;
     default:
       content = <div>Default Content</div>;
