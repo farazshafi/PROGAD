@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import userRoute from "./routes/userRoutes.js";
 import adminRoute from "./routes/adminRouter.js";
 import categoryRoute from "./routes/categoryRouter.js";
+import productRoute from "./routes/productRouter.js";
 import connectDB from "./config/db.js";
 import cors from "cors"
 
@@ -27,6 +28,7 @@ app.use(
 app.use("/api/user/", userRoute);
 app.use("/api/admin/", adminRoute);
 app.use("/api/category/", categoryRoute);
+app.use("/api/product/", productRoute );
 
 app.get("/", (req, res) => {
   res.send("Api is running...");
