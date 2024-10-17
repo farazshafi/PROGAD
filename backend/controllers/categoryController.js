@@ -64,10 +64,10 @@ export const publishAndUnpublish = asyncHandler(async (req, res) => {
 // @access  private admin
 export const editCategory = asyncHandler(async (req, res) => {
     const {id} = req.params
-    const {name,description} = req.body
+    const {name,description,isPublished} = req.body
     const updatedCategory = await Category.findByIdAndUpdate(
         id,
-        { name, description },
+        { name, description,isPublished },
         { new: true }
     )
     if(updatedCategory){

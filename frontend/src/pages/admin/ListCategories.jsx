@@ -32,6 +32,7 @@ import {
   handlePublishCategory,
   onCreateCategory,
   onDeleteCategory,
+  updateCategoryApi,
 } from "../../api/categoryApi";
 
 const ListCategories = () => {
@@ -41,7 +42,13 @@ const ListCategories = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [newCategory, setNewCategory] = useState({
+    name: "",
+    description: "",
+    isPublished: false,
+  });
+  const [editCategory, setEditCategory] = useState({
     name: "",
     description: "",
     isPublished: false,
@@ -87,7 +94,7 @@ const ListCategories = () => {
 
   const handlePublish = async () => {
     try {
-        console.log(selectedCategory._id)
+      console.log(selectedCategory._id);
       await handlePublishCategory(
         selectedCategory._id,
         !selectedCategory.isPublished
@@ -99,8 +106,8 @@ const ListCategories = () => {
   };
 
   const handleEdit = () => {
-    console.log(`Edit category: ${selectedCategory.name}`);
-    handleClose();
+    setEditCategory(selectedCategory);
+    setOpenEditModal(true);
   };
 
   const handleDelete = async () => {
@@ -119,7 +126,9 @@ const ListCategories = () => {
 
   const handleModalClose = () => {
     setOpenModal(false);
+    setOpenEditModal(false);
     setNewCategory({ name: "", description: "", isPublished: false });
+    setEditCategory({ name: "", description: "", isPublished: false });
   };
 
   const handleSubmitCategory = async () => {
@@ -139,6 +148,27 @@ const ListCategories = () => {
   const handleSwitchChange = (e) => {
     setNewCategory({ ...newCategory, isPublished: e.target.checked });
   };
+
+  const handleEditChange = (e) => {
+    setEditCategory({ ...editCategory, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitEdit = async () => {
+    try {
+      const updatedCategory = {
+        name: editCategory.name,
+        description: editCategory.description,
+        isPublished: editCategory.isPublished,
+      }
+      console.log("edit category : ",updatedCategory);
+      await updateCategoryApi(selectedCategory._id,updatedCategory)
+      fetchCategories();
+    } catch (err) {
+      console.error("Error updating category:", err);
+    }
+    handleModalClose();
+  };
+  
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
@@ -275,7 +305,6 @@ const ListCategories = () => {
                   >
                     <IoMdMore fontSize={"25px"} />
                   </IconButton>
-
                   <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl && selectedCategory === category)}
@@ -293,7 +322,7 @@ const ListCategories = () => {
                       <MdPublish fontSize={"25px"} />
                       {category.isPublished ? "Unpublish" : "Publish"}
                     </MenuItem>
-                    <Divider sx={{ height: "1px", background: "grey" }} />{" "}
+                    <Divider sx={{ height: "1px", background: "grey" }} />
                     {/* Divider to separate menu items */}
                     {/* Edit action */}
                     <MenuItem
@@ -303,6 +332,7 @@ const ListCategories = () => {
                       <MdEdit fontSize={"25px"} />
                       Edit
                     </MenuItem>
+                    <Divider sx={{ height: "1px", background: "grey" }} />
                     {/* Delete action */}
                     <MenuItem
                       onClick={handleDelete}
@@ -355,6 +385,51 @@ const ListCategories = () => {
         <DialogActions>
           <Button onClick={handleModalClose}>Cancel</Button>
           <Button onClick={handleSubmitCategory}>Submit</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* edit Category Modal */}
+      {/* Edit Category Modal */}
+      <Dialog open={openEditModal} onClose={handleModalClose}>
+        <DialogTitle>Edit Category</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="name"
+            label="Name"
+            type="text"
+            fullWidth
+            value={editCategory.name}
+            onChange={handleEditChange}
+          />
+          <TextField
+            margin="dense"
+            name="description"
+            label="Description"
+            type="text"
+            fullWidth
+            value={editCategory.description} 
+            onChange={handleEditChange} 
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={editCategory.isPublished} 
+                onChange={(e) =>
+                  setEditCategory({
+                    ...editCategory,
+                    isPublished: e.target.checked,
+                  })
+                }
+              />
+            }
+            label={editCategory.isPublished ? "Public" : "Private"}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose}>Cancel</Button>
+          <Button onClick={handleSubmitEdit}>Save Changes</Button>
         </DialogActions>
       </Dialog>
     </Box>

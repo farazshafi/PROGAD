@@ -43,3 +43,13 @@ export const handlePublishCategory = async (id,isPublished) => {
   }
 };
 
+export const updateCategoryApi = async (id,data) => {
+  try {
+    const response = await axios.patch(`${API_URL}/edit_category/${id}`,data);       
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
