@@ -91,7 +91,7 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    originalPrice: { 
+    originalPrice: {
       type: Number,
       required: true,
     },
@@ -134,7 +134,10 @@ const productSchema = mongoose.Schema(
     type: {
       type: String,
       enum: ["Bluetooth", "Non-Bluetooth"],
-      required: true,
+      required: function () {
+        // Only required if there are no variants
+        return !this.hasVariants;
+      },
     },
     batteryLife: {
       type: String,
