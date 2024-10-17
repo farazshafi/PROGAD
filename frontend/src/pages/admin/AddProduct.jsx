@@ -41,8 +41,8 @@ const AddProduct = () => {
     });
   };
   const [variantsArray, setVariantsArray] = useState([]);
-  const [hasVariants, setHasVariants] = useState(false); 
-  const [openVariantModal, setOpenVariantModal] = useState(false); 
+  const [hasVariants, setHasVariants] = useState(false);
+  const [openVariantModal, setOpenVariantModal] = useState(false);
   const [variantImages, setVariantImages] = useState([]);
   const [variantName, setVariantName] = useState("");
   const [variantOriginalPrice, setVariantOriginalPrice] = useState(0);
@@ -50,6 +50,11 @@ const AddProduct = () => {
   const [variantStock, setVariantStock] = useState(0);
   const [variantType, setVariantType] = useState("");
   const [variantColor, setVariantColor] = useState("");
+  const [hasBluetooth, setHasBluetooth] = useState(false);
+  const [batteryLife, setBatteryLife] = useState("");
+  const [bluetoothVersion, setBluetoothVersion] = useState("");
+  const [noiseCancellation, setNoiseCancellation] = useState(false);
+  const [dualPlayConnection, setDualPlayConnection] = useState(false);
 
   const handleVariantImageUpload = (event) => {
     const files = event.target.files;
@@ -67,7 +72,6 @@ const AddProduct = () => {
   };
 
   const handleSaveVariant = () => {
-    // Create a variant object
     const newVariant = {
       name: variantName,
       originalPrice: variantOriginalPrice,
@@ -76,10 +80,18 @@ const AddProduct = () => {
       type: variantType,
       color: variantColor,
       images: variantImages,
+      hasBluetooth,
+      ...(hasBluetooth && {
+        batteryLife,
+        bluetoothVersion,
+        noiseCancellation,
+        dualPlayConnection,
+      }),
     };
 
     setVariantsArray((prevArray) => [...prevArray, newVariant]);
 
+    // Reset fields
     setVariantName("");
     setVariantOriginalPrice("");
     setVariantDiscountPrice("");
@@ -87,6 +99,11 @@ const AddProduct = () => {
     setVariantType("");
     setVariantColor("");
     setVariantImages([]);
+    setHasBluetooth(false);
+    setBatteryLife("");
+    setBluetoothVersion("");
+    setNoiseCancellation(false);
+    setDualPlayConnection(false);
     setOpenVariantModal(false);
   };
 
@@ -351,35 +368,64 @@ const AddProduct = () => {
                     <Typography>Type: {variant.type}</Typography>
                     <Typography>Color: {variant.color}</Typography>
 
+                    {/* Check if the variant supports Bluetooth */}
+                    {variant.hasBluetooth && (
+                      <>
+                        <Typography>
+                          Battery Life: {variant.batteryLife} hours
+                        </Typography>
+                        <Typography>
+                          Bluetooth Version: {variant.bluetoothVersion}
+                        </Typography>
+                        <Typography>
+                          Noise Cancellation:{" "}
+                          {variant.noiseCancellation ? "Yes" : "No"}
+                        </Typography>
+                        <Typography>
+                          Dual Play Connection:{" "}
+                          {variant.dualPlayConnection ? "Yes" : "No"}
+                        </Typography>
+                      </>
+                    )}
+
                     <Grid container spacing={1}>
                       {variant.images.map((imgSrc, imgIndex) => (
                         <Grid item xs={4} key={imgIndex}>
-                          <>
-                            <Box
-                              sx={{
-                                border: "1px solid #ccc",
-                                borderRadius: "5px",
-                                overflow: "hidden",
+                          <Box
+                            sx={{
+                              border: "1px solid #ccc",
+                              borderRadius: "5px",
+                              overflow: "hidden",
+                            }}
+                          >
+                            <img
+                              src={imgSrc}
+                              alt="Variant"
+                              style={{
+                                width: "100%",
+                                height: "auto",
                               }}
-                            >
-                              <img
-                                src={imgSrc}
-                                alt="Variant"
-                                style={{
-                                  width: "100%",
-                                  height: "auto",
-                                }}
-                              />
-                            </Box>
-                          </>
+                            />
+                          </Box>
                         </Grid>
                       ))}
-                      <Button onClick={(e)=>handleDeleteVariant(index)} sx={{ width: "100%",background:"white",marginTop:"10px",color:"black" }}>Delete</Button>
+                      <Button
+                        onClick={(e) => handleDeleteVariant(index)}
+                        sx={{
+                          width: "100%",
+                          background: "white",
+                          marginTop: "10px",
+                          color: "black",
+                        }}
+                      >
+                        Delete
+                      </Button>
                     </Grid>
                   </Box>
                 </Grid>
               ))}
             </Grid>
+
             <Grid item xs={12}>
               <Button
                 variant="outlined"
@@ -515,7 +561,65 @@ const AddProduct = () => {
               <MenuItem value="white">White</MenuItem>
             </Select>
           </FormControl>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={hasBluetooth}
+                onChange={(e) => setHasBluetooth(e.target.checked)}
+              />
+            }
+            label="Supports Bluetooth"
+          />
 
+          {hasBluetooth && (
+            <>
+              <TextField
+                sx={{ mt: 2 }}
+                fullWidth
+                label="Battery Life (hours)"
+                value={batteryLife}
+                onChange={(e) => setBatteryLife(e.target.value)}
+                variant="outlined"
+                InputLabelProps={{ style: { color: "#ffffff" } }}
+                inputProps={{ style: { color: "#ffffff" } }}
+              />
+
+              <TextField
+                sx={{ mt: 2 }}
+                fullWidth
+                label="Bluetooth Version"
+                value={bluetoothVersion}
+                onChange={(e) => setBluetoothVersion(e.target.value)}
+                variant="outlined"
+                InputLabelProps={{ style: { color: "#ffffff" } }}
+                inputProps={{ style: { color: "#ffffff" } }}
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={noiseCancellation}
+                    onChange={(e) => setNoiseCancellation(e.target.checked)}
+                    style={{ color: "#ffffff" }}
+                  />
+                }
+                label="Noise Cancellation"
+                sx={{ mt: 2, color: "#ffffff" }}
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={dualPlayConnection}
+                    onChange={(e) => setDualPlayConnection(e.target.checked)}
+                    style={{ color: "#ffffff" }}
+                  />
+                }
+                label="Dual Play Connection"
+                sx={{ mt: 2, color: "#ffffff" }}
+              />
+            </>
+          )}
           <FormControl fullWidth sx={{ mt: 2 }}>
             <Box
               sx={{
