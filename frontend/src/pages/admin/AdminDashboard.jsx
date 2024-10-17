@@ -22,6 +22,7 @@ import ListUsers from "./ListUsers";
 import ListProduct from "./ListProducts";
 import ListCategories from "./ListCategories";
 import AddCategory from "./AddCategory";
+import AddProduct from "./AddProduct";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -65,8 +66,8 @@ const NAVIGATION = [
         icon: <IoMdAdd />,
       },
       {
-        segment: "list brand",
-        title: "List Brand",
+        segment: "",
+        title: "List Products",
         icon: <FaListUl />,
       },
     ],
@@ -204,6 +205,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/products":
       content = <ListProduct />;
+      break;
+    case "/products/add_product":
+      content = <AddProduct />;
       break;
     case "/categories":
       content = <ListCategories />;
