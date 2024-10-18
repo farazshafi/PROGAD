@@ -16,14 +16,45 @@ import {
   Modal,
 } from "@mui/material";
 import { MdCloudUpload } from "react-icons/md";
+import { createProductApi } from "../../api/productApi";
 
 const AddProduct = () => {
   const [isBluetooth, setIsBluetooth] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [variantFeatures, setVariantFeatures] = useState({
+    variantNoiseCancellation: false,
+    variantDualPlayConnection: false,
+  });
   const [features, setFeatures] = useState({
     noiseCancellation: false,
     dualPlayConnect: false,
   });
+  const [variantsArray, setVariantsArray] = useState([]);
+  const [hasVariants, setHasVariants] = useState(false);
+  const [openVariantModal, setOpenVariantModal] = useState(false);
+  const [variantImages, setVariantImages] = useState([]);
+  const [variantName, setVariantName] = useState("");
+  const [variantOriginalPrice, setVariantOriginalPrice] = useState(0);
+  const [variantDiscountPrice, setVariantDiscountPrice] = useState(0);
+  const [variantStock, setVariantStock] = useState(0);
+  const [variantColor, setVariantColor] = useState("");
+  const [variantHasBluetooth, setVariantHasBluetooth] = useState(false);
+  const [variantBatteryLife, setVariantBatteryLife] = useState("");
+  const [variantBluetoothVersion, setVariantBluetoothVersion] = useState("");
+  const [variantNoiseCancellation, setVariantNoiseCancellation] =
+    useState(false);
+  const [variantDualPlayConnection, setVariantDualPlayConnection] =
+    useState(false);
+  const [productName, setProductName] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [originalPrice, setOriginalPrice] = useState(0);
+  const [discountPrice, setDiscountPrice] = useState(0);
+  const [stock, setStock] = useState(0);
+  const [batteryLife, setBatteryLife] = useState("");
+  const [bluetoothVersion, setBluetoothVersion] = useState("");
+  const [warranty, setWarranty] = useState("1 Year");
+  const [variantWarranty, setVariantWarranty] = useState("1 Year");
 
   // Handle default product image upload
   const handleImageUpload = (event) => {
@@ -35,26 +66,19 @@ const AddProduct = () => {
   };
 
   const handleCheckboxChange = (event) => {
-    setFeatures({
-      ...features,
+    setVariantFeatures({
+      ...variantFeatures,
       [event.target.name]: event.target.checked,
     });
   };
-  const [variantsArray, setVariantsArray] = useState([]);
-  const [hasVariants, setHasVariants] = useState(false);
-  const [openVariantModal, setOpenVariantModal] = useState(false);
-  const [variantImages, setVariantImages] = useState([]);
-  const [variantName, setVariantName] = useState("");
-  const [variantOriginalPrice, setVariantOriginalPrice] = useState(0);
-  const [variantDiscountPrice, setVariantDiscountPrice] = useState(0);
-  const [variantStock, setVariantStock] = useState(0);
-  const [variantType, setVariantType] = useState("");
-  const [variantColor, setVariantColor] = useState("");
-  const [hasBluetooth, setHasBluetooth] = useState(false);
-  const [batteryLife, setBatteryLife] = useState("");
-  const [bluetoothVersion, setBluetoothVersion] = useState("");
-  const [noiseCancellation, setNoiseCancellation] = useState(false);
-  const [dualPlayConnection, setDualPlayConnection] = useState(false);
+
+  const handleCheckboxChangeOg = (event) => {
+    const { name, checked } = event.target;
+    setFeatures((prevFeatures) => ({
+      ...prevFeatures,
+      [name]: checked,
+    }));
+  };
 
   const handleVariantImageUpload = (event) => {
     const files = event.target.files;
@@ -72,20 +96,47 @@ const AddProduct = () => {
   };
 
   const handleSaveVariant = () => {
+    // Validation function
+    const validateFields = () => {
+      if (!variantName || variantName.length < 3) {
+        alert("Variant name must be at least 3 characters long.");
+        return false;
+      }
+      if (!variantOriginalPrice || variantOriginalPrice <= 1) {
+        alert("Original price must be greater than 0.");
+        return false;
+      }
+      if (variantDiscountPrice < 0) {
+        alert("Discount price cannot be negative.");
+        return false;
+      }
+      if (!variantStock || variantStock < 0) {
+        alert("Stock must be greater than or equal to 0.");
+        return false;
+      }
+      return true;
+    };
+
+    // Perform validation
+    if (!validateFields()) {
+      return; // Stop the function if validation fails
+    }
+
     const newVariant = {
       name: variantName,
       originalPrice: variantOriginalPrice,
       discountPrice: variantDiscountPrice,
       stock: variantStock,
-      type: variantType,
+      type: variantHasBluetooth ? "Bluetooth" : "Non-Bluetooth",
       color: variantColor,
       images: variantImages,
-      hasBluetooth,
-      ...(hasBluetooth && {
-        batteryLife,
-        bluetoothVersion,
-        noiseCancellation,
-        dualPlayConnection,
+      variantHasBluetooth,
+      warranty: variantWarranty,
+      ...(variantHasBluetooth && {
+        variantBatteryLife,
+        variantBluetoothVersion,
+        variantNoiseCancellation,
+        variantDualPlayConnection,
       }),
     };
 
@@ -93,22 +144,70 @@ const AddProduct = () => {
 
     // Reset fields
     setVariantName("");
-    setVariantOriginalPrice("");
-    setVariantDiscountPrice("");
-    setVariantStock("");
-    setVariantType("");
+    setVariantOriginalPrice(0);
+    setVariantDiscountPrice(0);
+    setVariantStock(0);
     setVariantColor("");
     setVariantImages([]);
-    setHasBluetooth(false);
-    setBatteryLife("");
-    setBluetoothVersion("");
-    setNoiseCancellation(false);
-    setDualPlayConnection(false);
+    setVariantHasBluetooth(false);
+    setVariantBatteryLife("");
+    setVariantBluetoothVersion("");
+    setVariantNoiseCancellation(false);
+    setVariantDualPlayConnection(false);
     setOpenVariantModal(false);
   };
+  const handleAddProductSubmit = async () => {
+    try {
+      const productDetails = {
+        name: productName,
+        description,
+        originalPrice,
+        discountPrice,
+        images: uploadedImages, // array of product images
+        totalStock: stock, // total stock available
+        isPublished: true, // assuming the product is published by default
+        category : "670f64bb4e5d5f23016cfd5b", // category ID from selected category
+        hasVariants, // whether the product has variants
+        type: hasVariants
+          ? variantsArray[0]?.type
+          : !isBluetooth
+            ? "Non-Bluetooth"
+            : "Bluetooth", // Set based on the first variant if applicable
+        warranty,
+      };
 
-  const handleAddProductSubmit = () => {
-    console.log("variants :", variantsArray);
+      // If product has variants, build the variants array
+      if (hasVariants) {
+        productDetails.variants = variantsArray.map((variant) => ({
+          name: variant.name,
+          originalPrice: variant.originalPrice,
+          discountPrice: variant.discountPrice,
+          stock: variant.stock,
+          images: variant.images, // array of variant images
+          color: variant.color, // variant color
+          type: variant.type, // variant type
+          warranty: variant.warranty,
+          ...(variant.type === "Bluetooth" && {
+            // add Bluetooth-specific fields
+            batteryLife: variant.batteryLife,
+            bluetoothVersion: variant.bluetoothVersion,
+            isNoiseCancellationEnabled: variant.variantNoiseCancellation,
+            isDualPlayConnectionEnabled: variant.variantDualPlayConnection,
+          }),
+        }));
+      }
+
+      // Sending the product data to the API
+      const data = await createProductApi(productDetails);
+      if (data) {
+        console.log("Product added successfully:", data);
+        // Optionally reset the state or provide feedback
+      } else {
+        console.error("Failed to add product");
+      }
+    } catch (err) {
+      console.error("Error adding product:", err);
+    }
   };
 
   return (
@@ -196,19 +295,29 @@ const AddProduct = () => {
           </Grid>
         </Grid>
 
+        {/* product name */}
         <Grid item xs={6}>
           <TextField
             fullWidth
             label="Product Name"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
             variant="outlined"
             InputLabelProps={{ style: { color: "#ffffff" } }}
             inputProps={{ style: { color: "#ffffff" } }}
           />
         </Grid>
+
+        {/* category */}
         <Grid item xs={6}>
           <FormControl fullWidth>
             <InputLabel style={{ color: "#ffffff" }}>Category</InputLabel>
-            <Select variant="outlined" style={{ color: "#ffffff" }}>
+            <Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              variant="outlined"
+              style={{ color: "#ffffff" }}
+            >
               <MenuItem value="headphones">Headphones</MenuItem>
               <MenuItem value="earbuds">Earbuds</MenuItem>
               <MenuItem value="speakers">Speakers</MenuItem>
@@ -216,10 +325,13 @@ const AddProduct = () => {
           </FormControl>
         </Grid>
 
+        {/* description */}
         <Grid item xs={12}>
           <TextField
             fullWidth
             label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             variant="outlined"
             multiline
             rows={4}
@@ -243,42 +355,60 @@ const AddProduct = () => {
 
         {!hasVariants ? (
           <>
+            {/* original price */}
             <Grid item xs={6}>
               <TextField
                 fullWidth
                 label="Original Price"
+                value={originalPrice}
+                onChange={(e) => setOriginalPrice(e.target.value)}
                 variant="outlined"
+                type="number"
                 InputLabelProps={{ style: { color: "#ffffff" } }}
                 inputProps={{ style: { color: "#ffffff" } }}
               />
             </Grid>
+
+            {/* discount price */}
             <Grid item xs={6}>
               <TextField
                 fullWidth
                 label="Discount Price"
+                value={discountPrice}
+                onChange={(e) => setDiscountPrice(e.target.value)}
+                type="number"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#ffffff" } }}
                 inputProps={{ style: { color: "#ffffff" } }}
               />
             </Grid>
 
+            {/* stock */}
             <Grid item xs={6}>
               <TextField
                 fullWidth
                 label="Stock"
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                type="number"
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#ffffff" } }}
                 inputProps={{ style: { color: "#ffffff" } }}
               />
             </Grid>
+
+            {/* warranty */}
             <Grid item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel style={{ color: "#ffffff" }}>Types</InputLabel>
-                <Select variant="outlined" style={{ color: "#ffffff" }}>
-                  <MenuItem value="headphones">Bluetooth</MenuItem>
-                  <MenuItem value="earbuds">Wired</MenuItem>
-                </Select>
-              </FormControl>
+              <TextField
+                fullWidth
+                label="Warranty"
+                value={warranty}
+                onChange={(e) => setWarranty(e.target.value)}
+                type="text"
+                variant="outlined"
+                InputLabelProps={{ style: { color: "#ffffff" } }}
+                inputProps={{ style: { color: "#ffffff" } }}
+              />
             </Grid>
 
             <Grid item xs={12}>
@@ -293,22 +423,26 @@ const AddProduct = () => {
                 label="Does your product support Bluetooth?"
               />
             </Grid>
-
             {isBluetooth && (
               <>
                 <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Battery Life (hours)"
+                    value={batteryLife}
+                    onChange={(e) => setBatteryLife(e.target.value)}
                     variant="outlined"
                     InputLabelProps={{ style: { color: "#ffffff" } }}
                     inputProps={{ style: { color: "#ffffff" } }}
                   />
                 </Grid>
+
                 <Grid item xs={6}>
                   <TextField
                     fullWidth
                     label="Bluetooth Version"
+                    value={bluetoothVersion}
+                    onChange={(e) => setBluetoothVersion(e.target.value)}
                     variant="outlined"
                     InputLabelProps={{ style: { color: "#ffffff" } }}
                     inputProps={{ style: { color: "#ffffff" } }}
@@ -321,7 +455,7 @@ const AddProduct = () => {
                       control={
                         <Checkbox
                           checked={features.noiseCancellation}
-                          onChange={handleCheckboxChange}
+                          onChange={handleCheckboxChangeOg}
                           name="noiseCancellation"
                           color="primary"
                         />
@@ -488,6 +622,7 @@ const AddProduct = () => {
             sx={{ mt: 2 }}
             fullWidth
             label="Original Price"
+            type="number"
             value={variantOriginalPrice}
             onChange={(e) => setVariantOriginalPrice(e.target.value)}
             variant="outlined"
@@ -499,6 +634,7 @@ const AddProduct = () => {
             sx={{ mt: 2 }}
             fullWidth
             label="Discount Price"
+            type="number"
             value={variantDiscountPrice}
             onChange={(e) => setVariantDiscountPrice(e.target.value)}
             variant="outlined"
@@ -510,6 +646,7 @@ const AddProduct = () => {
             sx={{ mt: 2 }}
             fullWidth
             label="Stock"
+            type="number"
             value={variantStock}
             onChange={(e) => setVariantStock(e.target.value)}
             variant="outlined"
@@ -517,26 +654,19 @@ const AddProduct = () => {
             inputProps={{ style: { color: "#ffffff" } }}
           />
 
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel style={{ color: "#ffffff" }}>Types</InputLabel>
-            <Select
-              variant="outlined"
-              value={variantType}
-              onChange={(e) => setVariantType(e.target.value)}
-              style={{ color: "#ffffff" }}
-              sx={{
-                "& .MuiSelect-select": {
-                  color: "#ffffff",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "#ffffff",
-                },
-              }}
-            >
-              <MenuItem value="bluetooth">Bluetooth</MenuItem>
-              <MenuItem value="wired">Wired</MenuItem>
-            </Select>
-          </FormControl>
+          <TextField
+            sx={{ mt: 2 }}
+            fullWidth
+            label="Warranty"
+            type="text"
+            value={variantWarranty}
+            onChange={(e) => setVariantWarranty(e.target.value)}
+            variant="outlined"
+            InputLabelProps={{ style: { color: "#ffffff" } }}
+            inputProps={{ style: { color: "#ffffff" } }}
+          />
+
+
 
           <FormControl fullWidth sx={{ mt: 2 }}>
             <InputLabel style={{ color: "#ffffff" }}>Colors</InputLabel>
@@ -564,21 +694,21 @@ const AddProduct = () => {
           <FormControlLabel
             control={
               <Switch
-                checked={hasBluetooth}
-                onChange={(e) => setHasBluetooth(e.target.checked)}
+                checked={variantHasBluetooth}
+                onChange={(e) => setVariantHasBluetooth(e.target.checked)}
               />
             }
             label="Supports Bluetooth"
           />
 
-          {hasBluetooth && (
+          {variantHasBluetooth && (
             <>
               <TextField
                 sx={{ mt: 2 }}
                 fullWidth
                 label="Battery Life (hours)"
-                value={batteryLife}
-                onChange={(e) => setBatteryLife(e.target.value)}
+                value={variantBatteryLife}
+                onChange={(e) => setVariantBatteryLife(e.target.value)}
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#ffffff" } }}
                 inputProps={{ style: { color: "#ffffff" } }}
@@ -588,8 +718,8 @@ const AddProduct = () => {
                 sx={{ mt: 2 }}
                 fullWidth
                 label="Bluetooth Version"
-                value={bluetoothVersion}
-                onChange={(e) => setBluetoothVersion(e.target.value)}
+                value={variantBluetoothVersion}
+                onChange={(e) => setVariantBluetoothVersion(e.target.value)}
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#ffffff" } }}
                 inputProps={{ style: { color: "#ffffff" } }}
@@ -598,8 +728,10 @@ const AddProduct = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={noiseCancellation}
-                    onChange={(e) => setNoiseCancellation(e.target.checked)}
+                    checked={variantNoiseCancellation}
+                    onChange={(e) =>
+                      setVariantNoiseCancellation(e.target.checked)
+                    }
                     style={{ color: "#ffffff" }}
                   />
                 }
@@ -610,8 +742,10 @@ const AddProduct = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={dualPlayConnection}
-                    onChange={(e) => setDualPlayConnection(e.target.checked)}
+                    checked={variantDualPlayConnection}
+                    onChange={(e) =>
+                      setVariantDualPlayConnection(e.target.checked)
+                    }
                     style={{ color: "#ffffff" }}
                   />
                 }

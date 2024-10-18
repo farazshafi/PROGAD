@@ -42,6 +42,7 @@ const variantSchema = mongoose.Schema(
     },
     images: {
       type: [String],
+      required: true,
     },
     color: {
       type: String,
@@ -76,6 +77,9 @@ const variantSchema = mongoose.Schema(
         return this.type === "Bluetooth";
       },
     },
+    warranty: {
+      type: "string",
+    },
   },
   { timestamps: true }
 );
@@ -93,7 +97,6 @@ const productSchema = mongoose.Schema(
     },
     originalPrice: {
       type: Number,
-      required: true,
     },
     discountPrice: {
       type: Number,
@@ -164,6 +167,16 @@ const productSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+productSchema.pre("save", function (next) {
+  if (this.hasVariants) {
+    this.totalStock = this.variants.reduce(
+      (acc, variant) => acc + variant.stock,
+      0
+    );
+  }
+  next();
+});
 
 // Models
 const Product = mongoose.model("Product", productSchema);
