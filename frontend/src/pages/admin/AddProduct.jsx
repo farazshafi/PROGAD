@@ -105,13 +105,6 @@ const AddProduct = () => {
     setUploadedImages(imageList);
   };
 
-  const handleCheckboxChange = (event) => {
-    setVariantFeatures({
-      ...variantFeatures,
-      [event.target.name]: event.target.checked,
-    });
-  };
-
   const handleCheckboxChangeOg = (event) => {
     const { name, checked } = event.target;
     setFeatures((prevFeatures) => ({
@@ -157,9 +150,8 @@ const AddProduct = () => {
       return true;
     };
 
-    // Perform validation
     if (!validateFields()) {
-      return; // Stop the function if validation fails
+      return;
     }
 
     const newVariant = {
@@ -198,6 +190,11 @@ const AddProduct = () => {
   };
   const handleAddProductSubmit = async () => {
     try {
+      if (!productName || !description || uploadedImages.length === 0 || !category) {
+        alert("Please fill out all required fields.");
+        return;
+      }
+  
       const productDetails = {
         name: productName,
         description,
@@ -208,42 +205,47 @@ const AddProduct = () => {
         isPublished: true,
         category: "670f64bb4e5d5f23016cfd5b",
         hasVariants,
-        type: hasVariants
-          ? variantsArray[0]?.type
-          : !isBluetooth
-            ? "Non-Bluetooth"
-            : "Bluetooth", // Set based on the first variant if applicable
+        type: isBluetooth ? "Bluetooth" : "Non-Bluetooth",
         warranty,
         batteryLife: isBluetooth ? batteryLife : undefined,
         bluetoothVersion: isBluetooth ? bluetoothVersion : undefined,
         noiseCancellation: isBluetooth ? features.noiseCancellation : undefined,
         dualPlayConnection: isBluetooth ? features.dualPlayConnect : undefined,
       };
-
+  
       if (hasVariants) {
-        productDetails.variants = variantsArray.map((variant) => ({
-          name: variant.name,
-          originalPrice: variant.originalPrice,
-          discountPrice: variant.discountPrice,
-          stock: variant.stock,
-          images: variant.images, // array of variant images
-          color: variant.color, // variant color
-          type: variant.type, // variant type
-          warranty: variant.warranty,
-          ...(variant.type === "Bluetooth" && {
-            // add Bluetooth-specific fields
-            batteryLife: variant.batteryLife,
-            bluetoothVersion: variant.bluetoothVersion,
-            isNoiseCancellationEnabled: variant.variantNoiseCancellation,
-            isDualPlayConnectionEnabled: variant.variantDualPlayConnection,
-          }),
-        }));
+        productDetails.variants = variantsArray.map((variant) => {
+          const variantDetails = {
+            name: variant.name,
+            originalPrice: variant.originalPrice,
+            discountPrice: variant.discountPrice,
+            stock: variant.stock,
+            images: variant.images,
+            color: variant.color,
+            type: variant.type,
+            warranty: variant.warranty,
+          };
+  
+          if (variant.type === "Bluetooth") {
+            variantDetails.batteryLife = variant.variantBatteryLife;
+            variantDetails.bluetoothVersion = variant.variantBluetoothVersion;
+            variantDetails.isNoiseCancellationEnabled = variant.variantNoiseCancellation;
+            variantDetails.isDualPlayConnectionEnabled = variant.variantDualPlayConnection;
+          }
+  
+          return variantDetails;
+        });
       }
-
+  
+      console.log("Sending product details:", productDetails);
+  
       const data = await createProductApi(productDetails);
-      if (data) {
+      if (data && data.error) {
+        console.error("Error from backend:", data.error);
+        alert("Failed to add product: " + data.error);
+      } else if (data) {
         console.log("Product added successfully:", data);
-        resetState()
+        resetState();
       } else {
         console.error("Failed to add product");
       }
@@ -251,6 +253,7 @@ const AddProduct = () => {
       console.error("Error adding product:", err);
     }
   };
+  
 
   return (
     <Box
