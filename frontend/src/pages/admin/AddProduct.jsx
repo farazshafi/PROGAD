@@ -157,6 +157,7 @@ const AddProduct = () => {
     setOpenVariantModal(false);
   };
   const handleAddProductSubmit = async () => {
+    console.log(bluetoothVersion)
     try {
       const productDetails = {
         name: productName,
@@ -174,6 +175,10 @@ const AddProduct = () => {
             ? "Non-Bluetooth"
             : "Bluetooth", // Set based on the first variant if applicable
         warranty,
+        batteryLife: isBluetooth ? batteryLife : undefined,
+        bluetoothVersion: isBluetooth ? bluetoothVersion : undefined,
+        noiseCancellation : isBluetooth ? features.noiseCancellation : undefined,
+        dualPlayConnection : isBluetooth ? features.dualPlayConnect : undefined,
       };
 
       // If product has variants, build the variants array
@@ -466,7 +471,7 @@ const AddProduct = () => {
                       control={
                         <Checkbox
                           checked={features.dualPlayConnect}
-                          onChange={handleCheckboxChange}
+                          onChange={handleCheckboxChangeOg}
                           name="dualPlayConnect"
                           color="primary"
                         />

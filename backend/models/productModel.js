@@ -160,6 +160,12 @@ const productSchema = mongoose.Schema(
         return this.type === "Bluetooth";
       },
     },
+    dualPlayConnection: {
+      type: Boolean,
+      required: function () {
+        return this.type === "Bluetooth";
+      },
+    },
     warranty: {
       type: String,
       default: "1 year",

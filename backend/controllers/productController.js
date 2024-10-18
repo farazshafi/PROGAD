@@ -20,6 +20,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     batteryLife,
     bluetoothVersion,
     noiseCancellation,
+    dualPlayConnection,
     warranty,
   } = req.body;
 
@@ -65,6 +66,8 @@ export const createProduct = asyncHandler(async (req, res) => {
       type === "Bluetooth" && !hasVariants ? bluetoothVersion : undefined,
     noiseCancellation:
       type === "Bluetooth" && !hasVariants ? noiseCancellation : undefined,
+      dualPlayConnection:
+      type === "Bluetooth" && !hasVariants ? dualPlayConnection : undefined,
     warranty,
   };
 
