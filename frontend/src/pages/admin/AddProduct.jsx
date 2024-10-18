@@ -56,6 +56,46 @@ const AddProduct = () => {
   const [warranty, setWarranty] = useState("1 Year");
   const [variantWarranty, setVariantWarranty] = useState("1 Year");
 
+  const resetState = () => {
+    setIsBluetooth(false);
+    setUploadedImages([]);
+    setVariantFeatures({
+      variantNoiseCancellation: false,
+      variantDualPlayConnection: false,
+    });
+    setFeatures({
+      noiseCancellation: false,
+      dualPlayConnect: false,
+    });
+
+    setVariantsArray([]);
+    setHasVariants(false);
+    setOpenVariantModal(false);
+    setVariantImages([]);
+
+    setVariantName("");
+    setVariantOriginalPrice(0);
+    setVariantDiscountPrice(0);
+    setVariantStock(0);
+    setVariantColor("");
+    setVariantHasBluetooth(false);
+    setVariantBatteryLife("");
+    setVariantBluetoothVersion("");
+    setVariantNoiseCancellation(false);
+    setVariantDualPlayConnection(false);
+    setVariantWarranty("1 Year");
+
+    setProductName("");
+    setCategory("");
+    setDescription("");
+    setOriginalPrice(0);
+    setDiscountPrice(0);
+    setStock(0);
+    setBatteryLife("");
+    setBluetoothVersion("");
+    setWarranty("1 Year");
+  };
+
   // Handle default product image upload
   const handleImageUpload = (event) => {
     const files = event.target.files;
@@ -157,18 +197,17 @@ const AddProduct = () => {
     setOpenVariantModal(false);
   };
   const handleAddProductSubmit = async () => {
-    console.log(bluetoothVersion)
     try {
       const productDetails = {
         name: productName,
         description,
         originalPrice,
         discountPrice,
-        images: uploadedImages, // array of product images
-        totalStock: stock, // total stock available
-        isPublished: true, // assuming the product is published by default
-        category : "670f64bb4e5d5f23016cfd5b", // category ID from selected category
-        hasVariants, // whether the product has variants
+        images: uploadedImages,
+        totalStock: stock,
+        isPublished: true,
+        category: "670f64bb4e5d5f23016cfd5b",
+        hasVariants,
         type: hasVariants
           ? variantsArray[0]?.type
           : !isBluetooth
@@ -177,11 +216,10 @@ const AddProduct = () => {
         warranty,
         batteryLife: isBluetooth ? batteryLife : undefined,
         bluetoothVersion: isBluetooth ? bluetoothVersion : undefined,
-        noiseCancellation : isBluetooth ? features.noiseCancellation : undefined,
-        dualPlayConnection : isBluetooth ? features.dualPlayConnect : undefined,
+        noiseCancellation: isBluetooth ? features.noiseCancellation : undefined,
+        dualPlayConnection: isBluetooth ? features.dualPlayConnect : undefined,
       };
 
-      // If product has variants, build the variants array
       if (hasVariants) {
         productDetails.variants = variantsArray.map((variant) => ({
           name: variant.name,
@@ -202,11 +240,10 @@ const AddProduct = () => {
         }));
       }
 
-      // Sending the product data to the API
       const data = await createProductApi(productDetails);
       if (data) {
         console.log("Product added successfully:", data);
-        // Optionally reset the state or provide feedback
+        resetState()
       } else {
         console.error("Failed to add product");
       }
@@ -670,8 +707,6 @@ const AddProduct = () => {
             InputLabelProps={{ style: { color: "#ffffff" } }}
             inputProps={{ style: { color: "#ffffff" } }}
           />
-
-
 
           <FormControl fullWidth sx={{ mt: 2 }}>
             <InputLabel style={{ color: "#ffffff" }}>Colors</InputLabel>
