@@ -6,7 +6,7 @@ export const createProductApi = async (productDetails) => {
   try {
     const config = {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
       }
     };
     console.log("frontent productDetails", productDetails);

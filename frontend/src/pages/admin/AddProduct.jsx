@@ -98,10 +98,13 @@ const AddProduct = () => {
 
   // Handle default product image upload
   const handleImageUpload = (event) => {
+    // const files = event.target.files;
+    // const imageList = Array.from(files).map((file) =>
+    //   URL.createObjectURL(file)
+    // );
+    // setUploadedImages(imageList);
     const files = event.target.files;
-    const imageList = Array.from(files).map((file) =>
-      URL.createObjectURL(file)
-    );
+    const imageList = Array.from(files);
     setUploadedImages(imageList);
   };
 
@@ -114,12 +117,16 @@ const AddProduct = () => {
   };
 
   const handleVariantImageUpload = (event) => {
+    // const files = event.target.files;
+    // const newImages = [];
+    // for (let i = 0; i < files.length; i++) {
+    //   newImages.push(URL.createObjectURL(files[i]));
+    // }
+    // setVariantImages(newImages);
+
     const files = event.target.files;
-    const newImages = [];
-    for (let i = 0; i < files.length; i++) {
-      newImages.push(URL.createObjectURL(files[i]));
-    }
-    setVariantImages(newImages);
+    const imageList = Array.from(files);
+    setVariantImages(imageList);
   };
 
   const handleDeleteVariant = (indexToDelete) => {
@@ -188,58 +195,89 @@ const AddProduct = () => {
     setVariantDualPlayConnection(false);
     setOpenVariantModal(false);
   };
+
   const handleAddProductSubmit = async () => {
     try {
-      if (!productName || !description || uploadedImages.length === 0 || !category) {
+      if (
+        !productName ||
+        !description ||
+        uploadedImages.length === 0 ||
+        !category
+      ) {
         alert("Please fill out all required fields.");
         return;
       }
-  
-      const productDetails = {
-        name: productName,
-        description,
-        originalPrice,
-        discountPrice,
-        images: uploadedImages,
-        totalStock: stock,
-        isPublished: true,
-        category: "670f64bb4e5d5f23016cfd5b",
-        hasVariants,
-        type: isBluetooth ? "Bluetooth" : "Non-Bluetooth",
-        warranty,
-        batteryLife: isBluetooth ? batteryLife : undefined,
-        bluetoothVersion: isBluetooth ? bluetoothVersion : undefined,
-        noiseCancellation: isBluetooth ? features.noiseCancellation : undefined,
-        dualPlayConnection: isBluetooth ? features.dualPlayConnect : undefined,
-      };
-  
+
+      const formData = new FormData();
+
+      formData.append("name", productName);
+      formData.append("description", description);
+      formData.append("originalPrice", originalPrice);
+      formData.append("discountPrice", discountPrice);
+      formData.append("totalStock", stock);
+      formData.append("isPublished", true);
+      formData.append("category", "670f64bb4e5d5f23016cfd5b");
+      formData.append("hasVariants", hasVariants);
+      formData.append("type", isBluetooth ? "Bluetooth" : "Non-Bluetooth");
+      formData.append("warranty", warranty);
+
+      if (isBluetooth) {
+        formData.append("batteryLife", batteryLife);
+        formData.append("bluetoothVersion", bluetoothVersion);
+        formData.append("noiseCancellation", features.noiseCancellation);
+        formData.append("dualPlayConnection", features.dualPlayConnect);
+      }
+
+      uploadedImages.forEach((image) => {
+        formData.append("images", image);
+      });
+
       if (hasVariants) {
-        productDetails.variants = variantsArray.map((variant) => {
-          const variantDetails = {
-            name: variant.name,
-            originalPrice: variant.originalPrice,
-            discountPrice: variant.discountPrice,
-            stock: variant.stock,
-            images: variant.images,
-            color: variant.color,
-            type: variant.type,
-            warranty: variant.warranty,
-          };
-  
+        variantsArray.forEach((variant, index) => {
+          formData.append(`variants[${index}][name]`, variant.name);
+          formData.append(
+            `variants[${index}][originalPrice]`,
+            variant.originalPrice
+          );
+          formData.append(
+            `variants[${index}][discountPrice]`,
+            variant.discountPrice
+          );
+          formData.append(`variants[${index}][stock]`, variant.stock);
+          formData.append(`variants[${index}][color]`, variant.color);
+          formData.append(`variants[${index}][type]`, variant.type);
+          formData.append(`variants[${index}][warranty]`, variant.warranty);
+
+          variant.images.forEach((variantImage) => {
+            formData.append("variantImages", variantImage);
+          });
+
           if (variant.type === "Bluetooth") {
-            variantDetails.batteryLife = variant.variantBatteryLife;
-            variantDetails.bluetoothVersion = variant.variantBluetoothVersion;
-            variantDetails.isNoiseCancellationEnabled = variant.variantNoiseCancellation;
-            variantDetails.isDualPlayConnectionEnabled = variant.variantDualPlayConnection;
+            formData.append(
+              `variants[${index}][batteryLife]`,
+              variant.variantBatteryLife
+            );
+            formData.append(
+              `variants[${index}][bluetoothVersion]`,
+              variant.variantBluetoothVersion
+            );
+            formData.append(
+              `variants[${index}][isNoiseCancellationEnabled]`,
+              variant.variantNoiseCancellation
+            );
+            formData.append(
+              `variants[${index}][isDualPlayConnectionEnabled]`,
+              variant.variantDualPlayConnection
+            );
           }
-  
-          return variantDetails;
         });
       }
-  
-      console.log("Sending product details:", productDetails);
-  
-      const data = await createProductApi(productDetails);
+
+      console.log("Sending product details as FormData");
+
+      // Make API call with FormData
+      const data = await createProductApi(formData);
+
       if (data && data.error) {
         console.error("Error from backend:", data.error);
         alert("Failed to add product: " + data.error);
@@ -253,7 +291,6 @@ const AddProduct = () => {
       console.error("Error adding product:", err);
     }
   };
-  
 
   return (
     <Box
@@ -307,6 +344,7 @@ const AddProduct = () => {
               hidden
               id="upload-image"
               accept="image/*"
+              name="images"
               multiple
               type="file"
               onChange={handleImageUpload}
@@ -831,6 +869,7 @@ const AddProduct = () => {
               id="upload-variant-image"
               accept="image/*"
               multiple
+              name="variantImages"
               type="file"
               onChange={handleVariantImageUpload}
             />
