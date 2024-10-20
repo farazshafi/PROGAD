@@ -25,6 +25,12 @@ const LoginPage = () => {
       password,
     };
     const data = await loginApi(userDetails);
+    if(data && data.response && data.response.status === 400){
+      toast.error(data.response.data.message);
+      return;
+    }
+    toast.success(data.message);
+    console.log(data)
     navigate("/");
   };
 

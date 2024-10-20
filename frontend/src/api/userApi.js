@@ -31,7 +31,7 @@ export const loginApi = async (userDetails) => {
     return data;
   } catch (e) {
     console.log(e);
-    return null;
+    return e;
   }
 };
 
