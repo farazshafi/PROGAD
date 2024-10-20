@@ -1,11 +1,34 @@
 import React from "react";
-import { Box, Center, ChakraProvider, Text } from "@chakra-ui/react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import {
+  Box,
+  Center,
+  ChakraProvider,
+  Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
+} from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { FaSearch, FaUser } from "react-icons/fa";
 import "./Header.css";
+import {useDispatch} from "react-redux"
+import { logoutUser } from "../../features/user/userSlice";
 
 const Header = ({ navbar = true }) => {
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const handleLogout = () => {
+    console.log("Logging out...");
+    dispatch(logoutUser());
+    navigate("/login"); 
+  };
+
   return (
     <React.Fragment>
       <ChakraProvider>
@@ -154,6 +177,7 @@ const Header = ({ navbar = true }) => {
                 </Box>
                 <Box id="box3" display={{ base: "none", lg: "flex" }}>
                   <Box className="nav-icons">
+                    {/* Search Icon */}
                     <Center
                       style={{
                         width: "50px",
@@ -162,32 +186,94 @@ const Header = ({ navbar = true }) => {
                         backgroundColor: "#262626",
                       }}
                     >
-                      <i
-                        style={{
-                          color: "white",
-                          alignItems: "center",
-                          textAlign: "center",
-                        }}
-                        className="fa-solid fa-magnifying-glass"
-                      ></i>
+                      <FaSearch color="white" />
                     </Center>
-                    <Center
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        borderRadius: "50%",
-                        backgroundColor: "#262626",
-                      }}
-                    >
-                      <i
-                        style={{
-                          color: "white",
-                          alignItems: "center",
-                          textAlign: "center",
-                        }}
-                        className="fa-solid fa-user"
-                      ></i>
-                    </Center>
+
+                    {/* Profile Dropdown */}
+                    <Menu>
+                      <MenuButton
+                        as={IconButton}
+                        icon={
+                          <Center
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              borderRadius: "50%",
+                              backgroundColor: "#262626",
+                              marginTop: "10px",
+                            }}
+                            _hover={{ backgroundColor: "#333333" }} // Change on hover
+                          >
+                            <FaUser color="white" />
+                          </Center>
+                        }
+                        background="none"
+                        _hover={{ background: "none" }}
+                      />
+                      <MenuList bg="white" color="black">
+                        {" "}
+                        {/* Dropdown background and text color */}
+                        <MenuItem
+                          as={Link}
+                          to="/profile"
+                          _hover={{
+                            backgroundColor: "#262626",
+                            color: "#FF7F11",
+                          }} // Change color on hover
+                        >
+                          Profile
+                        </MenuItem>
+                        <MenuItem
+                          as={Link}
+                          to="/settings"
+                          _hover={{
+                            backgroundColor: "#262626",
+                            color: "#FF7F11",
+                          }}
+                        >
+                          Settings
+                        </MenuItem>
+                        <MenuItem
+                          as={Link}
+                          to="/address"
+                          _hover={{
+                            backgroundColor: "#262626",
+                            color: "#FF7F11",
+                          }}
+                        >
+                          Address
+                        </MenuItem>
+                        <MenuItem
+                          as={Link}
+                          to="/orders"
+                          _hover={{
+                            backgroundColor: "#262626",
+                            color: "#FF7F11",
+                          }}
+                        >
+                          Orders
+                        </MenuItem>
+                        <MenuItem
+                          as={Link}
+                          to="/wishlist"
+                          _hover={{
+                            backgroundColor: "#262626",
+                            color: "#FF7F11",
+                          }}
+                        >
+                          Wishlist
+                        </MenuItem>
+                        <MenuItem
+                          onClick={handleLogout}
+                          _hover={{
+                            backgroundColor: "#262626",
+                            color: "#FF7F11",
+                          }}
+                        >
+                          Logout
+                        </MenuItem>
+                      </MenuList>
+                    </Menu>
                   </Box>
                 </Box>
               </Navbar>

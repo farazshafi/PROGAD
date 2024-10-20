@@ -28,10 +28,13 @@ const userSlice = createSlice({
     },
     verifyUser(state){
         state.user.isVerified = true
+    },
+    logoutUser(state){
+      state.user = initialState.user;
     }
   },
 });
 
 export const selectedUser = (state) => state.user.user;
-export const {setUser,verifyUser} = userSlice.actions;
+export const {setUser,verifyUser,logoutUser} = userSlice.actions;
 export default userSlice.reducer
