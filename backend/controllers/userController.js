@@ -63,6 +63,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
           role: user.role,
           isAdmin: user.isAdmin,
           isVerified: user.isVerified,
+          phoneNumber: user.phoneNumber,
           token: generageTokens(),
         },
       });

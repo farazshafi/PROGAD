@@ -18,8 +18,13 @@ import Footer from "../../../components/Footer/Footer";
 import { toast } from "react-toastify";
 import { userRegisterApi } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
+import {useDispatch} from "react-redux"
+import { setUser } from "../../../features/user/userSlice";
 
 const RegisterPage = () => {
+  // redux state
+  const dispatch = useDispatch()
+
   // state
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -57,13 +62,15 @@ const RegisterPage = () => {
         setLoading(false);
         return;
       }
-  
+      console.log("user data",data.user)
+      dispatch(setUser({...data.user}))
       toast.success(data.message);
-      navigate("/otp");  // only navigate after successful signup
+      navigate("/otp"); 
+      setLoading(false)
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     } finally {
-      setLoading(false);  // always stop loading whether success or error
+      setLoading(false); 
     }
   };
   

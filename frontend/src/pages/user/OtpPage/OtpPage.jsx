@@ -14,10 +14,14 @@ import OurButton from "../../../components/OurButton/OurButton";
 import { verifyOtpApi } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { verifyUser } from "../../../features/user/userSlice";
 
 const OtpPage = () => {
   const [otp, setOtp] = useState(["", "", "", ""]); // Update state to hold individual OTP digits
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch()
   const navigate = useNavigate();
 
   const handleChange = (value, index) => {
@@ -41,6 +45,7 @@ const OtpPage = () => {
     }
     console.log("data",data)
     toast.success(data.message);
+    dispatch(verifyUser())
     setLoading(false);
     navigate("/")
   };
