@@ -27,3 +27,15 @@ export const blockUnblockUser = asyncHandler(async (req, res) => {
     user: updatedUser,
   });
 });
+
+// @desc    delte user
+// @route   DELETE /api/admin/delte_user/:id/
+// @access  Private admin
+export const delteUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndDelete(id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  res.status(200).json({ message: "User deleted successfully" });
+});

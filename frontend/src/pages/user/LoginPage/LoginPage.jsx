@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import "./LoginPage.css";
 import Header from "../../../components/Header/Header";
 import { Box, Center, ChakraProvider, Image, Text } from "@chakra-ui/react";
 import headphoneImg from "../../../assets/images/walpaper/headphone.jpeg";
 import Footer from "../../../components/Footer/Footer";
 import OurButton from "../../../components/OurButton/OurButton";
+import { loginApi } from "../../../api/userApi";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const hanldeLogin = async () => {
+    if (!email || !password) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+    const userDetails = {
+      email,
+      password,
+    };
+    const data = await loginApi(userDetails);
+    navigate("/");
+  };
+
   return (
     <ChakraProvider>
       <Header />
@@ -35,14 +56,18 @@ const LoginPage = () => {
                   style={{ marginBottom: "20px" }}
                   className="form-input"
                   placeholder="Enter your gmail"
-                  type="text"
+                  type="email"
+                  value={email}
+                  onChange={(e)=>setEmail(e.target.value)}
                   name="gmail"
                 />
                 <br />
                 <input
                   className="form-input"
                   placeholder="Enter your password"
-                  type="text"
+                  type="password"
+                  value={password}
+                  onChange={(e)=>setPassword(e.target.value)}
                   name="passwrod"
                 />
                 <Text
@@ -53,7 +78,9 @@ const LoginPage = () => {
                 >
                   forgot password?
                 </Text>
-                <OurButton text={"SIGN IN"} />
+                <div onClick={hanldeLogin}>
+                  <OurButton w="100" text={"SIGN IN"} />
+                </div>
                 <Text
                   fontSize={{ base: "10px", md: "20px", lg: "15px" }}
                   mt={"10px"}

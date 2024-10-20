@@ -13,30 +13,35 @@ import ProductDetailsPage from "./pages/user/ProductDetailsPage/ProductDetailsPa
 import CartPage from "./pages/user/CartPage/CartPage";
 import CartProcess from "./pages/user/CartProcess/CartProcess";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* user route */}
-        <Route exact path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/otp" element={<OtpPage />} />
-        <Route path="/newarrivals" element={<NewArrivalsPage />} />
-        <Route path="/topproducts" element={<TopProducts />} />
-        <Route path="/offer" element={<OfferPage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/product_details/:id" element={<ProductDetailsPage />} />
-        <Route path="/cart_process" element={<CartProcess />} />
-        {/* admin route */}
-        <Route path="/admin_dashboard" element={<AdminDashboard />} />
+    <>
+      <ToastContainer />
+      <Router>
+        <Routes>
+          {/* user route */}
+          <Route exact path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/otp" element={<OtpPage />} />
+          <Route path="/newarrivals" element={<NewArrivalsPage />} />
+          <Route path="/topproducts" element={<TopProducts />} />
+          <Route path="/offer" element={<OfferPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/product_details/:id" element={<ProductDetailsPage />} />
+          <Route path="/cart_process" element={<CartProcess />} />
+          {/* admin route */}
+          <Route path="/admin_dashboard" element={<AdminDashboard />} />
 
-        {/* 404 page */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Router>
+          {/* 404 page */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 

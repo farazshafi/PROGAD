@@ -33,6 +33,13 @@ const userSchema = mongoose.Schema(
       enum: ["customer", "admin", "delivery"],
       default: "customer",
     },
+    otp:{
+      type: Number,
+    },
+    isVerified : {
+      type: Boolean,
+      default: false,
+    }
     // profileImage: {
     //   type: String,
     //   default: null, //defautl iamge url ,

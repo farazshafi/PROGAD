@@ -19,9 +19,14 @@ import {
   Divider,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
-import { getAllUsers, blockUnblockUser } from "../../api/adminApi";
+import {
+  getAllUsers,
+  blockUnblockUser,
+  deleteUserApi,
+} from "../../api/adminApi";
 import { MdEdit, MdBlock } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const ListUsers = () => {
   const [users, setUsers] = useState([]);
@@ -43,14 +48,15 @@ const ListUsers = () => {
     return matchesRole && matchesSearch && matchesBanned;
   });
 
+  const fetchUsers = async () => {
+    const data = await getAllUsers();
+    setUsers(data);
+  };
+
   const totalUsers = users.length;
   const bannedUsers = users.filter((user) => user.isBlocked).length;
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await getAllUsers();
-      setUsers(data);
-    };
     fetchUsers();
   }, []);
 
@@ -87,8 +93,9 @@ const ListUsers = () => {
     handleClose();
   };
 
-  const handleView = () => {
-    console.log(`View user: ${selectedUser.name}`);
+  const handleView = async () => {
+    const data = await deleteUserApi(selectedUser._id);
+    fetchUsers()
     handleClose();
   };
 
@@ -267,9 +274,9 @@ const ListUsers = () => {
                     <Divider sx={{ height: "1px", background: "black" }} />
                     <MenuItem
                       onClick={handleView}
-                      sx={{ color: "blue", gap: "15px" }}
+                      sx={{ color: "red", gap: "15px" }}
                     >
-                      <FaEye fontSize={"25px"} />
+                      <FaRegTrashAlt fontSize={"25px"} />
                       View
                     </MenuItem>
                   </Menu>

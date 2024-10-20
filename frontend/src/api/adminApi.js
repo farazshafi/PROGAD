@@ -23,3 +23,13 @@ export const blockUnblockUser = async (id, isBlocked) => {
     return null;
   }
 };
+
+export const deleteUserApi = async (id) => {
+  try {
+    const { data } = await axios.delete(`${API_URL}/delete_user/${id}`);
+    return data;
+  } catch (e) {
+    console.error("Error in deleting user API:", e);
+    return null;
+  }
+};

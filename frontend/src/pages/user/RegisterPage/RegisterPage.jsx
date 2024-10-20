@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import Header from "../../../components/Header/Header";
 import {
   Box,
@@ -15,10 +15,59 @@ import OurButton from "../../../components/OurButton/OurButton";
 import headphoneImg from "../../../assets/images/walpaper/boat.jpeg";
 import "./RegisterPage.css";
 import Footer from "../../../components/Footer/Footer";
+import { toast } from "react-toastify";
+import { userRegisterApi } from "../../../api/userApi";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
+  // state
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const navigate = useNavigate();
+
   const handleClick = () => setShow(!show);
+
+  const signUpHandler = async () => {
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+  
+    if (!name || !phoneNumber || !email || !password || !confirmPassword) {
+      toast.error("Please fill all the fields");
+      return;
+    }
+  
+    setLoading(true);
+    localStorage.setItem("otp-email", JSON.stringify(email));
+    
+    const userDetails = { name, phoneNumber, email, password };
+    
+    try {
+      const data = await userRegisterApi(userDetails);
+  
+      if (data && data.response && data.response.status === 400) {
+        toast.error(data.response.data.message);
+        setLoading(false);
+        return;
+      }
+  
+      toast.success(data.message);
+      navigate("/otp");  // only navigate after successful signup
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);  // always stop loading whether success or error
+    }
+  };
+  
+
   return (
     <ChakraProvider>
       <Header />
@@ -47,33 +96,46 @@ const RegisterPage = () => {
             <Box width={{ lg: "50%", md: "50%", base: "100%" }}>
               <form>
                 <input
+                  required
                   style={{ marginBottom: "20px" }}
                   className="form-input"
-                  placeholder="Enter your name"
+                  placeholder="name"
                   type="text"
                   name="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
                 <br />
                 <input
+                  required
                   style={{ marginBottom: "20px" }}
                   className="form-input"
-                  placeholder="Enter your phone number"
+                  placeholder="phone number"
                   type="number"
                   name="pnone"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
                 <br />
                 <input
+                  required
                   style={{ marginBottom: "20px" }}
                   className="form-input"
-                  placeholder="Enter your gmails address"
+                  placeholder="email address"
                   type="email"
-                  name="gmail"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
                 <InputGroup size="md">
                   <Input
+                    required
                     pr="4.5rem"
                     type={show ? "text" : "password"}
-                    placeholder="Enter password"
+                    placeholder="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -87,10 +149,13 @@ const RegisterPage = () => {
                   size="md"
                 >
                   <Input
+                    required
                     pr="4.5rem"
                     type={show ? "text" : "password"}
                     placeholder="confirm password"
                     name="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -98,7 +163,9 @@ const RegisterPage = () => {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <OurButton type={"submit"} text={"SIGN UP"} />
+                <div onClick={signUpHandler}>
+                  <OurButton isLoading={loading} text={"SIGN UP"} />
+                </div>
                 <Text
                   fontSize={{ base: "10px", md: "20px", lg: "15px" }}
                   mt={"10px"}
