@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header/Header";
 import {
   Box,
@@ -18,18 +18,20 @@ import Footer from "../../../components/Footer/Footer";
 import { toast } from "react-toastify";
 import { userRegisterApi } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
-import {useDispatch} from "react-redux"
-import { setUser } from "../../../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectedUser, setUser } from "../../../features/user/userSlice";
 
 const RegisterPage = () => {
   // redux state
-  const dispatch = useDispatch()
+  const user = useSelector(selectedUser);
+
+  const dispatch = useDispatch();
 
   // state
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState();
+  const [phoneNumber, setPhoneNumber] = useState(Number);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,42 +40,46 @@ const RegisterPage = () => {
 
   const handleClick = () => setShow(!show);
 
-  const signUpHandler = async () => {
+  const signUpHandler = async (e) => {
+    e.preventDefault();
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-  
+
     if (!name || !phoneNumber || !email || !password || !confirmPassword) {
       toast.error("Please fill all the fields");
       return;
     }
-  
+
     setLoading(true);
-    localStorage.setItem("otp-email", JSON.stringify(email));
-    
+
     const userDetails = { name, phoneNumber, email, password };
-    
+
     try {
       const data = await userRegisterApi(userDetails);
-  
+
       if (data && data.response && data.response.status === 400) {
         toast.error(data.response.data.message);
         setLoading(false);
         return;
       }
-      console.log("user data",data.user)
-      dispatch(setUser({...data.user}))
+      dispatch(setUser({ ...data.user }));
       toast.success(data.message);
-      navigate("/otp"); 
-      setLoading(false)
+      navigate("/otp");
+      setLoading(false);
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      console.log(error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
+
+  useEffect(() => { 
+    if (user ?? false) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <ChakraProvider>
@@ -101,7 +107,7 @@ const RegisterPage = () => {
               <Image borderRadius={"20px"} src={headphoneImg} alt="sign-in" />
             </Box>
             <Box width={{ lg: "50%", md: "50%", base: "100%" }}>
-              <form>
+              <form onSubmit={signUpHandler}>
                 <input
                   required
                   style={{ marginBottom: "20px" }}
@@ -170,9 +176,9 @@ const RegisterPage = () => {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <div onClick={signUpHandler}>
+                <button type="submit">
                   <OurButton isLoading={loading} text={"SIGN UP"} />
-                </div>
+                </button>
                 <Text
                   fontSize={{ base: "10px", md: "20px", lg: "15px" }}
                   mt={"10px"}

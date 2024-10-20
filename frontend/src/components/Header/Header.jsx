@@ -15,18 +15,20 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { FaSearch, FaUser } from "react-icons/fa";
 import "./Header.css";
-import {useDispatch} from "react-redux"
-import { logoutUser } from "../../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser, selectedUser } from "../../features/user/userSlice";
 
 const Header = ({ navbar = true }) => {
+  const user = useSelector(selectedUser);
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
+    
     console.log("Logging out...");
     dispatch(logoutUser());
-    navigate("/login"); 
+    navigate("/login");
   };
 
   return (
@@ -211,10 +213,10 @@ const Header = ({ navbar = true }) => {
                         _hover={{ background: "none" }}
                       />
                       <MenuList bg="white" color="black">
-                        {" "}
-                        {/* Dropdown background and text color */}
+                
                         <MenuItem
                           as={Link}
+                          disabled={user ? false : true}
                           to="/profile"
                           _hover={{
                             backgroundColor: "#262626",
@@ -225,6 +227,7 @@ const Header = ({ navbar = true }) => {
                         </MenuItem>
                         <MenuItem
                           as={Link}
+                          disabled={user ? false : true}
                           to="/settings"
                           _hover={{
                             backgroundColor: "#262626",
@@ -235,6 +238,7 @@ const Header = ({ navbar = true }) => {
                         </MenuItem>
                         <MenuItem
                           as={Link}
+                          disabled={user ? false : true}
                           to="/address"
                           _hover={{
                             backgroundColor: "#262626",
@@ -245,6 +249,7 @@ const Header = ({ navbar = true }) => {
                         </MenuItem>
                         <MenuItem
                           as={Link}
+                          disabled={user ? false : true}
                           to="/orders"
                           _hover={{
                             backgroundColor: "#262626",
@@ -255,6 +260,7 @@ const Header = ({ navbar = true }) => {
                         </MenuItem>
                         <MenuItem
                           as={Link}
+                          disabled={user ? false : true}
                           to="/wishlist"
                           _hover={{
                             backgroundColor: "#262626",
@@ -270,7 +276,7 @@ const Header = ({ navbar = true }) => {
                             color: "#FF7F11",
                           }}
                         >
-                          Logout
+                          {user ? "Logout" : "Login"}
                         </MenuItem>
                       </MenuList>
                     </Menu>

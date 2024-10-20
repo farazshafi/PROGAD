@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./LoginPage.css";
 import Header from "../../../components/Header/Header";
 import { Box, Center, ChakraProvider, Image, Text } from "@chakra-ui/react";
@@ -8,8 +8,13 @@ import OurButton from "../../../components/OurButton/OurButton";
 import { loginApi } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { selectedUser } from "../../../features/user/userSlice";
 
 const LoginPage = () => {
+  // redux state
+  const user = useSelector(selectedUser)
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -33,6 +38,14 @@ const LoginPage = () => {
     console.log(data)
     navigate("/");
   };
+
+
+  useEffect(()=>{
+    if(user){
+      console.log("login page ",user)
+      navigate("/")
+    }
+  })
 
   return (
     <ChakraProvider>

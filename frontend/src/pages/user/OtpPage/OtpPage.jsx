@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Center,
   HStack,
@@ -14,10 +14,14 @@ import OurButton from "../../../components/OurButton/OurButton";
 import { verifyOtpApi } from "../../../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
-import { verifyUser } from "../../../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectedUser, verifyUser } from "../../../features/user/userSlice";
 
 const OtpPage = () => {
+  // redux
+  const user = useSelector(selectedUser)
+
+
   const [otp, setOtp] = useState(["", "", "", ""]); // Update state to hold individual OTP digits
   const [loading, setLoading] = useState(false);
 
@@ -31,10 +35,10 @@ const OtpPage = () => {
   };
 
   const handleVerify = async () => {
+    console.log("email", user.email)
     setLoading(true);
-    const email = JSON.parse(localStorage.getItem("otp-email"));
     const otpDetails = {
-      email: email,
+      email: user.email,
       otp: Number(otp.join("")),
     };
     const data = await verifyOtpApi(otpDetails);
@@ -49,6 +53,14 @@ const OtpPage = () => {
     setLoading(false);
     navigate("/")
   };
+
+
+  useEffect(()=>{
+    if(user?.isVerified ?? false){
+      navigate("/")
+    }
+    console.log("useffected",user)
+  },[user])
 
   return (
     <ChakraProvider>

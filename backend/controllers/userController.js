@@ -52,7 +52,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error("Error sending OTP:", error);
-      return res.status(500).json({ message: "Error sending OTP", error: error.message });
+      return res.status(400).json({ message: "Error sending OTP", error: error.message });
     } else {
       res.status(201).json({
         message: "Please verify your OTP.",
