@@ -89,7 +89,6 @@ const ListUsers = () => {
   };
 
   const handleEdit = () => {
-    console.log(`Edit user: ${selectedUser.name}`);
     handleClose();
   };
 

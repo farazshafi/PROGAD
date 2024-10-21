@@ -273,8 +273,6 @@ const AddProduct = () => {
         });
       }
 
-      console.log("Sending product details as FormData");
-
       // Make API call with FormData
       const data = await createProductApi(formData);
 
@@ -282,7 +280,6 @@ const AddProduct = () => {
         console.error("Error from backend:", data.error);
         alert("Failed to add product: " + data.error);
       } else if (data) {
-        console.log("Product added successfully:", data);
         resetState();
       } else {
         console.error("Failed to add product");

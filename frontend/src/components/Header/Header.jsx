@@ -25,8 +25,6 @@ const Header = ({ navbar = true }) => {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    
-    console.log("Logging out...");
     dispatch(logoutUser());
     navigate("/login");
   };
@@ -213,7 +211,6 @@ const Header = ({ navbar = true }) => {
                         _hover={{ background: "none" }}
                       />
                       <MenuList bg="white" color="black">
-                
                         <MenuItem
                           as={Link}
                           disabled={user ? false : true}

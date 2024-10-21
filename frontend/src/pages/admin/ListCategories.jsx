@@ -94,7 +94,6 @@ const ListCategories = () => {
 
   const handlePublish = async () => {
     try {
-      console.log(selectedCategory._id);
       await handlePublishCategory(
         selectedCategory._id,
         !selectedCategory.isPublished
@@ -160,7 +159,6 @@ const ListCategories = () => {
         description: editCategory.description,
         isPublished: editCategory.isPublished,
       }
-      console.log("edit category : ",updatedCategory);
       await updateCategoryApi(selectedCategory._id,updatedCategory)
       fetchCategories();
     } catch (err) {

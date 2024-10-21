@@ -15,7 +15,6 @@ export const getAllCategories = async () => {
 export const onCreateCategory = async (obj) => {
   try {
     const { data } = await axios.post(`${API_URL}/create_category`,obj);       
-    console.log("data", data)
     return data;
   } catch (e) {
     console.log(e);

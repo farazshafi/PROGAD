@@ -17,9 +17,12 @@ import "./RegisterPage.css";
 import Footer from "../../../components/Footer/Footer";
 import { toast } from "react-toastify";
 import { userRegisterApi } from "../../../api/userApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedUser, setUser } from "../../../features/user/userSlice";
+import GoogleButton from "react-google-button";
+import { signInWithPopup } from "firebase/auth";
+import { auth, gProvider } from "../../../firebase";
 
 const RegisterPage = () => {
   // redux state
@@ -34,6 +37,7 @@ const RegisterPage = () => {
   const [phoneNumber, setPhoneNumber] = useState(Number);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [googleId, setGoogleId] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
@@ -75,11 +79,35 @@ const RegisterPage = () => {
     }
   };
 
-  useEffect(() => { 
-    if (user ?? false) {
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      const { user } = await signInWithPopup(auth, gProvider);
+      const googleId = user.providerData[0].uid;
+      const name = user.displayName;
+      const email = user.email;
+      const phoneNumber = user.phoneNumber || null;
+
+      const userDetails = { name, email, googleId, phoneNumber };
+      const data = await userRegisterApi(userDetails);
+
+      if (
+        (data && data.response && data.response.status === 400) ||
+        (data && data.response && data.response.status === 500)
+      ) {
+        toast.error(data.response.data.message);
+        setLoading(false);
+        return;
+      }
+      dispatch(setUser({ ...data.user }));
+      toast.success(data.message);
       navigate("/");
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
     }
-  }, []);
+  };
 
   return (
     <ChakraProvider>
@@ -176,15 +204,24 @@ const RegisterPage = () => {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <button type="submit">
-                  <OurButton isLoading={loading} text={"SIGN UP"} />
+                <button style={{ width: "100%" }} type="submit">
+                  <OurButton w={"100"} isLoading={loading} text={"SIGN UP"} />
                 </button>
                 <Text
                   fontSize={{ base: "10px", md: "20px", lg: "15px" }}
                   mt={"10px"}
                 >
-                  <a href="/register">Already have Account?</a>
+                  <Link to={"/login"}> Already have Account?</Link>
                 </Text>
+                <GoogleButton
+                  onClick={handleGoogleLogin}
+                  type="light"
+                  style={{
+                    borderRadius: "5px",
+                    marginTop: "10px",
+                    width: "100%",
+                  }}
+                />
               </form>
             </Box>
           </Box>

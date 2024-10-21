@@ -35,7 +35,6 @@ const OtpPage = () => {
   };
 
   const handleVerify = async () => {
-    console.log("email", user.email)
     setLoading(true);
     const otpDetails = {
       email: user.email,
@@ -47,20 +46,11 @@ const OtpPage = () => {
       setLoading(false)
       return;
     }
-    console.log("data",data)
     toast.success(data.message);
     dispatch(verifyUser())
     setLoading(false);
     navigate("/")
   };
-
-
-  useEffect(()=>{
-    if(user?.isVerified ?? false){
-      navigate("/")
-    }
-    console.log("useffected",user)
-  },[user])
 
   return (
     <ChakraProvider>

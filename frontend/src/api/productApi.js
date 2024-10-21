@@ -9,7 +9,6 @@ export const createProductApi = async (productDetails) => {
         'Content-Type': 'multipart/form-data',
       }
     };
-    console.log("frontent productDetails", productDetails);
     const { data } = await axios.post(`${API_URL}/create_product`, productDetails, config); 
     return data;
   } catch (e) {

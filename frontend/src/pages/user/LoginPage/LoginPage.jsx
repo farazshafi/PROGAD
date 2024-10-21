@@ -6,14 +6,18 @@ import headphoneImg from "../../../assets/images/walpaper/headphone.jpeg";
 import Footer from "../../../components/Footer/Footer";
 import OurButton from "../../../components/OurButton/OurButton";
 import { loginApi } from "../../../api/userApi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-import { selectedUser } from "../../../features/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectedUser, setUser } from "../../../features/user/userSlice";
+import GoogleButton from "react-google-button";
+import { gProvider, auth } from "../../../firebase";
+import { signInWithPopup } from "firebase/auth";
 
 const LoginPage = () => {
   // redux state
-  const user = useSelector(selectedUser)
+  const user = useSelector(selectedUser);
+  const dispatch = useDispatch()
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,22 +34,42 @@ const LoginPage = () => {
       password,
     };
     const data = await loginApi(userDetails);
-    if(data && data.response && data.response.status === 400){
+    if (data && data.response && data.response.status === 400 || data && data.response && data.response.status === 500) {
       toast.error(data.response.data.message);
       return;
     }
     toast.success(data.message);
-    console.log(data)
+    dispatch(setUser({...data.user}))
     navigate("/");
   };
 
-
-  useEffect(()=>{
-    if(user){
-      console.log("login page ",user)
-      navigate("/")
+  const handleGoogleLogin = async () => {
+    try { 
+      const {user} = await signInWithPopup(auth, gProvider);
+      console.log("google data",user)
+      const email = user.email
+      const name = user.displayName
+      const googleId = user.providerData[0].uid;
+      const phoneNumber = user.phoneNumber || null
+      const data = await loginApi({email,googleId,phoneNumber,name});
+      console.log("google data",data)
+    if (data && data.response && data.response.status === 400 || data && data.response && data.response.status === 500) {
+      toast.error(data.response.data.message);
+      return;
     }
-  })
+    toast.success(data.message);
+
+    navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  });
 
   return (
     <ChakraProvider>
@@ -77,7 +101,7 @@ const LoginPage = () => {
                   placeholder="Enter your gmail"
                   type="email"
                   value={email}
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   name="gmail"
                 />
                 <br />
@@ -86,7 +110,7 @@ const LoginPage = () => {
                   placeholder="Enter your password"
                   type="password"
                   value={password}
-                  onChange={(e)=>setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   name="passwrod"
                 />
                 <Text
@@ -104,8 +128,13 @@ const LoginPage = () => {
                   fontSize={{ base: "10px", md: "20px", lg: "15px" }}
                   mt={"10px"}
                 >
-                  <a href="/register">Create an Account</a>
+                  <Link to={"/register"}>Create an Account</Link>
                 </Text>
+                <GoogleButton
+                  onClick={handleGoogleLogin}
+                  type="light"
+                  style={{ borderRadius: "5px",marginTop:"40px",width:"100%" }}
+                />
               </form>
             </Box>
           </Box>
