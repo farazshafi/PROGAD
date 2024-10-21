@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
 
 const userSchema = mongoose.Schema(
   {
@@ -14,7 +14,9 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId;
+      },
     },
     isAdmin: {
       type: Boolean,
@@ -22,7 +24,6 @@ const userSchema = mongoose.Schema(
     },
     phoneNumber: {
       type: Number,
-      required: true,
     },
     isBlocked: {
       type: Boolean,
@@ -33,13 +34,17 @@ const userSchema = mongoose.Schema(
       enum: ["customer", "admin", "delivery"],
       default: "customer",
     },
-    otp:{
+    otp: {
       type: Number,
     },
-    isVerified : {
+    isVerified: {
       type: Boolean,
       default: false,
-    }
+    },
+    googleId: {
+      type: String,
+      default: null,
+    },
     // profileImage: {
     //   type: String,
     //   default: null, //defautl iamge url ,
@@ -60,5 +65,5 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-const User = mongoose.model("User",userSchema)
+const User = mongoose.model("User", userSchema);
 export default User;
