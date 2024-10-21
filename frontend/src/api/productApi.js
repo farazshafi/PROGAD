@@ -16,3 +16,13 @@ export const createProductApi = async (productDetails) => {
     return null;
   }
 };
+
+export const getAllProductsApi = async () => {
+  try{
+    const data = await axios.get(`${API_URL}/get_products`)
+    return data;
+  }catch(err){
+    console.log(err);
+    return err;
+  }
+}

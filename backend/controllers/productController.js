@@ -103,7 +103,7 @@ export const createProduct = asyncHandler(async (req, res) => {
       description,
       originalPrice: hasVariants ? undefined : Number(originalPrice),
       discountPrice: hasVariants ? undefined : Number(discountPrice),
-      images: productImages, // Use the productImages array here
+      images: productImages,
       totalStock: hasVariants ? undefined : Number(totalStock),
       isPublished,
       category,
@@ -175,5 +175,19 @@ export const createProduct = asyncHandler(async (req, res) => {
       message: "Server error while creating product",
       error: error.message,
     });
+  }
+});
+
+
+// @desc    get all product
+// @route   GET /api/product/get_products
+// @access  public
+export const getAllProduct = asyncHandler(async (req, res) => {
+  try{
+    const products = await Product.find({isPublished: true});
+    res.json(products);
+  }catch(err){
+    console.error("Error getting products:", err.message);
+    res.status(500).json({ message: "Server error while getting products" });
   }
 });
