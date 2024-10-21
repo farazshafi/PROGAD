@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,64 +9,72 @@ import {
   Paper,
   Checkbox,
   Avatar,
+  Tooltip,
   TextField,
   Select,
   MenuItem,
   Box,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
+import { getAllProductsApi } from "../../api/adminApi";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectedAdminProducts,
+  setAdminProducts,
+} from "../../features/admin/adminSlice";
 
 const ListProducts = () => {
-  const [products] = useState([
-    {
-      id: 1,
-      name: 'Urban Explorer Sneakers',
-      category: 'Accessories',
-      createdAt: '20 Aug 2024 12:24 am',
-      stock: 'Out of stock',
-      price: 83.74,
-      publishStatus: 'Unpublished',
-      image: '/path-to-your-image/sneakers.png',
-    },
-    {
-      id: 2,
-      name: 'Classic Leather Loafers',
-      category: 'Shoes',
-      createdAt: '18 Aug 2024 11:24 pm',
-      stock: 'In stock',
-      price: 97.14,
-      publishStatus: 'Published',
-      image: '/path-to-your-image/loafers.png',
-    },
-    {
-      id: 3,
-      name: 'Sports Running Shoes',
-      category: 'Shoes',
-      createdAt: '15 Aug 2024 10:14 am',
-      stock: 'Low stock',
-      price: 45.99,
-      publishStatus: 'Unpublished',
-      image: '/path-to-your-image/running.png',
-    },
-  ]);
+  const products = useSelector(selectedAdminProducts);
+
+  const dispatch = useDispatch();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStock, setSelectedStock] = useState("All");
   const [selectedPublishStatus, setSelectedPublishStatus] = useState("All");
 
-  // Filter products based on search term, stock status, and publish status
   const filteredProducts = products.filter((product) => {
     const matchesStock =
-      selectedStock === "All" || product.stock.toLowerCase().includes(selectedStock.toLowerCase());
+      selectedStock === "All" ||
+      (selectedStock === "Out of stock" && product?.totalStock === 0) ||
+      (selectedStock === "In stock" && product?.totalStock > 0) ||
+      (selectedStock === "Low stock" &&
+        product?.totalStock > 0 &&
+        product?.totalStock <= 5);
+
     const matchesPublishStatus =
       selectedPublishStatus === "All" ||
-      product.publishStatus.toLowerCase().includes(selectedPublishStatus.toLowerCase());
+      (selectedPublishStatus === "Published" && product?.isPublished) ||
+      (selectedPublishStatus === "Unpublished" && !product?.isPublished);
+
+    // Use optional chaining to avoid accessing undefined properties
     const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase());
+      product?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product?.category?.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesStock && matchesPublishStatus && matchesSearch;
   });
+
+  const fetchProducts = async () => {
+    try {
+      const { data } = await getAllProductsApi();
+      if (data.response) {
+        const { status } = data.response;
+        if (status === 400 || status === 500) {
+          toast.error(data.response.data.message);
+        }
+      } else {
+        dispatch(setAdminProducts(data));
+      }
+    } catch (err) {
+      toast.error("Failed to fetch products. Please try again.");
+      console.error("Fetch Products Error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
@@ -130,38 +138,67 @@ const ListProducts = () => {
           </TableHead>
           <TableBody>
             {filteredProducts.map((product) => (
-              <TableRow key={product.id}>
+              <TableRow key={product._id}>
                 <TableCell>
                   <Checkbox sx={{ color: "white" }} />
                 </TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center">
-                    <Avatar sx={{ mr: 2 }}>{product.name.charAt(0)}</Avatar>
+                    <Avatar src={product.images[0]} sx={{ mr: 2 }}></Avatar>
                     {product.name}
                   </Box>
                 </TableCell>
-                <TableCell sx={{ color: "white" }}>{product.createdAt}</TableCell>
-                <TableCell sx={{ color: "white" }}>{product.price}</TableCell>
-                <TableCell>
-                  <Box
-                    sx={{
-                      padding: "5px 10px",
-                      borderRadius: "5px",
-                      backgroundColor:
-                        product.stock === "Out of stock"
-                          ? "#e74c3c"
-                          : product.stock === "In stock"
-                          ? "#2ecc71"
-                          : "#f1c40f",
-                      color: product.stock === "Out of stock" ? "#fff" : "#333",
-                    }}
-                  >
-                    {product.stock}
-                  </Box>
+                <TableCell sx={{ color: "white" }}>
+                  {new Date(product.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell sx={{ color: "white" }}>
+                  {product.variants?.length > 0
+                    ? product.variants[0].originalPrice
+                    : "N/A"}
                 </TableCell>
                 <TableCell>
+                  <Tooltip
+                    placement="top"
+                    title={product.totalStock}
+                    componentsProps={{
+                      tooltip: {
+                        sx: {
+                          backgroundColor: "white",
+                          color: "black",
+                          "&:hover": {
+                            backgroundColor: "#333", 
+                            color: "#fff", 
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        padding: "5px",
+                        borderRadius: "5px",
+                        backgroundColor:
+                          product.totalStock < 1
+                            ? "#e74c3c"
+                            : product.totalStock <= 50
+                              ? "#f1c40f"
+                              : "#2ecc71",
+                        color: product.totalStock < 1 ? "#fff" : "#333",
+                      }}
+                    >
+                      {product.totalStock < 1
+                        ? "Out of Stock"
+                        : product.totalStock <= 50
+                          ? "Low Stock"
+                          : "In Stock"}
+                    </Box>
+                  </Tooltip>
+                </TableCell>
+
+                <TableCell>
                   <Select
-                    value={product.publishStatus}
+                    value={product.isPublished ? "Published" : "Unpublished"}
                     onChange={(e) => {
                       console.log(
                         `Update publish status of ${product.name} to ${e.target.value}`

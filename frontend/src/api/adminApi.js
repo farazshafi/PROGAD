@@ -33,3 +33,14 @@ export const deleteUserApi = async (id) => {
     return null;
   }
 };
+
+
+export const getAllProductsApi = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/all_products`);
+    return response;
+  } catch (e) {
+    console.error("Error in deleting user API:", e);
+    return e;
+  }
+};

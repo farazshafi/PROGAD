@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
+import Product from "../models/productModel.js"
 
 // @desc    get all users details
 // @route   GET /api/admin/get_users
@@ -38,4 +39,19 @@ export const delteUser = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
   res.status(200).json({ message: "User deleted successfully" });
+});
+
+
+
+// @desc    get all products
+// @route   GET /api/admin/all_products/
+// @access  Private admin
+export const getAllProducts = asyncHandler(async (req, res) => {
+  try{
+    const products = await Product.find({});
+    res.status(200).json(products);
+  }catch(err){
+    console.error("Error getting products:", err.message);
+    res.status(500).json({ message: "Server error while getting products" });
+  }
 });

@@ -187,5 +187,5 @@ productSchema.pre("save", function (next) {
 // Models
 const Product = mongoose.model("Product", productSchema);
 const Rating = mongoose.model("Rating", ratingSchema);
-
+export default Product
 export { Product, Rating };
