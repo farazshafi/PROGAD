@@ -30,6 +30,21 @@ export const getAllCategories = asyncHandler(async (req, res) => {
 });
 
 
+
+// @desc    get all categories
+// @route   GET /api/category/get_published_categories
+// @access  private admin
+export const getPublishedCategories = asyncHandler(async (req, res) => {
+  const category = await Category.find({isPublished: true});
+  if (category) {
+    res.status(200).json(category);
+  } else {
+    res.status(404).json({ message: "No categories found" });
+  }
+});
+
+
+
 // @desc    delete category by id
 // @route   GET /api/category/delete_category/:id
 // @access  private admin

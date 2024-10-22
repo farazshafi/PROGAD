@@ -52,3 +52,13 @@ export const updateCategoryApi = async (id,data) => {
   }
 };
 
+
+export const getPublishedCategoriesApi = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/get_published_categories`);       
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};

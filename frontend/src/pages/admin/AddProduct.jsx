@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -17,10 +17,16 @@ import {
 } from "@mui/material";
 import { MdCloudUpload } from "react-icons/md";
 import { createProductApi } from "../../api/productApi";
+import { toast } from "react-toastify";
+import { getPublishedCategoriesApi } from "../../api/categoryApi";
 
 const AddProduct = () => {
   const [isBluetooth, setIsBluetooth] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [productMainImg, setProductMainImg] = useState([]);
+  const [variantProductTempImg, setVariantProductTempImg] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
+  const [wantToPublish, setWantToPublish] = useState(true)
   const [variantFeatures, setVariantFeatures] = useState({
     variantNoiseCancellation: false,
     variantDualPlayConnection: false,
@@ -59,6 +65,7 @@ const AddProduct = () => {
   const resetState = () => {
     setIsBluetooth(false);
     setUploadedImages([]);
+    setProductMainImg([]);
     setVariantFeatures({
       variantNoiseCancellation: false,
       variantDualPlayConnection: false,
@@ -98,11 +105,14 @@ const AddProduct = () => {
 
   // Handle default product image upload
   const handleImageUpload = (event) => {
-    // const files = event.target.files;
-    // const imageList = Array.from(files).map((file) =>
-    //   URL.createObjectURL(file)
-    // );
-    // setUploadedImages(imageList);
+    // temp to show selected images
+    const tempFiles = event.target.files;
+    const tempImageList = Array.from(tempFiles).map((file) =>
+      URL.createObjectURL(file)
+    );
+    setProductMainImg(tempImageList);
+
+    // og to send
     const files = event.target.files;
     const imageList = Array.from(files);
     setUploadedImages(imageList);
@@ -117,13 +127,14 @@ const AddProduct = () => {
   };
 
   const handleVariantImageUpload = (event) => {
-    // const files = event.target.files;
-    // const newImages = [];
-    // for (let i = 0; i < files.length; i++) {
-    //   newImages.push(URL.createObjectURL(files[i]));
-    // }
-    // setVariantImages(newImages);
+    // temp to show selected images
+    const tempFiles = event.target.files;
+    const tempImageList = Array.from(tempFiles).map((file) =>
+      URL.createObjectURL(file)
+    );
+    setVariantProductTempImg(tempImageList);
 
+    // og to send
     const files = event.target.files;
     const imageList = Array.from(files);
     setVariantImages(imageList);
@@ -215,8 +226,8 @@ const AddProduct = () => {
       formData.append("originalPrice", originalPrice);
       formData.append("discountPrice", discountPrice);
       formData.append("totalStock", stock);
-      formData.append("isPublished", true);
-      formData.append("category", "670f64bb4e5d5f23016cfd5b");
+      formData.append("isPublished", wantToPublish);
+      formData.append("category", category);
       formData.append("hasVariants", hasVariants);
       formData.append("type", isBluetooth ? "Bluetooth" : "Non-Bluetooth");
       formData.append("warranty", warranty);
@@ -281,13 +292,30 @@ const AddProduct = () => {
         alert("Failed to add product: " + data.error);
       } else if (data) {
         resetState();
+        toast.success("Product added successfully");
+        
       } else {
+        toast.error("Failed to add product");
         console.error("Failed to add product");
       }
     } catch (err) {
       console.error("Error adding product:", err);
     }
   };
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getPublishedCategoriesApi();
+      setAllCategories(data);
+    } catch (err) {
+      toast.error(err);
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <Box
@@ -352,7 +380,7 @@ const AddProduct = () => {
         {/* Display uploaded images */}
         <Grid item xs={6}>
           <Grid container spacing={2}>
-            {uploadedImages.map((imgSrc, index) => (
+            {productMainImg.map((imgSrc, index) => (
               <Grid item xs={4} key={index}>
                 <Box
                   sx={{
@@ -398,9 +426,10 @@ const AddProduct = () => {
               variant="outlined"
               style={{ color: "#ffffff" }}
             >
-              <MenuItem value="headphones">Headphones</MenuItem>
-              <MenuItem value="earbuds">Earbuds</MenuItem>
-              <MenuItem value="speakers">Speakers</MenuItem>
+              {allCategories &&
+                allCategories.map((cat) => (
+                  <MenuItem value={cat._id}>{cat.name}</MenuItem>
+                ))}
             </Select>
           </FormControl>
         </Grid>
@@ -652,7 +681,17 @@ const AddProduct = () => {
             </Grid>
           </>
         )}
-
+        <Grid item xs={12} sx={{ mt: 3 }}>
+          <Select
+            value={wantToPublish}
+            onChange={(e) => setWantToPublish(e.target.value)}
+            variant="filled"
+            style={{ color: "black",backgroundColor:"#f0f0f0" }} 
+          >
+            <MenuItem value={true}>Publish</MenuItem>
+            <MenuItem value={false}>UnPublish</MenuItem>
+          </Select>
+        </Grid>
         <Grid item xs={12} sx={{ mt: 3 }}>
           <Button
             onClick={handleAddProductSubmit}
@@ -762,8 +801,8 @@ const AddProduct = () => {
                 },
               }}
             >
-              <MenuItem value="red">Red</MenuItem>
               <MenuItem value="black">Black</MenuItem>
+              <MenuItem value="red">Red</MenuItem>
               <MenuItem value="blue">Blue</MenuItem>
               <MenuItem value="green">Green</MenuItem>
               <MenuItem value="white">White</MenuItem>
@@ -873,7 +912,7 @@ const AddProduct = () => {
           </FormControl>
 
           <Grid container spacing={2} sx={{ mt: 2 }}>
-            {variantImages.map((imgSrc, index) => (
+            {variantProductTempImg.map((imgSrc, index) => (
               <Grid item xs={4} key={index}>
                 <Box
                   sx={{

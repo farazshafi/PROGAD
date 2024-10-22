@@ -22,10 +22,6 @@ const OurButton = ({ isLoading, text, type = "button", page, w }) => {
       >
         {type === "rupees" ? (
           <>
-            <i
-              style={{ marginTop: "3px", marginRight: "3px" }}
-              className="fa-solid fa-indian-rupee-sign"
-            ></i>{" "}
             {text}
           </>
         ) : (

@@ -97,7 +97,6 @@ export const createProduct = asyncHandler(async (req, res) => {
         .json({ message: "Please upload at least one image" });
     }
 
-    // Initialize the product data object
     const productData = {
       name,
       description,
@@ -120,6 +119,8 @@ export const createProduct = asyncHandler(async (req, res) => {
       warranty,
     };
 
+    // console.log("product data is getting ", productData)
+
     if (hasVariants) {
       productData.variants = variants.map((variant) => {
         const variantData = {
@@ -127,7 +128,7 @@ export const createProduct = asyncHandler(async (req, res) => {
           originalPrice: Number(variant.originalPrice),
           discountPrice: Number(variant.discountPrice) || 0,
           stock: Number(variant.stock),
-          images: variant.images || [], 
+          images: variant.images || [],
           color: variant.color,
           type: variant.type,
           warranty: variant.warranty,
@@ -178,15 +179,40 @@ export const createProduct = asyncHandler(async (req, res) => {
   }
 });
 
-
 // @desc    get all product
 // @route   GET /api/product/get_products
 // @access  public
 export const getAllProduct = asyncHandler(async (req, res) => {
-  try{
-    const products = await Product.find({isPublished: true});
+  try {
+    const products = await Product.find({ isPublished: true }).populate(
+      "category",
+      "_id name"
+    );
     res.json(products);
-  }catch(err){
+  } catch (err) {
+    console.error("Error getting products:", err.message);
+    res.status(500).json({ message: "Server error while getting products" });
+  }
+});
+
+// @desc    get all product
+// @route   PATCH /api/product/handle_public_change/:id
+// @access  public
+export const handlePublicChange = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { isPublished } = req.body;
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { isPublished },
+      { new: true }
+    );
+    if (updatedProduct) {
+      res.status(200).json({ product: updatedProduct });
+    } else {
+      res.status(404).json({ message: "Category not found" });
+    }
+  } catch (err) {
     console.error("Error getting products:", err.message);
     res.status(500).json({ message: "Server error while getting products" });
   }

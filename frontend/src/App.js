@@ -23,7 +23,7 @@ function App() {
       <Router>
         <Routes>
           {/* user route */}
-          <Route exact path="/" element={<HomePage />} />
+          <Route exact path="/ " element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/otp" element={<OtpPage />} />

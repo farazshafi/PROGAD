@@ -25,7 +25,7 @@ const ProductCard = ({ page }) => {
     <React.Fragment>
       <Container>
         <Row>
-          {products &&
+          {products.length > 0 ? (
             products.map((product) => (
               <Col
                 className="mb-5"
@@ -70,7 +70,14 @@ const ProductCard = ({ page }) => {
                     </CardContent>
                   </CardActionArea>
                   <CardActions sx={{ justifyContent: "center", gap: "10px" }}>
-                    <OurButton  type={"rupees"} text={String(product.hasVariants ? product.variants[0].discountPrice : product.discountPrice)} />
+                    <OurButton
+                      type={"rupees"}
+                      text={String(
+                        product.hasVariants
+                          ? product.variants[0].discountPrice
+                          : product.discountPrice
+                      )}
+                    />
                     <Typography
                       sx={{
                         fontSize: { sm: "5px", md: "1px", lg: "20PX" },
@@ -80,12 +87,19 @@ const ProductCard = ({ page }) => {
                         color: "white",
                       }}
                     >
-                      {product.hasVariants ? product.variants[0].originalPrice : product.originalPrice}
+                      {product.hasVariants
+                        ? product.variants[0].originalPrice
+                        : product.originalPrice}
                     </Typography>
                   </CardActions>
                 </Card>
               </Col>
-            ))}
+            ))
+          ) : (
+            <div style={{ textAlign: "center" }}>
+              <h2 style={{color:"white"}}>No Products Found</h2>
+            </div>
+          )}
         </Row>
       </Container>
     </React.Fragment>

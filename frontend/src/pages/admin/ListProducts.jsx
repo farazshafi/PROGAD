@@ -23,6 +23,7 @@ import {
   selectedAdminProducts,
   setAdminProducts,
 } from "../../features/admin/adminSlice";
+import { handlePublicChangeApi } from "../../api/productApi";
 
 const ListProducts = () => {
   const products = useSelector(selectedAdminProducts);
@@ -47,7 +48,6 @@ const ListProducts = () => {
       (selectedPublishStatus === "Published" && product?.isPublished) ||
       (selectedPublishStatus === "Unpublished" && !product?.isPublished);
 
-    // Use optional chaining to avoid accessing undefined properties
     const matchesSearch =
       product?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product?.category?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -71,6 +71,19 @@ const ListProducts = () => {
       console.error("Fetch Products Error:", err);
     }
   };
+
+  const handlePublishChange = async (id,data) => {
+    try{
+      const response = await handlePublicChangeApi(id,data)
+      if(response){
+        toast.success("Products published successfully.");
+        fetchProducts();
+      }
+    }catch(err){
+      toast.error("Failed to publish products. Please try again.");
+      console.error("Publish Change Error:", err);
+    }
+  }
 
   useEffect(() => {
     fetchProducts();
@@ -144,7 +157,11 @@ const ListProducts = () => {
                 </TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center">
-                    <Avatar src={product.images[0]} sx={{ mr: 2 }}></Avatar>
+                    <Avatar
+                      variant="rounded"
+                      src={product.images[0]}
+                      sx={{ mr: 2 }}
+                    ></Avatar>
                     {product.name}
                   </Box>
                 </TableCell>
@@ -152,9 +169,17 @@ const ListProducts = () => {
                   {new Date(product.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell sx={{ color: "white" }}>
-                  {product.variants?.length > 0
-                    ? product.variants[0].originalPrice
-                    : "N/A"}
+                  {product.variants?.length > 0 ? (
+                    product.variants[0].originalPrice
+                  ) : (
+                    <>
+                      <i
+                        style={{ marginTop: "3px", marginRight: "3px" }}
+                        className="fa-solid fa-indian-rupee-sign"
+                      ></i>
+                      {product.discountPrice}
+                    </>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Tooltip
@@ -166,8 +191,8 @@ const ListProducts = () => {
                           backgroundColor: "white",
                           color: "black",
                           "&:hover": {
-                            backgroundColor: "#333", 
-                            color: "#fff", 
+                            backgroundColor: "#333",
+                            color: "#fff",
                           },
                         },
                       },
@@ -195,23 +220,20 @@ const ListProducts = () => {
                     </Box>
                   </Tooltip>
                 </TableCell>
-
                 <TableCell>
                   <Select
-                    value={product.isPublished ? "Published" : "Unpublished"}
-                    onChange={(e) => {
-                      console.log(
-                        `Update publish status of ${product.name} to ${e.target.value}`
-                      );
-                    }}
+                    value={product.isPublished}
+                    onChange={(e) =>
+                      handlePublishChange(product._id, e.target.value)
+                    } // Add onChange handler
                     sx={{
                       backgroundColor: "#2c2c3a",
                       color: "white",
                       width: "150px",
                     }}
                   >
-                    <MenuItem value="Published">Published</MenuItem>
-                    <MenuItem value="Unpublished">Unpublished</MenuItem>
+                    <MenuItem value={true}>Published</MenuItem>
+                    <MenuItem value={false}>Unpublished</MenuItem>
                   </Select>
                 </TableCell>
                 <TableCell>

@@ -26,3 +26,15 @@ export const getAllProductsApi = async () => {
     return err;
   }
 }
+
+
+export const handlePublicChangeApi = async (id,isPublished) => {
+  try{
+    const data = await axios.patch(`${API_URL}/handle_public_change/${id}`,{isPublished})
+    return data;
+  }catch(err){
+    console.log(err);
+    return err;
+  }
+}
+
