@@ -2,6 +2,7 @@ import express from "express";
 import {
   createProduct,
   getAllProduct,
+  getProductDetails,
   handlePublicChange,
 } from "../controllers/productController.js";
 import multer from "multer";
@@ -21,5 +22,6 @@ router.post(
 
 router.get("/get_products", getAllProduct);
 router.patch("/handle_public_change/:id", handlePublicChange);
+router.get("/product_details/:id", getProductDetails);
 
 export default router;

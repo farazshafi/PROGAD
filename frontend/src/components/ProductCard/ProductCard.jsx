@@ -13,9 +13,16 @@ import sonyImg from "../../assets/images/products/sony.jpeg";
 import OurButton from "../OurButton/OurButton";
 import { useSelector } from "react-redux";
 import { selectedProduct } from "../../features/product/productSlice";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ page }) => {
   const products = useSelector(selectedProduct);
+
+  const navigate = useNavigate();
+
+  const handleNavigate = (productId) => () => {
+    navigate(`/product_details/${productId}`);
+  };
 
   useEffect(() => {
     console.log("produts...", products);
@@ -37,6 +44,7 @@ const ProductCard = ({ page }) => {
                 <Card sx={{ maxWidth: 345, backgroundColor: "transparent" }}>
                   <CardActionArea>
                     <CardMedia
+                      onClick={handleNavigate(product._id)}
                       component="img"
                       height="140"
                       image={product.images[0]}

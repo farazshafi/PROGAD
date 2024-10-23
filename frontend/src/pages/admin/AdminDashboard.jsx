@@ -16,6 +16,8 @@ import { BiSolidOffer } from "react-icons/bi";
 import { FaDownload } from "react-icons/fa6";
 import { GoGraph } from "react-icons/go";
 import { MdCategory } from "react-icons/md";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle"; // Profile icon
+
 
 // Components
 import ListUsers from "./ListUsers";

@@ -38,3 +38,14 @@ export const handlePublicChangeApi = async (id,isPublished) => {
   }
 }
 
+
+export const getProductDetailsApi = async (id) => {
+  try{
+    const data = await axios.get(`${API_URL}/product_details/${id}`)
+    return data;
+  }catch(err){
+    console.log(err);
+    return err;
+  }
+}
+
