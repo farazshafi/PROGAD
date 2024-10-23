@@ -97,7 +97,6 @@ export const userRegistration = asyncHandler(async (req, res) => {
       .status(400)
       .json({ message: "Error sending OTP", error: error.message });
   }
-  console.log("after sendig mail");
 });
 
 // @desc    Verify OTP
@@ -163,9 +162,39 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   if (!userExist.isVerified) {
-    return res
-      .status(400)
-      .json({ message: "User not verified. Please verify your account." });
+    const otp = generateOTP();
+    userExist.otp = otp
+    await userExist.save()
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your OTP for account verification",
+      text: `Your OTP for verifying your account is ${otp}`,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      res.status(201).json({
+        message: "login success",
+        warning: "Please verify your OTP.",
+        user: {
+          _id: userExist._id,
+          name: userExist.name,
+          email: userExist.email,
+          role: userExist.role,
+          isAdmin: userExist.isAdmin,
+          isVerified: userExist.isVerified,
+          phoneNumber: userExist.phoneNumber,
+          token: generateTokens(),
+        },
+      });
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      res
+        .status(400)
+        .json({ message: "Error sending OTP", error: error.message });
+    }
+    return;
   }
 
   const isMatch = await userExist.matchPassword(password);

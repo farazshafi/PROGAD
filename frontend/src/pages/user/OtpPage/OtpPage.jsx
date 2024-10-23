@@ -52,6 +52,13 @@ const OtpPage = () => {
     navigate("/")
   };
 
+  useEffect(()=>{
+    console.log("sate user",user)
+    if(user.isVerified){
+      navigate("/")
+    }
+  },[user])
+
   return (
     <ChakraProvider>
       <Flex

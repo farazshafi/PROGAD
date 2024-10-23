@@ -17,6 +17,7 @@ const userSlice = createSlice({
         _id: action.payload._id,
         isAdmin: action.payload.isAdmin,
         phoneNumber: action.payload.phoneNumber,
+        isVerified:action.payload.isVerified,
         token: action.payload.token,
       };
       localStorage.setItem("user", JSON.stringify(state.user));

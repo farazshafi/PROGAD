@@ -17,11 +17,15 @@ const adminSlice = createSlice({
     setAdmin(state,action){
       state.admin = action.payload;
       localStorage.setItem("admin",JSON.stringify(state.admin))
+    },
+    logoutAdmin(state){
+      state.admin = null;
+      localStorage.removeItem("admin")
     }
   },
 });
 
 export const selectedAdminProducts = (state) => state.admin.adminProducts;
 export const selectedAdmin = (state) => state.admin.admin;
-export const { setAdminProducts,setAdmin } = adminSlice.actions;
+export const { setAdminProducts,setAdmin ,logoutAdmin} = adminSlice.actions;
 export default adminSlice.reducer;

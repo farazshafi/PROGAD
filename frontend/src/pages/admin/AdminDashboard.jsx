@@ -16,7 +16,7 @@ import { BiSolidOffer } from "react-icons/bi";
 import { FaDownload } from "react-icons/fa6";
 import { GoGraph } from "react-icons/go";
 import { MdCategory } from "react-icons/md";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle"; // Profile icon
+import { IoIosExit } from "react-icons/io";
 
 
 // Components
@@ -25,6 +25,11 @@ import ListProduct from "./ListProducts";
 import ListCategories from "./ListCategories";
 import AddCategory from "./AddCategory";
 import AddProduct from "./AddProduct";
+import AdminLogout from "./AdminLogout";
+import { useSelector } from "react-redux";
+import { selectedAdmin } from "../../features/admin/adminSlice";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -176,6 +181,11 @@ const NAVIGATION = [
       },
     ],
   },
+  {
+    segment: "logout",
+    title: "Logout",
+    icon: <IoIosExit fontSize={"30px"} />,
+  },
 ];
 
 // Theme configuration
@@ -217,6 +227,9 @@ function DemoPageContent({ pathname }) {
     case "/categories/add_category":
       content = <AddCategory />;
       break;
+    case "/logout":
+      content = <AdminLogout />;
+      break;
     default:
       content = <div>Default Content</div>;
   }
@@ -226,6 +239,9 @@ function DemoPageContent({ pathname }) {
 
 function AdminDashboard(props) {
   const { window } = props;
+
+  const admin = useSelector(selectedAdmin)
+  const navigate = useNavigate()
 
   // Define state to manage the current route
   const [pathname, setPathname] = React.useState("/dashboard");
@@ -241,14 +257,21 @@ function AdminDashboard(props) {
 
   const demoWindow = window !== undefined ? window() : undefined;
 
+  useEffect(()=>{
+    if(!admin){
+      navigate("/admin_login")
+    }
+  },[])
+
   return (
     <AppProvider
+      appName="Progad"
       navigation={NAVIGATION}
       router={router}
       theme={demoTheme}
       window={demoWindow}
     >
-      <DashboardLayout>
+      <DashboardLayout title="PROGAD">
         <DemoPageContent pathname={pathname} />
       </DashboardLayout>
     </AppProvider>

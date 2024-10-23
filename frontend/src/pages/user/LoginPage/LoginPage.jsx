@@ -17,7 +17,7 @@ import { signInWithPopup } from "firebase/auth";
 const LoginPage = () => {
   // redux state
   const user = useSelector(selectedUser);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,32 +34,45 @@ const LoginPage = () => {
       password,
     };
     const data = await loginApi(userDetails);
-    if (data && data.response && data.response.status === 400 || data && data.response && data.response.status === 500) {
+    if (
+      (data && data.response && data.response.status === 400) ||
+      (data && data.response && data.response.status === 500)
+    ) {
       toast.error(data.response.data.message);
       return;
     }
+
     toast.success(data.message);
-    dispatch(setUser({...data.user}))
-    navigate("/");
+    dispatch(setUser({ ...data.user }));
+    const user = data.user
+    if (user?.isVerified) {
+      navigate("/");
+    }else{
+      toast.warning(data.warning)
+      navigate("/otp")
+    }
   };
 
   const handleGoogleLogin = async () => {
-    try { 
-      const {user} = await signInWithPopup(auth, gProvider);
-      console.log("google data",user)
-      const email = user.email
-      const name = user.displayName
+    try {
+      const { user } = await signInWithPopup(auth, gProvider);
+      console.log("google data", user);
+      const email = user.email;
+      const name = user.displayName;
       const googleId = user.providerData[0].uid;
-      const phoneNumber = user.phoneNumber || null
-      const data = await loginApi({email,googleId,phoneNumber,name});
-      console.log("google data",data)
-    if (data && data.response && data.response.status === 400 || data && data.response && data.response.status === 500) {
-      toast.error(data.response.data.message);
-      return;
-    }
-    toast.success(data.message);
+      const phoneNumber = user.phoneNumber || null;
+      const data = await loginApi({ email, googleId, phoneNumber, name });
+      console.log("google data", data);
+      if (
+        (data && data.response && data.response.status === 400) ||
+        (data && data.response && data.response.status === 500)
+      ) {
+        toast.error(data.response.data.message);
+        return;
+      }
+      toast.success(data.message);
 
-    navigate("/");
+      navigate("/");
     } catch (err) {
       console.log(err);
     }
@@ -69,7 +82,7 @@ const LoginPage = () => {
     if (user) {
       navigate("/");
     }
-  });
+  },[]);
 
   return (
     <ChakraProvider>
@@ -133,7 +146,11 @@ const LoginPage = () => {
                 <GoogleButton
                   onClick={handleGoogleLogin}
                   type="light"
-                  style={{ borderRadius: "5px",marginTop:"40px",width:"100%" }}
+                  style={{
+                    borderRadius: "5px",
+                    marginTop: "40px",
+                    width: "100%",
+                  }}
                 />
               </form>
             </Box>
