@@ -20,10 +20,16 @@ export const getAllUsers = async () => {
 };
 
 export const blockUnblockUser = async (id, isBlocked) => {
+  const token = JSON.parse(localStorage.getItem("admin")).token;
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
   try {
     const { data } = await axios.patch(`${API_URL}/block_unblock_user/${id}`, {
       isBlocked,
-    });
+    },config);
     return data.user;
   } catch (e) {
     console.error("Error in block/unblock API:", e);

@@ -93,7 +93,7 @@ const ListUsers = () => {
   };
 
   const handleView = async () => {
-    const data = await deleteUserApi(selectedUser._id);
+    // const data = await deleteUserApi(selectedUser._id);
     fetchUsers()
     handleClose();
   };
@@ -275,7 +275,7 @@ const ListUsers = () => {
                       onClick={handleView}
                       sx={{ color: "red", gap: "15px" }}
                     >
-                      <FaRegTrashAlt fontSize={"25px"} />
+                      <FaEye fontSize={"25px"} />
                       View
                     </MenuItem>
                   </Menu>

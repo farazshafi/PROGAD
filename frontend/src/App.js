@@ -16,6 +16,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import AdminLogin from "./pages/admin/AdminLogin";
+import EditProduct from "./pages/admin/EditProduct";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           {/* admin route */}
           <Route path="/admin_login" element={<AdminLogin />} />
           <Route path="/admin_dashboard" element={<AdminDashboard />} />
+          <Route path="/admin_dashboard/product/edit_product/:id" element={<EditProduct />} />
 
           {/* 404 page */}
           <Route path="*" element={<NotFoundPage />} />

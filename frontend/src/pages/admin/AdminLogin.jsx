@@ -11,7 +11,6 @@ const AdminLogin = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [captcha, setCaptcha] = useState('');
   const [error, setError] = useState(false);
 
   const navigate = useNavigate()
@@ -19,7 +18,7 @@ const AdminLogin = () => {
 
   const handleLogin = async() => {
 
-    if (!email || !password || captcha !== '1234') {
+    if (!email || !password) {
       setError(true);
       return;
     }
@@ -82,20 +81,6 @@ const AdminLogin = () => {
             />
 
             {/* Security Image */}
-            <Box display="flex" alignItems="center" marginY={2}>
-              <img src="https://via.placeholder.com/100x50.png?text=1234" alt="captcha" />
-              <TextField
-                label="Enter Captcha"
-                variant="outlined"
-                margin="normal"
-                value={captcha}
-                onChange={(e) => setCaptcha(e.target.value)}
-                error={error && captcha !== '1234'}
-                helperText={error && captcha !== '1234' ? 'Captcha is incorrect' : ''}
-                style={{ marginLeft: '1rem' }}
-              />
-            </Box>
-
             <Button
               fullWidth
               variant="contained"

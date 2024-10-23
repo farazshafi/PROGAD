@@ -78,6 +78,9 @@ export const userRegistration = asyncHandler(async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
+    setTimeout(async () => {
+      await User.updateOne({ _id: user._id }, { $unset: { otp: "" } });
+    },  1 * 60 * 1000);
     res.status(201).json({
       message: "Please verify your OTP.",
       user: {
@@ -105,15 +108,23 @@ export const userRegistration = asyncHandler(async (req, res) => {
 export const verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
   const userExist = await User.findOne({ email });
+
   if (!userExist) {
     return res.status(400).json({ message: "User does not exist" });
   }
+
+  if (!userExist.otp) {
+    return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+  }
+
   if (Number(userExist.otp) !== otp) {
     return res.status(400).json({ message: "Invalid OTP" });
   }
+
   userExist.isVerified = true;
   userExist.otp = null;
   await userExist.save();
+
   res.json({ message: "User verified successfully" });
 });
 
@@ -174,6 +185,9 @@ export const login = asyncHandler(async (req, res) => {
 
     try {
       await transporter.sendMail(mailOptions);
+      setTimeout(async () => {
+        await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
+      },  1 * 60 * 1000);
       res.status(201).json({
         message: "login success",
         warning: "Please verify your OTP.",
@@ -214,4 +228,41 @@ export const login = asyncHandler(async (req, res) => {
       token: generateTokens(userExist._id),
     },
   });
+});
+
+
+
+// @desc    Verify OTP
+// @route   POST /api/user/verify_otp
+// @access  public
+export const resendOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const userExist = await User.findOne({ email });
+  if (!userExist) {
+    return res.status(400).json({ message: "User does not exist" });
+  }
+  if(userExist.isVerified){
+    return res.status(400).json({ message: "User already verified" });
+  }
+  const otp = generateOTP();
+  userExist.otp = otp;
+  await userExist.save()
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your OTP for account verification",
+    text: `Your OTP for verifying your account is ${otp}`,
+  };
+  try{
+    await transporter.sendMail(mailOptions);
+    setTimeout(async () => {
+      await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
+    }, 1 * 60 * 1000);
+  
+    res.status(200).json({ message: "OTP resent successfully" });
+  }catch(err){
+    console.error("Error sending OTP:", err);
+    res.status(400).json({ message: "Error sending OTP", error: err.message });
+  }
+
 });

@@ -11,27 +11,27 @@ import {
 } from "@chakra-ui/react";
 import "./OtpPage.css";
 import OurButton from "../../../components/OurButton/OurButton";
-import { verifyOtpApi } from "../../../api/userApi";
+import { verifyOtpApi, resendOtpApi } from "../../../api/userApi"; // Add resendOtpApi for resend OTP
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedUser, verifyUser } from "../../../features/user/userSlice";
 
 const OtpPage = () => {
-  // redux
-  const user = useSelector(selectedUser)
-
-
-  const [otp, setOtp] = useState(["", "", "", ""]); // Update state to hold individual OTP digits
+  const user = useSelector(selectedUser);
+  const [otp, setOtp] = useState(["", "", "", ""]);
   const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+  const [verifyDisabled, setVerifyDisabled] = useState(false);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (value, index) => {
-    const newOtp = [...otp]; // Create a copy of the otp state
-    newOtp[index] = value; // Update the specific index
-    setOtp(newOtp); // Set the updated state
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
   };
 
   const handleVerify = async () => {
@@ -43,21 +43,51 @@ const OtpPage = () => {
     const data = await verifyOtpApi(otpDetails);
     if (data && data.response && data.response.status === 400) {
       toast.error(data.response.data.message);
-      setLoading(false)
+      setLoading(false);
       return;
     }
     toast.success(data.message);
-    dispatch(verifyUser())
+    dispatch(verifyUser());
     setLoading(false);
-    navigate("/")
+    navigate("/");
   };
 
-  useEffect(()=>{
-    console.log("sate user",user)
-    if(user.isVerified){
-      navigate("/")
+  useEffect(() => {
+    if (timer > 0) {
+      const countdown = setTimeout(() => setTimer(timer - 1), 1000);
+
+      return () => clearTimeout(countdown);
+    } else {
+      setCanResend(true);
+      setVerifyDisabled(true);
     }
-  },[user])
+  }, [timer]);
+
+  const handleResendOtp = async () => {
+    try {
+      const result = await resendOtpApi(user.email);
+      console.log("resend api result", result);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+        }
+      } else {
+        toast.success(result.data.message);
+        setTimer(60);
+        setCanResend(false);
+        setVerifyDisabled(false);
+      }
+    } catch (error) {
+      toast.error("Failed to resend OTP");
+    }
+  };
+
+  useEffect(() => {
+    if (user?.isVerified) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <ChakraProvider>
@@ -91,8 +121,40 @@ const OtpPage = () => {
               </PinInput>
             </HStack>
           </Center>
+
+          <Text fontSize={"14px"} mb={"10px"} textAlign="right">
+            {canResend ? (
+              <span
+                onClick={handleResendOtp}
+                style={{ color: "white", cursor: "pointer" }}
+              >
+                Resend OTP
+              </span>
+            ) : (
+              <p style={{ color: "white" }}>
+                <span
+                  style={{
+                    backgroundColor: "white",
+                    color: "black",
+                    padding: "3px",
+                    borderRadius: "4px",
+                    marginRight: "4px",
+                  }}
+                >
+                  {timer}
+                </span>
+                seconds remain
+              </p>
+            )}
+          </Text>
+
           <div onClick={handleVerify}>
-            <OurButton isLoading={loading} page={"otp"} text={"VERIFY"} />
+            <OurButton
+              isLoading={loading}
+              page={"otp"}
+              text={"VERIFY"}
+              disabled={verifyDisabled || loading}
+            />
           </div>
         </Box>
       </Flex>
