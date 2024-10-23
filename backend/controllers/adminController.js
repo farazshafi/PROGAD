@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js"
+import generateTokens from "../utils/generateToken.js"
 
 // @desc    get all users details
 // @route   GET /api/admin/get_users
@@ -54,4 +55,77 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     console.error("Error getting products:", err.message);
     res.status(500).json({ message: "Server error while getting products" });
   }
+});
+
+
+// @desc    admin validation
+// @route   POST /api/admin/admin_login
+// @access  public admin
+export const adminLogin = asyncHandler(async (req, res) => {
+  const { email, password} = req.body;
+  let userExist;
+
+  // if (googleId) {
+  //   userExist = await User.findOne({ googleId });
+  //   if (!userExist) {
+  //     userExist = await User.findOne({ email });
+  //     if (userExist) {
+  //       return res
+  //         .status(400)
+  //         .json({ message: "Email already associated with another account." });
+  //     }
+  //     userExist = await User.create({
+  //       email,
+  //       googleId,
+  //       name,
+  //       phoneNumber: phoneNumber || null,
+  //       isVerified: true,
+  //     });
+  //   }
+  //   return res.json({
+  //     message: "Login successful",
+  //     user: {
+  //       _id: userExist._id,
+  //       name: userExist.name,
+  //       email: userExist.email,
+  //       role: userExist.role,
+  //       isAdmin: userExist.isAdmin,
+  //       isVerified: userExist.isVerified,
+  //       phoneNumber: userExist.phoneNumber,
+  //       token: generateTokens(userExist._id),
+  //     },
+  //   });
+  // }
+
+  userExist = await User.findOne({ email });
+  if (!userExist) {
+    return res.status(400).json({ message: "User does not exist" });
+  }
+  if(!userExist.isAdmin && userExist.role !== "admin" ){
+    return res.status(400).json({ message: "You are not an admin" });
+  }
+
+  if (!userExist.isVerified) {
+    return res
+      .status(400)
+      .json({ message: "User not verified. Please verify your account." });
+  }
+
+  const isMatch = await userExist.matchPassword(password);
+  if (!isMatch) {
+    return res.status(400).json({ message: "Invalid email or password" });
+  }
+
+  res.status(200).json({
+    message: "Login successful",
+    user: {
+      _id: userExist._id,
+      name: userExist.name,
+      email: userExist.email,
+      role: userExist.role,
+      isAdmin: userExist.isAdmin,
+      isVerified: userExist.isVerified,
+      token: generateTokens(userExist._id),
+    },
+  });
 });

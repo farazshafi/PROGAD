@@ -15,6 +15,7 @@ import CartProcess from "./pages/user/CartProcess/CartProcess";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
       <Router>
         <Routes>
           {/* user route */}
-          <Route exact path="/ " element={<HomePage />} />
+          <Route exact path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/otp" element={<OtpPage />} />
@@ -35,6 +36,7 @@ function App() {
           <Route path="/product_details/:id" element={<ProductDetailsPage />} />
           <Route path="/cart_process" element={<CartProcess />} />
           {/* admin route */}
+          <Route path="/admin_login" element={<AdminLogin />} />
           <Route path="/admin_dashboard" element={<AdminDashboard />} />
 
           {/* 404 page */}

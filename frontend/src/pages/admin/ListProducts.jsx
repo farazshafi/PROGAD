@@ -14,6 +14,9 @@ import {
   Select,
   MenuItem,
   Box,
+  Divider,
+  IconButton,
+  Menu,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
 import { getAllProductsApi } from "../../api/adminApi";
@@ -24,15 +27,21 @@ import {
   setAdminProducts,
 } from "../../features/admin/adminSlice";
 import { handlePublicChangeApi } from "../../api/productApi";
+import { FaEye, FaTrash } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
+import {useNavigate} from "react-router-dom"
 
 const ListProducts = () => {
   const products = useSelector(selectedAdminProducts);
-
   const dispatch = useDispatch();
-
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStock, setSelectedStock] = useState("All");
   const [selectedPublishStatus, setSelectedPublishStatus] = useState("All");
+
+  // State for handling the Menu component for each product
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const filteredProducts = products.filter((product) => {
     const matchesStock =
@@ -72,18 +81,39 @@ const ListProducts = () => {
     }
   };
 
-  const handlePublishChange = async (id,data) => {
-    try{
-      const response = await handlePublicChangeApi(id,data)
-      if(response){
-        toast.success("Products published successfully.");
+  const handlePublishChange = async (id, data) => {
+    try {
+      const response = await handlePublicChangeApi(id, data);
+      if (response) {
+        toast.success("Product publish status updated successfully.");
         fetchProducts();
       }
-    }catch(err){
-      toast.error("Failed to publish products. Please try again.");
+    } catch (err) {
+      toast.error("Failed to update publish status. Please try again.");
       console.error("Publish Change Error:", err);
     }
-  }
+  };
+
+  const handleMenuClick = (event, product) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedProduct(product);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSelectedProduct(null);
+  };
+
+  const handleEdit = (product) => {
+    console.log("product edit ", selectedProduct)
+    navigate(`/admin_dashboard/product/edit_product/${selectedProduct._id}`)
+    handleClose();
+  };
+
+  const handleDelete = (productId) => {
+    console.log("Deleting product:", productId);
+    handleClose()
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -104,6 +134,7 @@ const ListProducts = () => {
           <MenuItem value="In stock">In stock</MenuItem>
           <MenuItem value="Low stock">Low stock</MenuItem>
         </Select>
+
         {/* Search Filter */}
         <TextField
           variant="outlined"
@@ -169,17 +200,9 @@ const ListProducts = () => {
                   {new Date(product.createdAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell sx={{ color: "white" }}>
-                  {product.variants?.length > 0 ? (
-                    product.variants[0].originalPrice
-                  ) : (
-                    <>
-                      <i
-                        style={{ marginTop: "3px", marginRight: "3px" }}
-                        className="fa-solid fa-indian-rupee-sign"
-                      ></i>
-                      {product.discountPrice}
-                    </>
-                  )}
+                  {product.variants?.length > 0
+                    ? product.variants[0].originalPrice
+                    : product.discountPrice}
                 </TableCell>
                 <TableCell>
                   <Tooltip
@@ -225,7 +248,7 @@ const ListProducts = () => {
                     value={product.isPublished}
                     onChange={(e) =>
                       handlePublishChange(product._id, e.target.value)
-                    } // Add onChange handler
+                    }
                     sx={{
                       backgroundColor: "#2c2c3a",
                       color: "white",
@@ -237,13 +260,33 @@ const ListProducts = () => {
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <IoMdMore
-                    fontSize={"25px"}
-                    style={{ color: "white", cursor: "pointer" }}
-                    onClick={() => {
-                      console.log(`Edit product: ${product.name}`);
-                    }}
-                  />
+                  <IconButton
+                    sx={{ color: "white" }}
+                    onClick={(e) => handleMenuClick(e, product)}
+                  >
+                    <IoMdMore />
+                  </IconButton>
+                  {/* Action Menu */}
+                  <Menu
+                    sx={{ "& .MuiPaper-root": { backgroundColor: "white" } }}
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                    <MenuItem
+                      style={{ gap: "20px", color: "black" }}
+                      onClick={() => handleEdit(product)}
+                    >
+                      <MdEdit /> Edit
+                    </MenuItem>
+                    <Divider sx={{ height: "1px", backgroundColor: "black" }} />
+                    <MenuItem
+                      style={{ gap: "20px", color: "black" }}
+                      onClick={() => handleDelete(product._id)}
+                    >
+                      <FaEye /> View
+                    </MenuItem>
+                  </Menu>
                 </TableCell>
               </TableRow>
             ))}
