@@ -28,12 +28,9 @@ const variantSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    originalPrice: {
-      type: Number,
-      required: true,
-    },
     discountPrice: {
       type: Number,
+      required: true,
     },
     stock: {
       type: Number,
@@ -45,40 +42,82 @@ const variantSchema = mongoose.Schema(
       required: true,
     },
     color: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"Color",
       required: true,
     },
-    type: {
-      type: String,
-      enum: ["Bluetooth", "Non-Bluetooth"],
+    material:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Material",
+      required: true,
+    },
+    isBluetoothSupported: {
+      type: Boolean,
       required: true,
     },
     batteryLife: {
       type: String,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
       },
     },
     bluetoothVersion: {
       type: String,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
       },
     },
-    isNoiseCancellationEnabled: {
-      type: Boolean,
+    bluetoothRange: {
+      type: String,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
       },
     },
-    isDualPlayConnectionEnabled: {
+    chargingTime: {
+      type: String,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    noiseCancellation: {
       type: Boolean,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
+      },
+    },
+    dualPlayConnection: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    appControl: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    waterResistant: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    touchControl: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    multiDevice: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
       },
     },
     warranty: {
-      type: "string",
+      type: String,
+      default: "1 year",
     },
   },
   { timestamps: true }
@@ -91,15 +130,21 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    color: {
+      type: [String],
+      required: true,
+    },
     description: {
       type: String,
       required: true,
     },
     originalPrice: {
       type: Number,
+      required: true
     },
     discountPrice: {
       type: Number,
+      required: true
     },
     images: {
       type: [String],
@@ -108,11 +153,11 @@ const productSchema = mongoose.Schema(
     totalStock: {
       type: Number,
       default: 10,
+      required: true,
     },
     isPublished: {
       type: Boolean,
       default: true,
-      required: true,
     },
     sold: {
       type: Number,
@@ -122,6 +167,16 @@ const productSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
+    },
+    brand:{
+      type:String,
+      required: true,
+    },
+    material:{
+      type:String,
+      required: function(){
+        return !this.hasVariants
+      },
     },
     ratings: {
       type: [ratingSchema],
@@ -134,41 +189,81 @@ const productSchema = mongoose.Schema(
     variants: {
       type: [variantSchema],
     },
-    type: {
-      type: String,
-      enum: ["Bluetooth", "Non-Bluetooth"],
-      required: function () {
-        // Only required if there are no variants
-        return !this.hasVariants;
-      },
+    isBluetoothSupported: {
+      type: Boolean,
+      required: true,
     },
     batteryLife: {
       type: String,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
       },
     },
     bluetoothVersion: {
       type: String,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
+      },
+    },
+    bluetoothRange: {
+      type: String,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    chargingTime: {
+      type: String,
+      required: function () {
+        return this.isBluetoothSupported === true;
       },
     },
     noiseCancellation: {
       type: Boolean,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
       },
     },
     dualPlayConnection: {
       type: Boolean,
       required: function () {
-        return this.type === "Bluetooth";
+        return this.isBluetoothSupported === true;
+      },
+    },
+    appControl: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    waterResistant: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    touchControl: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
+      },
+    },
+    multiDevice: {
+      type: Boolean,
+      required: function () {
+        return this.isBluetoothSupported === true;
       },
     },
     warranty: {
       type: String,
       default: "1 year",
+    },
+    isNewArrival: {
+      type: Boolean,
+      default: false,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
@@ -187,5 +282,5 @@ productSchema.pre("save", function (next) {
 // Models
 const Product = mongoose.model("Product", productSchema);
 const Rating = mongoose.model("Rating", ratingSchema);
-export default Product
+export default Product;
 export { Product, Rating };

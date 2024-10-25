@@ -88,7 +88,7 @@ const RegisterPage = () => {
       const email = user.email;
       const phoneNumber = user.phoneNumber || null;
 
-      const userDetails = { name, email, googleId, phoneNumber };
+      const userDetails = { name, email, googleId, phoneNumber }; 
       const data = await userRegisterApi(userDetails);
 
       if (

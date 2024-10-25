@@ -30,40 +30,78 @@ const uploadImageToS3 = async (file) => {
 export const createProduct = asyncHandler(async (req, res) => {
   try {
     const {
+      // default product
       name,
+      brand,
       description,
       originalPrice,
       discountPrice,
       totalStock,
       isPublished,
+      material,
       category,
-      hasVariants: hasVariantsString,
-      variants,
-      type,
+      warranty,
+      color,
+      isNewArrival,
+      isFeatured,
+      isBluetoothSupported: isBluetoothSupportedString,
+      // if it suppot bluetooth
       batteryLife,
       bluetoothVersion,
+      bluetoothRange,
+      chargingTime,
       noiseCancellation,
       dualPlayConnection,
-      warranty,
+      appControl,
+      waterResistant,
+      touchControl,
+      multiDevice,
+      hasVariants: hasVariantsString,
+      // if it has variants
+      variants,
     } = req.body;
-
+    const images = req.files.images;
     const hasVariants = hasVariantsString === "true";
+    const isBluetoothSupported = isBluetoothSupportedString === "true";
+    console.log("images i am getting", images);
+    // validation
     if (
       !name ||
       !description ||
+      !originalPrice ||
+      !discountPrice ||
+      !totalStock ||
+      !isNewArrival ||
+      !isPublished ||
+      !isFeatured ||
+      // !color ||
+      !brand ||
+      !category ||
+      !warranty ||
+      (isBluetoothSupported &&
+        (!batteryLife ||
+          !bluetoothVersion ||
+          !bluetoothRange ||
+          !chargingTime ||
+          !noiseCancellation ||
+          !appControl ||
+          dualPlayConnection ||
+          waterResistant ||
+          multiDevice ||
+          touchControl ||
+          !bluetoothRange ||
+          !chargingTime)) ||
       (hasVariants && (!variants || variants.length === 0))
     ) {
       return res
         .status(400)
         .json({ message: "Please provide all required fields" });
     }
-
     if (!hasVariants && !originalPrice) {
       return res.status(400).json({
         message: "Original price is required for products without variants",
       });
     }
-
     if (hasVariants && (!variants || variants.length === 0)) {
       return res
         .status(400)
@@ -78,19 +116,10 @@ export const createProduct = asyncHandler(async (req, res) => {
     if (req.files && req.files["images"]) {
       for (const file of req.files["images"]) {
         const imageUrl = await uploadImageToS3(file);
-        productImages.push(imageUrl); // Push to productImages array
+        productImages.push(imageUrl);
       }
     }
 
-    // Process variant images
-    if (req.files && req.files["variantImages"]) {
-      for (const file of req.files["variantImages"]) {
-        const imageUrl = await uploadImageToS3(file);
-        variantImages.push(imageUrl);
-      }
-    }
-
-    // Check if product images are empty
     if (productImages.length === 0) {
       return res
         .status(400)
@@ -99,48 +128,61 @@ export const createProduct = asyncHandler(async (req, res) => {
 
     const productData = {
       name,
+      brand,
       description,
-      originalPrice: hasVariants ? undefined : Number(originalPrice),
-      discountPrice: hasVariants ? undefined : Number(discountPrice),
-      images: productImages,
-      totalStock: hasVariants ? undefined : Number(totalStock),
+      originalPrice: Number(originalPrice),
+      discountPrice: Number(discountPrice),
+      totalStock: Number(totalStock),
       isPublished,
+      material,
       category,
-      hasVariants,
-      type: hasVariants ? undefined : type, // Only add type if no variants
-      batteryLife:
-        type === "Bluetooth" && !hasVariants ? batteryLife : undefined,
-      bluetoothVersion:
-        type === "Bluetooth" && !hasVariants ? bluetoothVersion : undefined,
-      noiseCancellation:
-        type === "Bluetooth" && !hasVariants ? noiseCancellation : undefined,
-      dualPlayConnection:
-        type === "Bluetooth" && !hasVariants ? dualPlayConnection : undefined,
       warranty,
+      images:productImages,
+      isBluetoothSupported,
+      hasVariants,
+      isNewArrival,
+      isFeatured,
     };
 
-    // console.log("product data is getting ", productData)
+    if (isBluetoothSupported) {
+      productData.batteryLife = batteryLife;
+      productData.bluetoothVersion = bluetoothVersion;
+      productData.bluetoothRange = bluetoothRange;
+      productData.chargingTime = chargingTime;
+      productData.noiseCancellation = noiseCancellation;
+      productData.dualPlayConnection = dualPlayConnection;
+      productData.appControl = appControl;
+      productData.waterResistant = waterResistant;
+      productData.touchControl = touchControl;
+      productData.multiDevice = multiDevice;
+    }
 
     if (hasVariants) {
       productData.variants = variants.map((variant) => {
         const variantData = {
           name: variant.name,
-          originalPrice: Number(variant.originalPrice),
           discountPrice: Number(variant.discountPrice) || 0,
           stock: Number(variant.stock),
           images: variant.images || [],
           color: variant.color,
-          type: variant.type,
-          warranty: variant.warranty,
+          material: variant.material,
+          images: variant.images,
+          isBluetoothSupported: variant.isBluetoothSupported,
         };
 
-        if (variant.type === "Bluetooth") {
+        if (variant.isBluetoothSupported) {
           variantData.batteryLife = variant.batteryLife;
           variantData.bluetoothVersion = variant.bluetoothVersion;
+          variantData.bluetoothRange = variant.bluetoothRange;
+          variantData.chargingTime = variant.chargingTime;
           variantData.isNoiseCancellationEnabled =
             variant.isNoiseCancellationEnabled;
           variantData.isDualPlayConnectionEnabled =
             variant.isDualPlayConnectionEnabled;
+          variantData.waterResistant = variant.waterResistant;
+          variantData.touchControl = variant.touchControl;
+          variantData.multiDevice = variant.multiDevice;
+          variantData.appControl = variant.appControl;
         }
 
         return variantData;
@@ -218,15 +260,15 @@ export const handlePublicChange = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 // @desc    get  product by id
 // @route   get /api/product/product_details/:id
 // @access  public
 export const getProductDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const product = await Product.findById(id).select("-sold").populate("category","_id name")
+    const product = await Product.findById(id)
+      .select("-sold")
+      .populate("category", "_id name");
     if (product) {
       res.status(200).json(product);
     } else {

@@ -44,6 +44,7 @@ const userSchema = mongoose.Schema(
     googleId: {
       type: String,
       default: null,
+      unique: true,
     },
     // profileImage: {
     //   type: String,
