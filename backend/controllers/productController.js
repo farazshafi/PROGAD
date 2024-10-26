@@ -29,6 +29,7 @@ const uploadImageToS3 = async (file) => {
 // @access  private
 export const createProduct = asyncHandler(async (req, res) => {
   try {
+    console.log("product data: ", req.body);
     const {
       // default product
       name,
@@ -50,19 +51,27 @@ export const createProduct = asyncHandler(async (req, res) => {
       bluetoothVersion,
       bluetoothRange,
       chargingTime,
-      noiseCancellation,
-      dualPlayConnection,
-      appControl,
-      waterResistant,
-      touchControl,
-      multiDevice,
+      noiseCancellation: noiseCancellationSring,
+      dualPlayConnection: dualPlayConnectionString,
+      appControl: appControlString,
+      waterResistant: waterResistantString,
+      touchControl: touchControlString,
+      multiDevice: multiDeviceString,
       hasVariants: hasVariantsString,
       // if it has variants
       variants,
     } = req.body;
     const images = req.files.images;
+
     const hasVariants = hasVariantsString === "true";
     const isBluetoothSupported = isBluetoothSupportedString === "true";
+    const noiseCancellation = noiseCancellationSring === "true";
+    const dualPlayConnection = dualPlayConnectionString === "true";
+    const appControl = appControlString === "true";
+    const waterResistant = waterResistantString === "true";
+    const touchControl = touchControlString === "true";
+    const multiDevice = multiDeviceString === "true";
+
     console.log("images i am getting", images);
     // validation
     if (
@@ -79,18 +88,16 @@ export const createProduct = asyncHandler(async (req, res) => {
       !category ||
       !warranty ||
       (isBluetoothSupported &&
-        (!batteryLife ||
-          !bluetoothVersion ||
-          !bluetoothRange ||
-          !chargingTime ||
-          !noiseCancellation ||
-          !appControl ||
-          dualPlayConnection ||
-          waterResistant ||
-          multiDevice ||
-          touchControl ||
-          !bluetoothRange ||
-          !chargingTime)) ||
+        (batteryLife === undefined ||
+          bluetoothVersion === undefined ||
+          noiseCancellation === undefined ||
+          appControl === undefined ||
+          dualPlayConnection === undefined ||
+          waterResistant === undefined ||
+          multiDevice === undefined ||
+          touchControl === undefined ||
+          bluetoothRange === undefined ||
+          chargingTime === undefined)) ||
       (hasVariants && (!variants || variants.length === 0))
     ) {
       return res
@@ -137,7 +144,7 @@ export const createProduct = asyncHandler(async (req, res) => {
       material,
       category,
       warranty,
-      images:productImages,
+      images: productImages,
       isBluetoothSupported,
       hasVariants,
       isNewArrival,

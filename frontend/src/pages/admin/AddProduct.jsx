@@ -73,14 +73,15 @@ const AddProduct = () => {
 
   const [variantData, setVariantData] = useState(initialVariantData);
 
-  const handleChange = (e) => {
+  const handleChange = (event) => {
+    const { name, type, checked, value } = event.target;
     
-    const { name, value, type, checked } = e.target;
     setProductData((prevData) => ({
       ...prevData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "checkbox" || type === "switch" ? checked : value, 
     }));
   };
+  
 
   const handleVariantChange = (e) => {
     const { name, type, value, checked } = e.target;
@@ -309,6 +310,9 @@ const AddProduct = () => {
     let totalStock = Number(productData.totalStock)
     console.log("poduct data , when submit", productData)
     console.log("image , when submit", uploadedImages)
+    console.log("batter life",productData.batteryLife);
+    console.log("bluetooth version",productData.bluetoothVersion);
+
     
     try {
       if (!productData.name || productData.name.length < 3) { 
@@ -347,6 +351,25 @@ const AddProduct = () => {
           "Discount price must be less than original price and not negative."
         );
         return;
+      }
+      if(productData.isBluetoothSupported){
+        if (!productData.batteryLife) {
+          
+          toast.error("must provide battery life");
+          return;
+        }
+        if (!productData.bluetoothVersion) {
+          toast.error("Bluetooth version is required.");
+          return;
+        }
+        if (!productData.bluetoothRange) {
+          toast.error("Bluetooth range is required.");
+          return;
+        }
+        if (!productData.chargingTime) {
+          toast.error("charging time is required.");
+          return;
+        }
       }
       // if (totalStock > 1) {
       //   toast.error("Stock must be at least 1.");     
@@ -439,7 +462,7 @@ const AddProduct = () => {
       if (data && data.error) {
         toast.error("Failed to add product: " + data.error);
       } else if (data) {
-        resetState();
+        resetProductData()
         toast.success("Product added successfully");
       } else {
         toast.error("Failed to add product");
@@ -748,8 +771,8 @@ const AddProduct = () => {
               <TextField
                 fullWidth
                 label="Battery Life (hours)"
-                name="batterLife"
-                value={productData.batterLife}
+                name="batteryLife"
+                value={productData.batteryLife} 
                 onChange={handleChange}
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#ffffff" } }}
