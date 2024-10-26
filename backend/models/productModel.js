@@ -42,42 +42,16 @@ const variantSchema = mongoose.Schema(
       required: true,
     },
     color: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref:"Color",
+      type: String,
       required: true,
     },
     material:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Material",
+      type: String,
       required: true,
     },
     isBluetoothSupported: {
       type: Boolean,
       required: true,
-    },
-    batteryLife: {
-      type: String,
-      required: function () {
-        return this.isBluetoothSupported === true;
-      },
-    },
-    bluetoothVersion: {
-      type: String,
-      required: function () {
-        return this.isBluetoothSupported === true;
-      },
-    },
-    bluetoothRange: {
-      type: String,
-      required: function () {
-        return this.isBluetoothSupported === true;
-      },
-    },
-    chargingTime: {
-      type: String,
-      required: function () {
-        return this.isBluetoothSupported === true;
-      },
     },
     noiseCancellation: {
       type: Boolean,
@@ -114,10 +88,6 @@ const variantSchema = mongoose.Schema(
       required: function () {
         return this.isBluetoothSupported === true;
       },
-    },
-    warranty: {
-      type: String,
-      default: "1 year",
     },
   },
   { timestamps: true }

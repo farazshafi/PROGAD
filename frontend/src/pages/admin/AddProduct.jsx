@@ -75,16 +75,16 @@ const AddProduct = () => {
 
   const handleChange = (event) => {
     const { name, type, checked, value } = event.target;
-    
+
     setProductData((prevData) => ({
       ...prevData,
-      [name]: type === "checkbox" || type === "switch" ? checked : value, 
+      [name]: type === "checkbox" || type === "switch" ? checked : value,
     }));
   };
-  
 
   const handleVariantChange = (e) => {
     const { name, type, value, checked } = e.target;
+
     setVariantData((prevVariantData) => ({
       ...prevVariantData,
       [name]: type === "checkbox" || type === "switch" ? checked : value,
@@ -189,7 +189,7 @@ const AddProduct = () => {
 
     setProductData((prevData) => ({
       ...prevData,
-      images: [...prevData.images, ...tempFiles] 
+      images: [...prevData.images, ...tempFiles],
     }));
 
     setUploadedImages((prevFiles) => [...prevFiles, ...tempFiles]);
@@ -240,6 +240,8 @@ const AddProduct = () => {
   };
 
   const handleSaveVariant = () => {
+    console.log(" variants array , ", variantsArray);
+    console.log("product ile variatns , ", productData.variants);
     // Validation function
     const validateFields = () => {
       if (!variantData.name || variantData.name.length < 3) {
@@ -272,6 +274,7 @@ const AddProduct = () => {
 
       return true;
     };
+
     if (!validateFields()) {
       return;
     }
@@ -286,7 +289,7 @@ const AddProduct = () => {
       isBluetoothSupported: variantData.isBluetoothSupported,
       ...(variantData.isBluetoothSupported && {
         noiseCancellation: variantData.noiseCancellation,
-        dualConnection: variantData.dualConnection,
+        dualPlayConnection: variantData.dualPlayConnection,
         appControl: variantData.appControl,
         waterResistant: variantData.waterResistant,
         touchControl: variantData.touchControl,
@@ -307,15 +310,22 @@ const AddProduct = () => {
   };
 
   const handleAddProductSubmit = async () => {
-    let totalStock = Number(productData.totalStock)
-    console.log("poduct data , when submit", productData)
-    console.log("image , when submit", uploadedImages)
-    console.log("batter life",productData.batteryLife);
-    console.log("bluetooth version",productData.bluetoothVersion);
+    let totalStock;
+    let discountPrice = Number(productData.discountPrice);
+    if (productData.hasVariants) {
+      totalStock = productData.variants.reduce(
+        (sum, variant) => sum + parseInt(variant.stock, 10),
+        0
+      );
+    } else {
+      totalStock = Number(productData.totalStock);
+    }
+    console.log("poduct data , when submit", productData);
+    console.log("variant array", variantsArray);
 
-    
+
     try {
-      if (!productData.name || productData.name.length < 3) { 
+      if (!productData.name || productData.name.length < 3) {
         toast.error("Product name must be at least 3 characters.");
         return;
       }
@@ -344,17 +354,17 @@ const AddProduct = () => {
         return;
       }
       if (
-        productData.discountPrice >= productData.originalPrice ||
-        productData.discount < 0
+        Number(productData.discountPrice) >=
+          Number(productData.originalPrice) ||
+        Number(productData.discountPrice) < 0
       ) {
         toast.error(
           "Discount price must be less than original price and not negative."
         );
         return;
       }
-      if(productData.isBluetoothSupported){
+      if (productData.isBluetoothSupported) {
         if (!productData.batteryLife) {
-          
           toast.error("must provide battery life");
           return;
         }
@@ -371,16 +381,20 @@ const AddProduct = () => {
           return;
         }
       }
-      // if (totalStock > 1) {
-      //   toast.error("Stock must be at least 1.");     
-      //   return;
-      // }
-      if (!productData.warranty) {
-        toast.error("warranty required")
+      if (totalStock < 1) {
+        toast.error("Stock must be at least 1.");
         return;
       }
-      if(productData.description.length < 50){
+      if (!productData.warranty) {
+        toast.error("warranty required");
+        return;
+      }
+      if (productData.description.length < 50) {
         toast.error("Description must be at least 50 characters.");
+        return;
+      }
+      if (productData.hasVariants && productData.variants.length < 0) {
+        toast.error("Variants required");
         return;
       }
 
@@ -389,8 +403,8 @@ const AddProduct = () => {
       formData.append("name", productData.name);
       formData.append("description", productData.description);
       formData.append("originalPrice", productData.originalPrice);
-      formData.append("discountPrice", productData.discountPrice);
-      formData.append("totalStock", productData.totalStock);
+      formData.append("discountPrice", discountPrice);
+      formData.append("totalStock", totalStock);
       formData.append("isNewArrival", productData.isNewArrival);
       formData.append("isFeatured", productData.isFeatured);
       formData.append("isPublished", productData.isPublished);
@@ -403,7 +417,6 @@ const AddProduct = () => {
       formData.append("warranty", productData.warranty);
       formData.append("hasVariants", productData.hasVariants);
       formData.append("isBluetoothSupported", productData.isBluetoothSupported);
-
 
       if (productData.isBluetoothSupported) {
         formData.append("batteryLife", productData.batteryLife);
@@ -418,43 +431,50 @@ const AddProduct = () => {
         formData.append("touchCountrol", productData.touchCountrol);
       }
 
-      // if (productData.hasVariants) {
-      //   productData.variants.forEach((variant, index) => {
-      //     formData.append(`variants[${index}][name]`, variant.name);
-      //     formData.append(`variants[${index}][originalPrice]`,variant.originalPrice);
-      //     formData.append(
-      //       `variants[${index}][discountPrice]`,
-      //       variant.discountPrice
-      //     );
-      //     formData.append(`variants[${index}][stock]`, variant.stock);
-      //     formData.append(`variants[${index}][color]`, variant.color);
-      //     formData.append(`variants[${index}][type]`, variant.type);
-      //     formData.append(`variants[${index}][warranty]`, variant.warranty);
+      if (productData.hasVariants) {
+        variantsArray.forEach((variant, index) => {
+          formData.append(`variants[${index}][name]`, variant.name);
+          formData.append(
+            `variants[${index}][discountPrice]`,
+            variant.discountPrice
+          );
+          formData.append(`variants[${index}][stock]`, variant.stock);
+          formData.append(`variants[${index}][color]`, variant.color);
+          formData.append(`variants[${index}][material]`, variant.material);
+          formData.append(
+            `variants[${index}][isBluetoothSupported]`,
+            variant.isBluetoothSupported
+          );
 
-      //     variant.images.forEach((variantImage) => {
-      //       formData.append("variantImages", variantImage);
-      //     });
-
-      //     if (variant.type === "Bluetooth") {
-      //       formData.append(
-      //         `variants[${index}][batteryLife]`,
-      //         variant.variantBatteryLife
-      //       );
-      //       formData.append(
-      //         `variants[${index}][bluetoothVersion]`,
-      //         variant.variantBluetoothVersion
-      //       );
-      //       formData.append(
-      //         `variants[${index}][isNoiseCancellationEnabled]`,
-      //         variant.variantNoiseCancellation
-      //       );
-      //       formData.append(
-      //         `variants[${index}][isDualPlayConnectionEnabled]`,
-      //         variant.variantDualPlayConnection
-      //       );
-      //     }
-      //   });
-      // }
+          if (variant.isBluetoothSupported) {
+            // Always append noiseCancellation and dualPlayConnection
+            formData.append(
+              `variants[${index}][noiseCancellation]`,
+              variant.noiseCancellation ?? false
+            );
+            formData.append(
+              `variants[${index}][dualPlayConnection]`,
+              variant.dualPlayConnection ?? false
+            );
+            formData.append(
+              `variants[${index}][multiDevice]`,
+              variant.multiDevice ?? false
+            );
+            formData.append(
+              `variants[${index}][appControl]`,
+              variant.appControl ?? false
+            );
+            formData.append(
+              `variants[${index}][waterResistant]`,
+              variant.waterResistant ?? false
+            );
+            formData.append(
+              `variants[${index}][touchControl]`,
+              variant.touchControl ?? false
+            );
+          }
+        });
+      }
 
       // Make API call
       const data = await createProductApi(formData);
@@ -462,7 +482,7 @@ const AddProduct = () => {
       if (data && data.error) {
         toast.error("Failed to add product: " + data.error);
       } else if (data) {
-        resetProductData()
+        resetProductData();
         toast.success("Product added successfully");
       } else {
         toast.error("Failed to add product");
@@ -667,19 +687,21 @@ const AddProduct = () => {
         </Grid>
 
         {/* stock */}
-        <Grid item xs={6}>
-          <TextField
-            fullWidth
-            label="Stock"
-            name="totalStock" 
-            value={productData.totalStock} 
-            onChange={handleChange}
-            type="number"
-            variant="outlined"
-            InputLabelProps={{ style: { color: "#ffffff" } }}
-            inputProps={{ style: { color: "#ffffff" } }}
-          />
-        </Grid>
+        {!productData.hasVariants && (
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Stock"
+              name="totalStock"
+              value={productData.totalStock}
+              onChange={handleChange}
+              type="number"
+              variant="outlined"
+              InputLabelProps={{ style: { color: "#ffffff" } }}
+              inputProps={{ style: { color: "#ffffff" } }}
+            />
+          </Grid>
+        )}
 
         {/* warranty */}
         <Grid item xs={6}>
@@ -772,7 +794,7 @@ const AddProduct = () => {
                 fullWidth
                 label="Battery Life (hours)"
                 name="batteryLife"
-                value={productData.batteryLife} 
+                value={productData.batteryLife}
                 onChange={handleChange}
                 variant="outlined"
                 InputLabelProps={{ style: { color: "#ffffff" } }}
@@ -1281,8 +1303,8 @@ const AddProduct = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="touchCountrol"
-                      checked={variantData.touchCountrol}
+                      name="touchControl"
+                      checked={variantData.touchControl}
                       onChange={handleVariantChange}
                       style={{ color: "#ffffff" }}
                     />

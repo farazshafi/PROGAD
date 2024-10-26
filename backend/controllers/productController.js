@@ -178,14 +178,10 @@ export const createProduct = asyncHandler(async (req, res) => {
         };
 
         if (variant.isBluetoothSupported) {
-          variantData.batteryLife = variant.batteryLife;
-          variantData.bluetoothVersion = variant.bluetoothVersion;
-          variantData.bluetoothRange = variant.bluetoothRange;
-          variantData.chargingTime = variant.chargingTime;
-          variantData.isNoiseCancellationEnabled =
-            variant.isNoiseCancellationEnabled;
-          variantData.isDualPlayConnectionEnabled =
-            variant.isDualPlayConnectionEnabled;
+          variantData.noiseCancellation =
+            variant.noiseCancellation;
+          variantData.dualPlayConnection =
+            variant.dualPlayConnection;
           variantData.waterResistant = variant.waterResistant;
           variantData.touchControl = variant.touchControl;
           variantData.multiDevice = variant.multiDevice;
