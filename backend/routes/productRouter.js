@@ -4,6 +4,7 @@ import {
   getAllProduct,
   getProductDetails,
   handlePublicChange,
+  updateProduct
 } from "../controllers/productController.js";
 import multer from "multer";
 const router = express.Router();
@@ -15,7 +16,7 @@ router.post(
   "/create_product",
   upload.fields([
     { name: "images", maxCount: 5 },
-    { name: "variantImages", maxCount: 10 },
+    { name: "varinat", maxCount: 10 },
   ]),
   createProduct
 );
@@ -23,5 +24,6 @@ router.post(
 router.get("/get_products", getAllProduct);
 router.patch("/handle_public_change/:id", handlePublicChange);
 router.get("/product_details/:id", getProductDetails);
+router.put("/update_product/:id",updateProduct);
 
 export default router;

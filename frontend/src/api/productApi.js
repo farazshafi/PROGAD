@@ -49,3 +49,15 @@ export const getProductDetailsApi = async (id) => {
   }
 }
 
+
+
+export const updateProductApi = async (id,data) => {
+  try{
+    const response = await axios.put(`${API_URL}/update_product/${id}`,data)
+    return response;
+  }catch(err){
+    console.log(err);
+    return err;
+  }
+}
+

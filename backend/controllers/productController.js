@@ -178,10 +178,8 @@ export const createProduct = asyncHandler(async (req, res) => {
         };
 
         if (variant.isBluetoothSupported) {
-          variantData.noiseCancellation =
-            variant.noiseCancellation;
-          variantData.dualPlayConnection =
-            variant.dualPlayConnection;
+          variantData.noiseCancellation = variant.noiseCancellation;
+          variantData.dualPlayConnection = variant.dualPlayConnection;
           variantData.waterResistant = variant.waterResistant;
           variantData.touchControl = variant.touchControl;
           variantData.multiDevice = variant.multiDevice;
@@ -280,5 +278,39 @@ export const getProductDetails = asyncHandler(async (req, res) => {
   } catch (err) {
     console.error("Error getting products:", err.message);
     res.status(500).json({ message: "Server error while getting products" });
+  }
+});
+// @desc    update product by id
+// @route   PUT /api/product/update_product/:id
+// @access  private admin
+export const updateProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {
+    name,
+    description,
+    discountPrice,
+    stock,
+    warranty,
+    isPublished,
+  } = req.body;
+  console.log("update product", req.body)
+  try {
+    const product = await Product.findById(id);
+    if (product) {
+      product.name = name ?? product.name;
+      product.description = description ?? product.description;
+      product.discountPrice = discountPrice ?? product.discountPrice;
+      product.totalStock = stock ?? product.totalStock;
+      product.warranty = warranty ?? product.warranty;
+      product.isPublished = isPublished ?? product.isPublished;
+
+      await product.save();
+      res.status(200).json({ message: "Product updated successfully" });
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (err) {
+    console.error("Error updating product:", err.message);
+    res.status(500).json({ message: "Server error while updating product" });
   }
 });

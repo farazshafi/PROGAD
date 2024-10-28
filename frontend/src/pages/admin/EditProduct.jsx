@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from "react";
-import { getProductDetailsApi } from "../../api/productApi";
+import { getProductDetailsApi, updateProductApi } from "../../api/productApi";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 import {
   Box,
   FormControl,
@@ -21,6 +20,8 @@ import {
   DialogContent,
   DialogActions,
   Modal,
+  Link,
+  Breadcrumbs,
 } from "@mui/material";
 import { MdCloudUpload, MdDelete, MdAdd } from "react-icons/md";
 import { getPublishedCategoriesApi } from "../../api/categoryApi";
@@ -30,195 +31,320 @@ const EditProduct = () => {
   const params = useParams();
   const { id } = params;
 
-  // useState for product details and updated fields
-  const [product, setProduct] = useState({});
-  const [updatedImages, setUpdatedImages] = useState([]);
-  const [updatedName, setUpdatedName] = useState("");
-  const [updatedDescription, setUpdatedDescription] = useState("");
-  const [allCategories, setAllCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [discountPrice, setDiscountPrice] = useState("");
-  const [stock, setStock] = useState("");
-  const [warranty, setWarranty] = useState("");
-  const [batteryLife, setBatteryLife] = useState("");
-  const [bluetoothVersion, setBluetoothVersion] = useState("");
-  const [noiseCancellation, setNoiseCancellation] = useState(false);
-  const [dualPlayConnection, setDualPlayConnection] = useState(false);
-  const [isPublished, setIsPublished] = useState(false);
-  const [variants, setVariants] = useState(product.variants || []);
-  const [editVariantModalOpen, setEditVariantModalOpen] = useState(false);
-  const [variantToEdit, setVariantToEdit] = useState(null);
-  const [newVariantImages, setNewVariantImages] = useState([]);
-
-  const [newVariant, setNewVariant] = useState({
-    name: "",
+  // Single state object
+  const [state, setState] = useState({
+    product: {},
+    updatedImages: [],
+    updatedName: "",
+    updatedDescription: "",
+    allCategories: [],
+    selectedCategory: "",
     originalPrice: "",
     discountPrice: "",
     stock: "",
-    color: "",
-    images: [],
-    type: "",
+    warranty: "",
     batteryLife: "",
     bluetoothVersion: "",
     noiseCancellation: false,
     dualPlayConnection: false,
+    isPublished: false,
+    variants: [],
+    editVariantModalOpen: false,
+    variantToEdit: null,
+    newVariantImages: [],
+    newVariant: {
+      name: "",
+      originalPrice: "",
+      discountPrice: "",
+      stock: "",
+      color: "",
+      images: [],
+      type: "",
+      batteryLife: "",
+      bluetoothVersion: "",
+      noiseCancellation: false,
+      dualPlayConnection: false,
+    },
+    newVariantImages: [],
+    editVariantModalOpen: false,
+    variantToEdit: null,
+    addVariantModalOpen: false,
+    newVariantAdded: false,
   });
 
-  const [addVariantModalOpen, setAddVariantModalOpen] = useState(false);
-
-  // Function to open the modal
-  const handleOpenAddVariantModal = () => {
-    setAddVariantModalOpen(true);
+  const resetForm = () => {
+    setState((prev) => ({
+      ...prev,
+      updatedName: "",
+      selectedCategory: "",
+      updatedDescription: "",
+      product: {},
+      updatedImages: [],
+      allCategories: [],
+      originalPrice: "",
+      discountPrice: "",
+      stock: "",
+      warranty: "",
+      batteryLife: "",
+      bluetoothVersion: "",
+      noiseCancellation: false,
+      dualPlayConnection: false,
+      isPublished: false,
+      newVariant: {
+        name: "",
+        originalPrice: "",
+        discountPrice: "",
+        stock: "",
+        color: "",
+        images: [],
+      },
+      newVariantImages: [],
+      editVariantModalOpen: false,
+      variantToEdit: null,
+      addVariantModalOpen: false,
+      newVariantAdded: false,
+    }));
   };
 
-  // Function to close the modal
-  const handleCloseAddVariantModal = () => {
-    setAddVariantModalOpen(false);
+  const enqueueSnackbar = (message, options) => {
+    console.log("Showing snackbar:", message);
   };
 
-  // Fetch product details
-  const fetchProductDetails = async () => {
-    try {
-      const { data } = await getProductDetailsApi(id);
-      if (data.response) {
-        const { status } = data.response;
-        if (status === 500 || status === 400) {
-          toast.error(data.response.data.message);
-        }
-      } else {
-        setProduct({
-          ...data,
-          variants: data.variants || [], // Ensure variants is always an array
-        });
-        setUpdatedImages(data.images);
-        setUpdatedName(data.name);
-        setUpdatedDescription(data.description);
-        setSelectedCategory(data.category?.name);
-        setOriginalPrice(data.originalPrice);
-        setDiscountPrice(data.discountPrice);
-        setStock(data.totalStock);
-        setWarranty(data.warranty);
-        if (data.type === "Bluetooth") {
-          setBatteryLife(data.batteryLife);
-          setBluetoothVersion(data.bluetoothVersion);
-          setNoiseCancellation(data.noiseCancellation);
-          setDualPlayConnection(data.dualPlayConnection);
-        }
-        setIsPublished(data.isPublished);
-        setVariants(data.variants);
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  const handleClose = () => {
+    setState((prev) => ({
+      ...prev,
+      editVariantModalOpen: false,
+      variantToEdit: null,
+      addVariantModalOpen: false,
+      newVariantAdded: false,
+    }));
   };
 
-  // Fetch categories
-  const fetchCategories = async () => {
-    try {
-      const data = await getPublishedCategoriesApi();
-      setAllCategories(data);
-    } catch (err) {
-      toast.error(err);
-      console.error("Error fetching categories:", err);
-    }
-  };
-
-  // Handle image upload
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
-    const newImages = files.map((file) => URL.createObjectURL(file)); // Temporarily show the uploaded images
-    setUpdatedImages([...updatedImages, ...newImages]);
+    const newImages = files.map((file) => URL.createObjectURL(file));
+    setState((prevState) => ({
+      ...prevState,
+      updatedImages: [...prevState.updatedImages, ...newImages],
+    }));
   };
 
-  // Handle image removal
   const handleRemoveImage = (index) => {
-    const updated = updatedImages.filter((_, imgIndex) => imgIndex !== index);
-    setUpdatedImages(updated);
-  };
-
-  // handle variants delete
-  const handleDeleteVariant = (variantId) => {
-    // This will log the variantId being deleted
-    console.log("Deleting variant with id:", variantId);
-
-    // Update the product state by filtering out the variant to delete
-    const updatedVariants = product.variants.filter(
-      (variant) => variant._id !== variantId
-    );
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      variants: updatedVariants,
+    setState((prevState) => ({
+      ...prevState,
+      updatedImages: prevState.updatedImages.filter(
+        (_, imgIndex) => imgIndex !== index
+      ),
     }));
   };
 
-  // Function to handle opening the modal
-  const handleEditVariant = (variant) => {
-    setVariantToEdit(variant);
-    setEditVariantModalOpen(true);
-  };
-
-  // Function to handle closing the modal
-  const handleCloseModal = () => {
-    setEditVariantModalOpen(false);
-    setVariantToEdit(null); // Clear the selected variant
-  };
-
-  // Function to handle saving the edited variant
-  const handleSaveVariant = () => {
-    // Update the product state by adding the new variant
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      variants: [...(prevProduct.variants || []), newVariant], // Add to variants array
-    }));
-    setNewVariant({ name: "", originalPrice: "", discountPrice: "", stock: "", color: "" }); // Clear the form
-    handleCloseAddVariantModal();
-  };
-  
-
-  // Function to save edited variant details
   const saveEditedVariant = (editedVariant) => {
-    const updatedVariants = variants.map((variant) =>
-      variant._id === editedVariant._id ? editedVariant : variant
-    );
-    setVariants(updatedVariants);
-    // setEditModalOpen(false); // Close the modal after saving
-    // Optionally, call your API to update the variant in the database here
+    setState((prevState) => ({
+      ...prevState,
+      variants: prevState.variants.map((variant) =>
+        variant._id === editedVariant._id ? editedVariant : variant
+      ),
+    }));
   };
 
   const handleVariantImageUpload = (event) => {
     const files = Array.from(event.target.files);
-    const uploadedImages = files.map((file) => URL.createObjectURL(file)); // Temporarily show the uploaded images
-    setNewVariantImages([...newVariantImages, ...uploadedImages]);
-
-    // Optional: handle uploading to your server or storage bucket here
-  };
-
-  const handleUpdateProduct = () => {
-    const updatedProductData = {
-      updatedImages,
-      updatedName,
-      updatedDescription,
-      selectedCategory,
-      originalPrice,
-      discountPrice,
-      stock,
-      warranty,
-      batteryLife,
-      bluetoothVersion,
-      noiseCancellation,
-      dualPlayConnection,
-      variants,
-      isPublished,
-    };
-
-    console.log("Updated Product Data:", updatedProductData);
+    const uploadedImages = files.map((file) => URL.createObjectURL(file));
+    setState((prevState) => ({
+      ...prevState,
+      newVariantImages: [...prevState.newVariantImages, ...uploadedImages],
+    }));
   };
 
   useEffect(() => {
     fetchProductDetails();
     fetchCategories();
   }, []);
+
+  const fetchProductDetails = async () => {
+    try {
+      const { data } = await getProductDetailsApi(id);
+      if (data.response) {
+        toast.error(data.response.data.message);
+      } else {
+        setState((prevState) => ({
+          ...prevState,
+          product: {
+            ...data,
+            variants: data.variants || [],
+          },
+          updatedImages: data.images,
+          updatedName: data.name,
+          updatedDescription: data.description,
+          selectedCategory: data.category?.name,
+          originalPrice: data.originalPrice,
+          discountPrice: data.discountPrice,
+          stock: data.totalStock,
+          warranty: data.warranty,
+          batteryLife: data.batteryLife,
+          bluetoothVersion: data.bluetoothVersion,
+          noiseCancellation: data.noiseCancellation,
+          dualPlayConnection: data.dualPlayConnection,
+          isPublished: data.isPublished,
+        }));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getPublishedCategoriesApi();
+      setState((prevState) => ({
+        ...prevState,
+        allCategories: data,
+      }));
+    } catch (err) {
+      toast.error(err);
+      console.error("Error fetching categories:", err);
+    }
+  };
+  const handleUpdateProduct = async () => {
+    try {
+      const updatedFields = {};
+
+      if (state.updatedName) {
+        updatedFields.name = state.updatedName;
+      }
+
+      if (state.updatedDescription) {
+        updatedFields.description = state.updatedDescription;
+      }
+
+      if (state.price) {
+        updatedFields.price = state.price;
+      }
+
+      if (state.stock) {
+        updatedFields.stock = state.stock;
+      }
+
+      if (state.warranty) {
+        updatedFields.warranty = state.warranty;
+      }
+
+      if (state.isPublished !== undefined) {
+        updatedFields.isPublished = state.isPublished;
+      }
+
+      // Handle image update
+      const updatedImages = [...state.updatedImages];
+      if (
+        updatedImages.length > 0 &&
+        state.product.images.length < updatedImages.length
+      ) {
+        updatedFields.images = updatedImages;
+      }
+
+      const updatedProduct =  JSON.stringify(updatedFields, null, 2)
+      console.log("result : ", updatedProduct);
+
+      const result = await updateProductApi(id,JSON.parse(updatedProduct))
+      console.log("data : ", result)
+      if(result.response){
+        const {status} = result.response
+        if(status === 400 || status === 500){
+          toast.error(result.response.data.message)
+          return;
+        }
+      }else{
+        toast.success(result.data.message)
+        fetchProductDetails()
+      }
+
+      // Show success message
+      console.log("Product updated successfully!");
+
+      // Close the dialog
+      setState((prev) => ({
+        ...prev,
+        editVariantModalOpen: false,
+        variantToEdit: null,
+        addVariantModalOpen: false,
+        newVariantAdded: false,
+      }));
+    } catch (error) {
+      console.error("Error updating product:", error);
+      console.log("Failed to update product.");
+    }
+  };
+
+  const handleOpenAddVariantModal = () => {
+    setState((prev) => ({ ...prev, addVariantModalOpen: true }));
+  };
+
+  const handleCloseAddVariantModal = () => {
+    setState((prev) => ({ ...prev, addVariantModalOpen: false }));
+  };
+
+  const handleSaveVariant = () => {
+    setState((prev) => ({
+      ...prev,
+      product: {
+        ...prev.product,
+        variants: [
+          ...prev.product.variants,
+          {
+            ...prev.newVariant,
+            images: prev.newVariantImages,
+          },
+        ],
+      },
+      addVariantModalOpen: false,
+      newVariant: { ...prev.newVariant, images: [] },
+      newVariantImages: [],
+    }));
+  };
+
+  const handleEditVariant = (variant) => {
+    setState((prev) => ({
+      ...prev,
+      variantToEdit: variant,
+      editVariantModalOpen: true,
+    }));
+  };
+
+  const handleCloseModal = () => {
+    setState((prev) => ({
+      ...prev,
+      variantToEdit: null,
+      editVariantModalOpen: false,
+    }));
+  };
+
+  const handleSaveVariantEdit = () => {
+    setState((prev) => {
+      const index = prev.product.variants.findIndex(
+        (v) => v._id === prev.variantToEdit._id
+      );
+      const updatedVariants = [...prev.product.variants];
+      updatedVariants[index] = { ...prev.variantToEdit };
+      return {
+        ...prev,
+        product: { ...prev.product, variants: updatedVariants },
+        variantToEdit: null,
+        editVariantModalOpen: false,
+      };
+    });
+  };
+
+  const handleDeleteVariant = (_id) => {
+    setState((prev) => ({
+      ...prev,
+      product: {
+        ...prev.product,
+        variants: prev.product.variants.filter(
+          (variant) => variant._id !== _id
+        ),
+      },
+    }));
+  };
 
   return (
     <>
@@ -237,6 +363,30 @@ const EditProduct = () => {
         >
           Edit Product
         </Typography>
+
+        <div role="presentation">
+        <Breadcrumbs
+          aria-label="breadcrumb"
+          sx={{ color: "white", padding: "0 " }}
+        >
+          {/* Home Breadcrumb */}
+          <Link underline="hover" color="white" component={RouterLink} to="/admin_dashboard">
+            Admin Dashboard
+          </Link>
+
+          <Link
+            underline="hover"
+            color="white"
+            component={RouterLink}
+            to="/admin_dashboard"
+          >
+            Products
+          </Link>
+
+          {/* Product Details Breadcrumb */}
+          <Typography color="white">Product Edit</Typography>
+        </Breadcrumbs>
+      </div>
 
         <Grid container spacing={2} sx={{ mt: "20px" }}>
           {/* Image Upload & Image Display */}
@@ -295,7 +445,7 @@ const EditProduct = () => {
           {/* Display uploaded images with delete option */}
           <Grid item xs={6}>
             <Grid container spacing={2}>
-              {updatedImages.map((imgSrc, index) => (
+              {state.updatedImages.map((imgSrc, index) => (
                 <Grid item xs={4} key={index}>
                   <Box
                     sx={{
@@ -335,8 +485,10 @@ const EditProduct = () => {
             <TextField
               fullWidth
               label="Product Name"
-              value={updatedName}
-              onChange={(e) => setUpdatedName(e.target.value)}
+              value={state.updatedName}
+              onChange={(e) =>
+                setState((prev) => ({ ...prev, updatedName: e.target.value }))
+              }
               variant="filled"
               InputLabelProps={{ style: { color: "white" } }}
               inputProps={{ style: { color: "white" } }}
@@ -349,16 +501,21 @@ const EditProduct = () => {
             <FormControl fullWidth>
               <InputLabel style={{ color: "#ffffff" }}>Category</InputLabel>
               <Select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={state.selectedCategory}
+                onChange={(e) =>
+                  setState((prev) => ({
+                    ...prev,
+                    selectedCategory: e.target.value,
+                  }))
+                }
                 variant="outlined"
                 style={{ color: "#ffffff" }}
                 InputLabelProps={{ style: { color: "white" } }}
                 inputProps={{ style: { color: "white" } }}
                 sx={{ backgroundColor: "#1b1a45" }}
               >
-                {allCategories &&
-                  allCategories.map((cat) => (
+                {state.allCategories &&
+                  state.allCategories.map((cat) => (
                     <MenuItem key={cat._id} value={cat._id}>
                       {cat.name}
                     </MenuItem>
@@ -374,8 +531,13 @@ const EditProduct = () => {
             <TextField
               fullWidth
               label="Product description"
-              value={updatedDescription}
-              onChange={(e) => setUpdatedDescription(e.target.value)}
+              value={state.updatedDescription}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  updatedDescription: e.target.value,
+                }))
+              }
               variant="outlined"
               InputLabelProps={{ style: { color: "white" } }}
               inputProps={{ style: { color: "white" } }}
@@ -385,146 +547,108 @@ const EditProduct = () => {
         </Grid>
 
         {/* if product have variants */}
-        {product.hasVariants &&
-          product.variants.map((variant, index) => (
-            <Grid
-              sx={{ marginTop: "20px" }}
-              item
-              xs={6}
-              lg={3}
-              key={variant._id}
+        {state.product.variants?.map((variant, index) => (
+          <Grid sx={{ marginTop: "20px" }} item xs={6} lg={3} key={variant._id}>
+            <Box
+              sx={{
+                border: "1px solid #ccc",
+                borderRadius: "10px",
+                padding: "10px",
+                backgroundColor: "#f0f0f0",
+                position: "relative",
+              }}
             >
-              <Box
-                sx={{
-                  border: "1px solid #ccc",
-                  borderRadius: "10px",
-                  padding: "10px",
-                  backgroundColor: "#f0f0f0",
-                  position: "relative",
-                }}
+              {/* Edit Variant Button */}
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ position: "absolute", top: 10, right: 10 }}
+                onClick={() => handleEditVariant(variant)}
               >
-                {/* Edit Variant Button */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ position: "absolute", top: 10, right: 10 }}
-                  onClick={() => handleEditVariant(variant)}
-                >
-                  Edit
-                </Button>
+                Edit
+              </Button>
 
-                {/* Variant Name */}
-                <Typography variant="h6" sx={{ color: "black" }}>
-                  {variant.name}
-                </Typography>
+              {/* Variant Name */}
+              <Typography variant="h6" sx={{ color: "black" }}>
+                {variant.name}
+              </Typography>
 
-                {/* Original Price */}
-                <Typography variant="body1" sx={{ color: "black" }}>
-                  Original Price: {variant.originalPrice}
-                </Typography>
+              {/* Discount Price */}
+              <Typography variant="body1" sx={{ color: "black" }}>
+                Discount Price: {variant.discountPrice}
+              </Typography>
+              <Typography variant="body1" sx={{ color: "black" }}>
+                stock: {variant.stock}
+              </Typography>
+              <Typography variant="body1" sx={{ color: "black" }}>
+                warranty: {variant.warranty}
+              </Typography>
+              <Typography variant="body1" sx={{ color: "black" }}>
+                color: {variant.color}
+              </Typography>
+              {variant.type === "Bluetooth" && (
+                <>
+                  <Typography variant="body1" sx={{ color: "black" }}>
+                    Battery Life: {variant.batteryLife} hours
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "black" }}>
+                    Bluetooth Version: {variant.bluetoothVersion}
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "black" }}>
+                    Noise Cancellation:{" "}
+                    {variant.noiseCancellation ? "Yes" : "No"}
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: "black" }}>
+                    Dual Play Connection:{" "}
+                    {variant.dualPlayConnection ? "Yes" : "No"}
+                  </Typography>
+                </>
+              )}
 
-                {/* Discount Price */}
-                <Typography variant="body1" sx={{ color: "black" }}>
-                  Discount Price: {variant.discountPrice}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "black" }}>
-                  stock: {variant.stock}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "black" }}>
-                  warranty: {variant.warranty}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "black" }}>
-                  color: {variant.color}
-                </Typography>
-                {variant.type === "Bluetooth" && (
-                  <>
-                    <Typography variant="body1" sx={{ color: "black" }}>
-                      Battery Life: {variant.batteryLife} hours
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: "black" }}>
-                      Bluetooth Version: {variant.bluetoothVersion}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: "black" }}>
-                      Noise Cancellation:{" "}
-                      {variant.noiseCancellation ? "Yes" : "No"}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: "black" }}>
-                      Dual Play Connection:{" "}
-                      {variant.dualPlayConnection ? "Yes" : "No"}
-                    </Typography>
-                  </>
-                )}
+              {/* Variant Images */}
+              <Grid container spacing={1} sx={{ mt: 2 }}>
+                {variant.images.map((imgSrc, imgIndex) => (
+                  <Grid item xs={6} key={imgIndex}>
+                    <img
+                      src={imgSrc}
+                      alt={`Variant ${variant.name}`}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        borderRadius: "5px",
+                      }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
 
-                {/* Variant Images */}
-                <Grid container spacing={1} sx={{ mt: 2 }}>
-                  {variant.images.map((imgSrc, imgIndex) => (
-                    <Grid item xs={6} key={imgIndex}>
-                      <img
-                        src={imgSrc}
-                        alt={`Variant ${variant.name}`}
-                        style={{
-                          width: "100%",
-                          height: "auto",
-                          borderRadius: "5px",
-                        }}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
+              {/* Delete Variant Button */}
+              <Button
+                variant="outlined"
+                fullWidth
+                color="error"
+                sx={{ mt: 2 }}
+                onClick={() => handleDeleteVariant(variant._id)}
+              >
+                Delete Variant
+              </Button>
+            </Box>
+          </Grid>
+        ))}
 
-                {/* Delete Variant Button */}
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  color="error"
-                  sx={{ mt: 2 }}
-                  onClick={() => handleDeleteVariant(variant._id)}
-                >
-                  Delete Variant
-                </Button>
-              </Box>
-            </Grid>
-          ))}
-
-        {product.variants?.length === 0 && (
+        {state.product.variants?.length === 0 && (
           <>
-            {/* Original Price and Discounted Price */}
-            <Grid container spacing={2} sx={{ mt: 4 }}>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Original Price"
-                  value={originalPrice}
-                  onChange={(e) => setOriginalPrice(e.target.value)}
-                  variant="outlined"
-                  InputLabelProps={{ style: { color: "white" } }}
-                  inputProps={{ style: { color: "white" } }}
-                  sx={{ backgroundColor: "#1b1a45" }}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  label="Offer Price"
-                  value={discountPrice}
-                  onChange={(e) => setDiscountPrice(e.target.value)}
-                  variant="outlined"
-                  InputLabelProps={{ style: { color: "white" } }}
-                  inputProps={{ style: { color: "white" } }}
-                  sx={{ backgroundColor: "#1b1a45" }}
-                />
-              </Grid>
-            </Grid>
-
+            {/* Discounted Price */}
             {/* Stock and Warranty */}
             <Grid container spacing={2} sx={{ mt: 4 }}>
               <Grid item xs={6}>
                 <TextField
                   fullWidth
                   label="Stock"
-                  value={stock}
-                  onChange={(e) => setStock(e.target.value)}
+                  value={state.stock}
+                  onChange={(e) =>
+                    setState((prev) => ({ ...prev, stock: e.target.value }))
+                  }
                   variant="outlined"
                   InputLabelProps={{ style: { color: "white" } }}
                   inputProps={{ style: { color: "white" } }}
@@ -536,8 +660,10 @@ const EditProduct = () => {
                 <TextField
                   fullWidth
                   label="Warranty"
-                  value={warranty}
-                  onChange={(e) => setWarranty(e.target.value)}
+                  value={state.warranty}
+                  onChange={(e) =>
+                    setState((prev) => ({ ...prev, warranty: e.target.value }))
+                  }
                   variant="outlined"
                   InputLabelProps={{ style: { color: "white" } }}
                   inputProps={{ style: { color: "white" } }}
@@ -549,7 +675,7 @@ const EditProduct = () => {
         )}
 
         {/* if product support blutooth */}
-        {product.type === "Bluetooth" && (
+        {state.product.type === "Bluetooth" && (
           <>
             {/* // batteryl life and bluetooth version */}
             <Grid container spacing={2} sx={{ mt: 4 }}>
@@ -557,8 +683,13 @@ const EditProduct = () => {
                 <TextField
                   fullWidth
                   label="Battery Life"
-                  value={batteryLife}
-                  onChange={(e) => setBatteryLife(e.target.value)}
+                  value={state.batteryLife}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      batteryLife: e.target.value,
+                    }))
+                  }
                   variant="outlined"
                   InputLabelProps={{ style: { color: "white" } }}
                   inputProps={{ style: { color: "white" } }}
@@ -570,8 +701,13 @@ const EditProduct = () => {
                 <TextField
                   fullWidth
                   label="Bluetooth Version"
-                  value={bluetoothVersion}
-                  onChange={(e) => setBluetoothVersion(e.target.value)}
+                  value={state.bluetoothVersion}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      bluetoothVersion: e.target.value,
+                    }))
+                  }
                   variant="outlined"
                   InputLabelProps={{ style: { color: "white" } }}
                   inputProps={{ style: { color: "white" } }}
@@ -585,18 +721,23 @@ const EditProduct = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={noiseCancellation}
-                      onChange={(e) => setNoiseCancellation(e.target.checked)}
+                      checked={state.noiseCancellation}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          noiseCancellation: e.target.checked,
+                        }))
+                      }
                       sx={{
-                        color: "white", // Default color
+                        color: "white",
                         "&.Mui-checked": {
-                          color: "white", // Color when checked
+                          color: "white",
                         },
                       }}
                     />
                   }
                   label="Noise Cancellation"
-                  sx={{ color: "white" }} // Change label color to white
+                  sx={{ color: "white" }}
                 />
               </Grid>
 
@@ -604,18 +745,23 @@ const EditProduct = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={dualPlayConnection}
-                      onChange={(e) => setDualPlayConnection(e.target.checked)}
+                      checked={state.dualPlayConnection}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          dualPlayConnection: e.target.checked,
+                        }))
+                      }
                       sx={{
-                        color: "white", // Default color
+                        color: "white",
                         "&.Mui-checked": {
-                          color: "white", // Color when checked
+                          color: "white",
                         },
                       }}
                     />
                   }
                   label="Dual Play Connection"
-                  sx={{ color: "white" }} // Change label color to white
+                  sx={{ color: "white" }}
                 />
               </Grid>
             </Grid>
@@ -626,9 +772,12 @@ const EditProduct = () => {
                   Publish Status
                 </InputLabel>
                 <Select
-                  value={isPublished ? "Published" : "Unpublished"}
+                  value={state.isPublished ? "Published" : "Unpublished"}
                   onChange={(e) =>
-                    setIsPublished(e.target.value === "Published")
+                    setState((prev) => ({
+                      ...prev,
+                      isPublished: e.target.value === "Published",
+                    }))
                   }
                   variant="outlined"
                   sx={{ backgroundColor: "#1b1a45", color: "white" }}
@@ -648,7 +797,9 @@ const EditProduct = () => {
             variant="contained"
             color="primary"
             sx={{ mt: 2 }}
-            onClick={handleOpenAddVariantModal}
+            onClick={() =>
+              setState((prev) => ({ ...prev, addVariantModalOpen: true }))
+            }
           >
             Add Variant
           </Button>
@@ -659,90 +810,94 @@ const EditProduct = () => {
           fullWidth
           color="primary"
           sx={{ mt: 4 }}
-          onClick={handleUpdateProduct}
+          onClick={() => handleUpdateProduct()}
         >
           Update Product
         </Button>
 
         {/* modal */}
         <Dialog
-          open={editVariantModalOpen}
+          open={state.editVariantModalOpen}
           onClose={handleCloseModal}
-          scroll="paper" // Make the modal scrollable
+          scroll="paper"
         >
           <DialogTitle>Edit Variant</DialogTitle>
           <DialogContent dividers sx={{ maxHeight: "80vh", overflowY: "auto" }}>
-            {/* Set max height and enable vertical scroll */}
             <TextField
               label="Variant Name"
-              value={variantToEdit?.name || ""}
+              value={state.variantToEdit?.name || ""}
               onChange={(e) =>
-                setVariantToEdit({ ...variantToEdit, name: e.target.value })
-              }
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Original Price"
-              value={variantToEdit?.originalPrice || ""}
-              onChange={(e) =>
-                setVariantToEdit({
-                  ...variantToEdit,
-                  originalPrice: e.target.value,
-                })
+                setState((prev) => ({
+                  ...prev,
+                  variantToEdit: {
+                    ...prev.variantToEdit,
+                    name: e.target.value,
+                  },
+                }))
               }
               fullWidth
               sx={{ mb: 2 }}
             />
             <TextField
               label="Discount Price"
-              value={variantToEdit?.discountPrice || ""}
+              value={state.variantToEdit?.discountPrice || ""}
               onChange={(e) =>
-                setVariantToEdit({
-                  ...variantToEdit,
-                  discountPrice: e.target.value,
-                })
+                setState((prev) => ({
+                  ...prev,
+                  variantToEdit: {
+                    ...prev.variantToEdit,
+                    discountPrice: e.target.value,
+                  },
+                }))
               }
               fullWidth
               sx={{ mb: 2 }}
             />
             <TextField
               label="Stock"
-              value={variantToEdit?.stock || ""}
+              value={state.variantToEdit?.stock || ""}
               onChange={(e) =>
-                setVariantToEdit({
-                  ...variantToEdit,
-                  stock: e.target.value,
-                })
+                setState((prev) => ({
+                  ...prev,
+                  variantToEdit: {
+                    ...prev.variantToEdit,
+                    stock: e.target.value,
+                  },
+                }))
               }
               fullWidth
               sx={{ mb: 2 }}
             />
             <TextField
               label="Warranty"
-              value={variantToEdit?.warranty || ""}
+              value={state.variantToEdit?.warranty || ""}
               onChange={(e) =>
-                setVariantToEdit({
-                  ...variantToEdit,
-                  warranty: e.target.value,
-                })
+                setState((prev) => ({
+                  ...prev,
+                  variantToEdit: {
+                    ...prev.variantToEdit,
+                    warranty: e.target.value,
+                  },
+                }))
               }
               fullWidth
               sx={{ mb: 2 }}
             />
             <TextField
               label="Color"
-              value={variantToEdit?.color || ""}
+              value={state.variantToEdit?.color || ""}
               onChange={(e) =>
-                setVariantToEdit({
-                  ...variantToEdit,
-                  color: e.target.value,
-                })
+                setState((prev) => ({
+                  ...prev,
+                  variantToEdit: {
+                    ...prev.variantToEdit,
+                    color: e.target.value,
+                  },
+                }))
               }
               fullWidth
               sx={{ mb: 2 }}
             />
-            {/* Add more fields as necessary */}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseModal} color="secondary">
@@ -755,7 +910,7 @@ const EditProduct = () => {
         </Dialog>
         {/* add variant modal */}
         <Modal
-          open={addVariantModalOpen}
+          open={state.addVariantModalOpen}
           onClose={handleCloseAddVariantModal}
           aria-labelledby="add-variant-modal"
           aria-describedby="add-variant-modal-description"
@@ -766,8 +921,8 @@ const EditProduct = () => {
               backgroundColor: "#121212",
               color: "#ffffff",
               width: "50%",
-              height: "80vh", // Fixed height
-              overflowY: "auto", // Enable vertical scrolling
+              height: "80vh",
+              overflowY: "auto",
               margin: "auto",
               mt: "10%",
               borderRadius: "10px",
@@ -781,83 +936,73 @@ const EditProduct = () => {
               Add New Variant
             </Typography>
 
-            {/* Variant Name */}
             <TextField
-              fullWidth
               label="Variant Name"
-              value={newVariant.name}
+              value={state.newVariant.name}
               onChange={(e) =>
-                setNewVariant((prev) => ({ ...prev, name: e.target.value }))
-              }
-              variant="outlined"
-              InputLabelProps={{ style: { color: "white" } }}
-              inputProps={{ style: { color: "white" } }}
-              sx={{ backgroundColor: "#1b1a45", mt: 3 }}
-            />
-
-            {/* Original Price */}
-            <TextField
-              fullWidth
-              label="Original Price"
-              value={newVariant.originalPrice}
-              onChange={(e) =>
-                setNewVariant((prev) => ({
+                setState((prev) => ({
                   ...prev,
-                  originalPrice: e.target.value,
+                  newVariant: { ...prev.newVariant, name: e.target.value },
                 }))
               }
+              fullWidth
               variant="outlined"
               InputLabelProps={{ style: { color: "white" } }}
               inputProps={{ style: { color: "white" } }}
               sx={{ backgroundColor: "#1b1a45", mt: 3 }}
             />
 
-            {/* Discount Price */}
             <TextField
-              fullWidth
               label="Discount Price"
-              value={newVariant.discountPrice}
+              value={state.newVariant.discountPrice}
               onChange={(e) =>
-                setNewVariant((prev) => ({
+                setState((prev) => ({
                   ...prev,
-                  discountPrice: e.target.value,
+                  newVariant: {
+                    ...prev.newVariant,
+                    discountPrice: e.target.value,
+                  },
                 }))
               }
+              fullWidth
               variant="outlined"
               InputLabelProps={{ style: { color: "white" } }}
               inputProps={{ style: { color: "white" } }}
               sx={{ backgroundColor: "#1b1a45", mt: 3 }}
             />
 
-            {/* Stock */}
             <TextField
-              fullWidth
               label="Stock"
-              value={newVariant.stock}
+              value={state.newVariant.stock}
               onChange={(e) =>
-                setNewVariant((prev) => ({ ...prev, stock: e.target.value }))
+                setState((prev) => ({
+                  ...prev,
+                  newVariant: { ...prev.newVariant, stock: e.target.value },
+                }))
               }
-              variant="outlined"
-              InputLabelProps={{ style: { color: "white" } }}
-              inputProps={{ style: { color: "white" } }}
-              sx={{ backgroundColor: "#1b1a45", mt: 3 }}
-            />
-
-            {/* Color */}
-            <TextField
               fullWidth
-              label="Color"
-              value={newVariant.color}
-              onChange={(e) =>
-                setNewVariant((prev) => ({ ...prev, color: e.target.value }))
-              }
               variant="outlined"
               InputLabelProps={{ style: { color: "white" } }}
               inputProps={{ style: { color: "white" } }}
               sx={{ backgroundColor: "#1b1a45", mt: 3 }}
             />
 
-            {/* Variant Image Upload */}
+            <TextField
+              label="Color"
+              value={state.newVariant.color}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  newVariant: { ...prev.newVariant, color: e.target.value },
+                }))
+              }
+              fullWidth
+              variant="outlined"
+              InputLabelProps={{ style: { color: "white" } }}
+              inputProps={{ style: { color: "white" } }}
+              sx={{ backgroundColor: "#1b1a45", mt: 3 }}
+            />
+
             <Button
               variant="contained"
               component="label"
@@ -872,9 +1017,8 @@ const EditProduct = () => {
               />
             </Button>
 
-            {/* Display Uploaded Variant Images */}
             <Grid container spacing={1} sx={{ mt: 2 }}>
-              {newVariantImages.map((imgSrc, imgIndex) => (
+              {state.newVariantImages.map((imgSrc, imgIndex) => (
                 <Grid item xs={6} key={imgIndex}>
                   <img
                     src={imgSrc}
@@ -889,7 +1033,6 @@ const EditProduct = () => {
               ))}
             </Grid>
 
-            {/* Save Variant Button */}
             <Button
               fullWidth
               variant="contained"
@@ -897,15 +1040,18 @@ const EditProduct = () => {
               sx={{ mt: 3 }}
               onClick={() => {
                 // Add new variant with images
-                setProduct((prevProduct) => ({
-                  ...prevProduct,
-                  variants: [
-                    ...prevProduct.variants,
-                    {
-                      ...newVariant,
-                      images: newVariantImages, // Add the uploaded images to the variant
-                    },
-                  ],
+                setState((prev) => ({
+                  ...prev,
+                  product: {
+                    ...prev.product,
+                    variants: [
+                      ...prev.product.variants,
+                      {
+                        ...state.newVariant,
+                        images: state.newVariantImages,
+                      },
+                    ],
+                  },
                 }));
                 handleCloseAddVariantModal();
               }}
