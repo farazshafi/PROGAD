@@ -48,7 +48,7 @@ const AddProduct = () => {
     dualPlayConnection: false,
     appControl: false,
     waterResistant: false,
-    touchCountrol: false,
+    touchControl: false,
     multiDevice: false,
     variants: [],
   };
@@ -428,7 +428,7 @@ const AddProduct = () => {
         formData.append("appControl", productData.appControl);
         formData.append("waterResistant", productData.waterResistant);
         formData.append("multiDevice", productData.multiDevice);
-        formData.append("touchCountrol", productData.touchCountrol);
+        formData.append("touchControl", productData.touchControl);
       }
 
       if (productData.hasVariants) {
@@ -906,8 +906,8 @@ const AddProduct = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      name="touchCountrol"
-                      checked={productData.touchCountrol}
+                      name="touchControl"
+                      checked={productData.touchControl}
                       onChange={handleChange}
                       color="primary"
                     />

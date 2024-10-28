@@ -22,6 +22,8 @@ import {
   Modal,
   Link,
   Breadcrumbs,
+  Switch,
+  FormGroup,
 } from "@mui/material";
 import { MdCloudUpload, MdDelete, MdAdd } from "react-icons/md";
 import { getPublishedCategoriesApi } from "../../api/categoryApi";
@@ -38,19 +40,25 @@ const EditProduct = () => {
     updatedName: "",
     updatedDescription: "",
     allCategories: [],
-    selectedCategory: "",
-    originalPrice: "",
-    discountPrice: "",
+    updatedDiscountPrice: "",
     stock: "",
     warranty: "",
-    batteryLife: "",
-    bluetoothVersion: "",
-    noiseCancellation: false,
-    dualPlayConnection: false,
+    // if bluetooth supported
+    isBluetoothSupported: false,
+    updatedBatteryLife: "",
+    updatedBluetoothVersion: "",
+    updatedBluetoothRange: "",
+    updatedChargingTime: "",
+    updatedNoiseCancellation: false,
+    updatedDualPlayConnection: false,
+    updatedAppControl: false,
+    updatedWaterResistant: false,
+    updatedMultiDevice: false,
+    updatedtouchControl: false,
+
     isPublished: false,
+    // if it has vaiatns
     variants: [],
-    editVariantModalOpen: false,
-    variantToEdit: null,
     newVariantImages: [],
     newVariant: {
       name: "",
@@ -66,9 +74,11 @@ const EditProduct = () => {
       dualPlayConnection: false,
     },
     newVariantImages: [],
+    variantToEdit: null,
     editVariantModalOpen: false,
     variantToEdit: null,
     addVariantModalOpen: false,
+    editVariantModalOpen: false,
     newVariantAdded: false,
   });
 
@@ -164,6 +174,7 @@ const EditProduct = () => {
   const fetchProductDetails = async () => {
     try {
       const { data } = await getProductDetailsApi(id);
+      console.log("data fetched ", data);
       if (data.response) {
         toast.error(data.response.data.message);
       } else {
@@ -177,14 +188,21 @@ const EditProduct = () => {
           updatedName: data.name,
           updatedDescription: data.description,
           selectedCategory: data.category?.name,
-          originalPrice: data.originalPrice,
-          discountPrice: data.discountPrice,
+          updatedDiscountPrice: data.discountPrice,
           stock: data.totalStock,
           warranty: data.warranty,
-          batteryLife: data.batteryLife,
-          bluetoothVersion: data.bluetoothVersion,
-          noiseCancellation: data.noiseCancellation,
-          dualPlayConnection: data.dualPlayConnection,
+          // if bluetooth support
+          isBluetoothSupported: data.isBluetoothSupported,
+          updatedBatteryLife: data.batteryLife,
+          updatedBluetoothVersion: data.bluetoothVersion,
+          updatedBluetoothRange: data.bluetoothRange,
+          updatedChargingTime: data.chargingTime,
+          updatedNoiseCancellation: data.noiseCancellation,
+          updatedDualPlayConnection: data.dualPlayConnection,
+          updatedAppControl: data.appControl,
+          updatedWaterResistant: data.waterResistant,
+          updatedMultiDevice: data.multiDevice,
+          updatedtouchControl: data.touchControl,
           isPublished: data.isPublished,
         }));
       }
@@ -205,6 +223,7 @@ const EditProduct = () => {
       console.error("Error fetching categories:", err);
     }
   };
+
   const handleUpdateProduct = async () => {
     try {
       const updatedFields = {};
@@ -217,8 +236,8 @@ const EditProduct = () => {
         updatedFields.description = state.updatedDescription;
       }
 
-      if (state.price) {
-        updatedFields.price = state.price;
+      if (state.updatedDiscountPrice) {
+        updatedFields.discountPrice = state.updatedDiscountPrice;
       }
 
       if (state.stock) {
@@ -233,7 +252,6 @@ const EditProduct = () => {
         updatedFields.isPublished = state.isPublished;
       }
 
-      // Handle image update
       const updatedImages = [...state.updatedImages];
       if (
         updatedImages.length > 0 &&
@@ -241,21 +259,35 @@ const EditProduct = () => {
       ) {
         updatedFields.images = updatedImages;
       }
+      if(state.isBluetoothSupported){
+        console.log("condition true...")
+        updatedFields.isBluetoothSupported = state.isBluetoothSupported;
+        updatedFields.batteryLife = state.updatedBatteryLife;
+        updatedFields.bluetoothVersion = state.updatedBluetoothVersion;
+        updatedFields.bluetoothRange = state.updatedBluetoothRange;
+        updatedFields.chargingTime = state.updatedChargingTime;
+        updatedFields.noiseCancellation = state.updatedNoiseCancellation;
+        updatedFields.dualPlayConnection = state.updatedDualPlayConnection;
+        updatedFields.appControl = state.updatedAppControl;
+        updatedFields.waterResistant = state.updatedWaterResistant;
+        updatedFields.multiDevice = state.updatedMultiDevice;
+        updatedFields.touchControl = state.updatedtouchControl;
+      }
 
-      const updatedProduct =  JSON.stringify(updatedFields, null, 2)
+      const updatedProduct = JSON.stringify(updatedFields, null, 2);
       console.log("result : ", updatedProduct);
 
-      const result = await updateProductApi(id,JSON.parse(updatedProduct))
-      console.log("data : ", result)
-      if(result.response){
-        const {status} = result.response
-        if(status === 400 || status === 500){
-          toast.error(result.response.data.message)
+      const result = await updateProductApi(id, JSON.parse(updatedProduct));
+      console.log("data : ", result);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
           return;
         }
-      }else{
-        toast.success(result.data.message)
-        fetchProductDetails()
+      } else {
+        toast.success(result.data.message);
+        fetchProductDetails();
       }
 
       // Show success message
@@ -365,28 +397,33 @@ const EditProduct = () => {
         </Typography>
 
         <div role="presentation">
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          sx={{ color: "white", padding: "0 " }}
-        >
-          {/* Home Breadcrumb */}
-          <Link underline="hover" color="white" component={RouterLink} to="/admin_dashboard">
-            Admin Dashboard
-          </Link>
-
-          <Link
-            underline="hover"
-            color="white"
-            component={RouterLink}
-            to="/admin_dashboard"
+          <Breadcrumbs
+            aria-label="breadcrumb"
+            sx={{ color: "white", padding: "0 " }}
           >
-            Products
-          </Link>
+            {/* Home Breadcrumb */}
+            <Link
+              underline="hover"
+              color="white"
+              component={RouterLink}
+              to="/admin_dashboard"
+            >
+              Admin Dashboard
+            </Link>
 
-          {/* Product Details Breadcrumb */}
-          <Typography color="white">Product Edit</Typography>
-        </Breadcrumbs>
-      </div>
+            <Link
+              underline="hover"
+              color="white"
+              component={RouterLink}
+              to="/admin_dashboard"
+            >
+              Products
+            </Link>
+
+            {/* Product Details Breadcrumb */}
+            <Typography color="white">Product Edit</Typography>
+          </Breadcrumbs>
+        </div>
 
         <Grid container spacing={2} sx={{ mt: "20px" }}>
           {/* Image Upload & Image Display */}
@@ -496,32 +533,23 @@ const EditProduct = () => {
             />
           </Grid>
 
-          {/* category */}
+          {/* Discout Pice */}
           <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel style={{ color: "#ffffff" }}>Category</InputLabel>
-              <Select
-                value={state.selectedCategory}
-                onChange={(e) =>
-                  setState((prev) => ({
-                    ...prev,
-                    selectedCategory: e.target.value,
-                  }))
-                }
-                variant="outlined"
-                style={{ color: "#ffffff" }}
-                InputLabelProps={{ style: { color: "white" } }}
-                inputProps={{ style: { color: "white" } }}
-                sx={{ backgroundColor: "#1b1a45" }}
-              >
-                {state.allCategories &&
-                  state.allCategories.map((cat) => (
-                    <MenuItem key={cat._id} value={cat._id}>
-                      {cat.name}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
+            <TextField
+              fullWidth
+              label="Discout Price"
+              value={state.updatedDiscountPrice}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  updatedDiscountPrice: e.target.value,
+                }))
+              }
+              variant="filled"
+              InputLabelProps={{ style: { color: "white" } }}
+              inputProps={{ style: { color: "white" } }}
+              sx={{ backgroundColor: "#1b1a45" }}
+            />
           </Grid>
         </Grid>
 
@@ -674,20 +702,18 @@ const EditProduct = () => {
           </>
         )}
 
-        {/* if product support blutooth */}
-        {state.product.type === "Bluetooth" && (
+        {state.isBluetoothSupported && (
           <>
-            {/* // batteryl life and bluetooth version */}
             <Grid container spacing={2} sx={{ mt: 4 }}>
               <Grid item xs={6}>
                 <TextField
                   fullWidth
                   label="Battery Life"
-                  value={state.batteryLife}
+                  value={state.updatedBatteryLife}
                   onChange={(e) =>
                     setState((prev) => ({
                       ...prev,
-                      batteryLife: e.target.value,
+                      updatedBatteryLife: e.target.value,
                     }))
                   }
                   variant="outlined"
@@ -701,11 +727,11 @@ const EditProduct = () => {
                 <TextField
                   fullWidth
                   label="Bluetooth Version"
-                  value={state.bluetoothVersion}
+                  value={state.updatedBluetoothVersion}
                   onChange={(e) =>
                     setState((prev) => ({
                       ...prev,
-                      bluetoothVersion: e.target.value,
+                      updatedBluetoothVersion: e.target.value,
                     }))
                   }
                   variant="outlined"
@@ -715,17 +741,57 @@ const EditProduct = () => {
                 />
               </Grid>
             </Grid>
+
+            {/* bluetooth range and charging time */}
+            <Grid container spacing={2} sx={{ mt: 4 }}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="bluetooth range "
+                  value={state.updatedBluetoothRange}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      updatedBluetoothRange: e.target.value,
+                    }))
+                  }
+                  variant="outlined"
+                  InputLabelProps={{ style: { color: "white" } }}
+                  inputProps={{ style: { color: "white" } }}
+                  sx={{ backgroundColor: "#1b1a45" }}
+                />
+              </Grid>
+
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="charging time"
+                  value={state.updatedChargingTime}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      updatedChargingTime: e.target.value,
+                    }))
+                  }
+                  variant="outlined"
+                  InputLabelProps={{ style: { color: "white" } }}
+                  inputProps={{ style: { color: "white" } }}
+                  sx={{ backgroundColor: "#1b1a45" }}
+                />
+              </Grid>
+            </Grid>
+
             {/* 2 check box */}
             <Grid container spacing={2} sx={{ mt: 4 }}>
               <Grid item xs={6}>
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={state.noiseCancellation}
+                      checked={state.updatedNoiseCancellation}
                       onChange={(e) =>
                         setState((prev) => ({
                           ...prev,
-                          noiseCancellation: e.target.checked,
+                          updatedNoiseCancellation: e.target.checked,
                         }))
                       }
                       sx={{
@@ -745,11 +811,11 @@ const EditProduct = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={state.dualPlayConnection}
+                      checked={state.updatedDualPlayConnection}
                       onChange={(e) =>
                         setState((prev) => ({
                           ...prev,
-                          dualPlayConnection: e.target.checked,
+                          updatedDualPlayConnection: e.target.checked,
                         }))
                       }
                       sx={{
@@ -764,28 +830,100 @@ const EditProduct = () => {
                   sx={{ color: "white" }}
                 />
               </Grid>
-            </Grid>
-            {/* isPublished */}
-            <Grid sx={{ mt: 4 }} item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel style={{ color: "white" }}>
-                  Publish Status
-                </InputLabel>
-                <Select
-                  value={state.isPublished ? "Published" : "Unpublished"}
-                  onChange={(e) =>
-                    setState((prev) => ({
-                      ...prev,
-                      isPublished: e.target.value === "Published",
-                    }))
+              <Grid item xs={6}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={state.updatedAppControl}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          updatedAppControl: e.target.checked,
+                        }))
+                      }
+                      sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                          color: "white",
+                        },
+                      }}
+                    />
                   }
-                  variant="outlined"
-                  sx={{ backgroundColor: "#1b1a45", color: "white" }}
-                >
-                  <MenuItem value="Published">Published</MenuItem>
-                  <MenuItem value="Unpublished">Unpublished</MenuItem>
-                </Select>
-              </FormControl>
+                  label="App control"
+                  sx={{ color: "white" }}
+                />
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={state.updatedtouchControl}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          updatedtouchControl: e.target.checked,
+                        }))
+                      }
+                      sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                  }
+                  label="Touch control"
+                  sx={{ color: "white" }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={state.updatedWaterResistant}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          updatedWaterResistant: e.target.checked,
+                        }))
+                      }
+                      sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                  }
+                  label="Water resistance"
+                  sx={{ color: "white" }}
+                />
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={state.updatedMultiDevice}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          updatedMultiDevice: e.target.checked,
+                        }))
+                      }
+                      sx={{
+                        color: "white",
+                        "&.Mui-checked": {
+                          color: "white",
+                        },
+                      }}
+                    />
+                  }
+                  label="Multi device"
+                  sx={{ color: "white" }}
+                />
+              </Grid>
             </Grid>
           </>
         )}
@@ -803,6 +941,27 @@ const EditProduct = () => {
           >
             Add Variant
           </Button>
+        </Grid>
+
+        {/* isPublished */}
+        <Grid sx={{ mt: 4 }} item xs={6}>
+          <FormControl fullWidth>
+            <InputLabel style={{ color: "white" }}>Publish Status</InputLabel>
+            <Select
+              value={state.isPublished ? "Published" : "Unpublished"}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  isPublished: e.target.value === "Published",
+                }))
+              }
+              variant="outlined"
+              sx={{ backgroundColor: "#1b1a45", color: "white" }}
+            >
+              <MenuItem value="Published">Published</MenuItem>
+              <MenuItem value="Unpublished">Unpublished</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
 
         <Button

@@ -292,6 +292,18 @@ export const updateProduct = asyncHandler(async (req, res) => {
     stock,
     warranty,
     isPublished,
+    // if bluetooth supports
+    isBluetoothSupported,
+    noiseCancellation,
+    dualPlayConnection,
+    waterResistant,
+    touchControl,
+    multiDevice,
+    appControl,
+    batteryLife,
+    bluetoothVersion,
+    bluetoothRange,
+    chargingTime,
   } = req.body;
   console.log("update product", req.body)
   try {
@@ -303,7 +315,22 @@ export const updateProduct = asyncHandler(async (req, res) => {
       product.totalStock = stock ?? product.totalStock;
       product.warranty = warranty ?? product.warranty;
       product.isPublished = isPublished ?? product.isPublished;
-
+      // if bluetooth support
+      if(isBluetoothSupported){
+        product.isBluetoothSupported = isBluetoothSupported?? product.isBluetoothSupported;
+        product.batteryLife = batteryLife?? product.batteryLife;
+        product.bluetoothVersion = bluetoothVersion?? product.bluetoothVersion;
+        product.bluetoothRange = bluetoothRange?? product.bluetoothRange;
+        product.chargingTime = chargingTime?? product.chargingTime;
+        product.noiseCancellation = noiseCancellation?? product.noiseCancellation;
+        product.dualPlayConnection = dualPlayConnection?? product.dualPlayConnection;
+        product.appControl = appControl?? product.appControl;
+        product.waterResistant = waterResistant?? product.waterResistant;
+        product.touchControl = touchControl?? product.touchControl;
+        product.multiDevice = multiDevice?? product.multiDevice;
+      }else{
+        product.isBluetoothSupported = isBluetoothSupported?? product.isBluetoothSupported;
+      }
       await product.save();
       res.status(200).json({ message: "Product updated successfully" });
     } else {
