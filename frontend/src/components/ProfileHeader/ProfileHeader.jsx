@@ -10,14 +10,24 @@ import {
 } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { styled } from "@mui/material/styles";
-import { FaShoppingCart, FaHeart, FaLock, FaAddressCard, FaUser } from "react-icons/fa";
+import {
+  FaShoppingCart,
+  FaHeart,
+  FaLock,
+  FaAddressCard,
+  FaUser,
+} from "react-icons/fa";
 import UserProfileCard from "../UserProfileCard/UserProfileCard";
+import { useSelector } from "react-redux";
+import { selectedUser } from "../../features/user/userSlice";
 
 const Input = styled("input")({
   display: "none",
 });
 
 const ProfileHeader = () => {
+  const user = useSelector(selectedUser);
+
   const [tabIndex, setTabIndex] = useState(0);
 
   const handleTabChange = (event, newIndex) => {
@@ -69,8 +79,8 @@ const ProfileHeader = () => {
             alt="Profile Picture"
           />
           <Box>
-            <Typography variant="h5">Faraz shafi</Typography>
-            <Typography variant="subtitle1">Customer</Typography>
+            <Typography variant="h5">{user.name}</Typography>
+            <Typography variant="subtitle1">{user.email}</Typography>
           </Box>
         </Box>
         {/* Upload Button */}
@@ -122,7 +132,7 @@ const ProfileHeader = () => {
 
       {/* Content Section */}
       <Box mt={3}>
-        {tabIndex === 0 && <UserProfileCard />}
+        {tabIndex === 0 && <UserProfileCard user={user}/>}
         {tabIndex === 1 && <Typography>Address content goes here.</Typography>}
         {tabIndex === 2 && (
           <Typography>Reset Password content goes here.</Typography>

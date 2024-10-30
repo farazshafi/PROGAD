@@ -12,11 +12,9 @@ import {
 } from "@mui/material";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
-
-const UserProfileCard = () => {
+const UserProfileCard = ({ user }) => {
   return (
     <>
-     
       <Card
         variant="outlined"
         sx={{
@@ -51,15 +49,32 @@ const UserProfileCard = () => {
               paddingLeft: "16px",
             }}
           >
-            <Typography variant="h6">John Doe</Typography>
+            <Typography variant="h6">{user.name}</Typography>
             <VerifiedIcon color="primary" />
           </Box>
           <CardContent>
-            <Typography variant="body2">Email: johndoe@example.com</Typography>
-            <Typography variant="body2">Phone: +1234567890</Typography>
-            <Typography variant="body2">Country: USA</Typography>
-            <Typography variant="body2">City: New York</Typography>
-            <Typography variant="body2">Address: 123 Main St</Typography>
+            <Typography sx={{ marginTop: "5px" }} variant="body2">
+              Email: {user.email}
+            </Typography>
+            {user.phone && (
+              <Typography sx={{ marginTop: "5px" }} variant="body2">
+                Phone: {user.phone}
+              </Typography>
+            )}
+            {user.address && (
+              <>
+                <Typography sx={{ marginTop: "5px" }} variant="body2">
+                  Country: India
+                </Typography>
+
+                <Typography sx={{ marginTop: "5px" }} variant="body2">
+                  City: New York
+                </Typography>
+                <Typography sx={{ marginTop: "5px" }} variant="body2">
+                  Address: 123 Main St
+                </Typography>
+              </>
+            )}
           </CardContent>
           <CardActions>
             <Button
