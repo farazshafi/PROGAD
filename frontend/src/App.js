@@ -11,6 +11,7 @@ import OfferPage from "./pages/user/OfferPage/OfferPage";
 import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage/ProductDetailsPage";
 import CartPage from "./pages/user/CartPage/CartPage";
+import ProfilePage from "./pages/user/ProfilePage/ProfilePage";
 import CartProcess from "./pages/user/CartProcess/CartProcess";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,7 +36,8 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product_details/:id" element={<ProductDetailsPage />} />
-          <Route path="/cart_process" element={<CartProcess />} />
+          <Route path="/cart_process" element={<CartProcess />} /> 
+          <Route path="/profile" element={<ProfilePage />} />
           {/* admin route */}
           <Route path="/admin_login" element={<AdminLogin />} />
           <Route path="/admin_dashboard" element={<AdminDashboard />} />
