@@ -49,7 +49,7 @@ const UserProfileCard = ({ user }) => {
               paddingLeft: "16px",
             }}
           >
-            <Typography variant="h6">{user.name}</Typography>
+            <Typography variant="h6">{user?.name}</Typography>
             <VerifiedIcon color="primary" />
           </Box>
           <CardContent>

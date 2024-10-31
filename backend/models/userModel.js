@@ -46,6 +46,12 @@ const userSchema = mongoose.Schema(
       default: null,
       unique: true,
     },
+    addresses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address",
+      },
+    ] 
     // profileImage: {
     //   type: String,
     //   default: null, //defautl iamge url ,

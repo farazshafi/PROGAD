@@ -2,9 +2,9 @@ import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import generageTokens from "../utils/generateToken.js";
 import nodemailer from "nodemailer";
-import crypto from "crypto";
 import dotenv from "dotenv";
 import generateTokens from "../utils/generateToken.js";
+import Address from "../models/addressModel.js";
 
 dotenv.config();
 
@@ -80,7 +80,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
     await transporter.sendMail(mailOptions);
     setTimeout(async () => {
       await User.updateOne({ _id: user._id }, { $unset: { otp: "" } });
-    },  1 * 60 * 1000);
+    }, 1 * 60 * 1000);
     res.status(201).json({
       message: "Please verify your OTP.",
       user: {
@@ -114,7 +114,9 @@ export const verifyOtp = asyncHandler(async (req, res) => {
   }
 
   if (!userExist.otp) {
-    return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+    return res
+      .status(400)
+      .json({ message: "OTP has expired. Please request a new one." });
   }
 
   if (Number(userExist.otp) !== otp) {
@@ -136,7 +138,10 @@ export const login = asyncHandler(async (req, res) => {
   let userExist;
 
   if (googleId) {
-    userExist = await User.findOne({ googleId });
+    userExist = await User.findOne({ googleId }).populate({
+      path: 'address',
+      select: '_id type street apartment city state zip country phoneNumber email',
+    });
     if (!userExist) {
       userExist = await User.findOne({ email });
       if (userExist) {
@@ -162,20 +167,24 @@ export const login = asyncHandler(async (req, res) => {
         isAdmin: userExist.isAdmin,
         isVerified: userExist.isVerified,
         phoneNumber: userExist.phoneNumber,
+        addresses: userExist.addresses || null,
         token: generateTokens(userExist._id),
       },
     });
   }
 
-  userExist = await User.findOne({ email });
+  userExist = await User.findOne({ email }).populate({
+    path: 'addresses',
+    select: '_id type street apartment city state zip country phoneNumber email',
+  });
   if (!userExist) {
     return res.status(400).json({ message: "User does not exist" });
   }
 
   if (!userExist.isVerified) {
     const otp = generateOTP();
-    userExist.otp = otp
-    await userExist.save()
+    userExist.otp = otp;
+    await userExist.save();
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -187,7 +196,7 @@ export const login = asyncHandler(async (req, res) => {
       await transporter.sendMail(mailOptions);
       setTimeout(async () => {
         await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
-      },  1 * 60 * 1000);
+      }, 1 * 60 * 1000);
       res.status(201).json({
         message: "login success",
         warning: "Please verify your OTP.",
@@ -199,6 +208,7 @@ export const login = asyncHandler(async (req, res) => {
           isAdmin: userExist.isAdmin,
           isVerified: userExist.isVerified,
           phoneNumber: userExist.phoneNumber,
+          addresses: userExist.addresses || null,
           token: generateTokens(),
         },
       });
@@ -225,14 +235,13 @@ export const login = asyncHandler(async (req, res) => {
       role: userExist.role,
       isAdmin: userExist.isAdmin,
       isVerified: userExist.isVerified,
+      addresses: userExist.addresses || null,
       token: generateTokens(userExist._id),
     },
   });
 });
 
-
-
-// @desc    Verify OTP
+// @desc    Resend OTP
 // @route   POST /api/user/verify_otp
 // @access  public
 export const resendOtp = asyncHandler(async (req, res) => {
@@ -241,28 +250,27 @@ export const resendOtp = asyncHandler(async (req, res) => {
   if (!userExist) {
     return res.status(400).json({ message: "User does not exist" });
   }
-  if(userExist.isVerified){
+  if (userExist.isVerified) {
     return res.status(400).json({ message: "User already verified" });
   }
   const otp = generateOTP();
   userExist.otp = otp;
-  await userExist.save()
+  await userExist.save();
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Your OTP for account verification",
     text: `Your OTP for verifying your account is ${otp}`,
   };
-  try{
+  try {
     await transporter.sendMail(mailOptions);
     setTimeout(async () => {
       await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
     }, 1 * 60 * 1000);
-  
+
     res.status(200).json({ message: "OTP resent successfully" });
-  }catch(err){
+  } catch (err) {
     console.error("Error sending OTP:", err);
     res.status(400).json({ message: "Error sending OTP", error: err.message });
   }
-
 });

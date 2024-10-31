@@ -17,7 +17,8 @@ const userSlice = createSlice({
         _id: action.payload._id,
         isAdmin: action.payload.isAdmin,
         phoneNumber: action.payload.phoneNumber,
-        isVerified:action.payload.isVerified,
+        addresses: action.payload.addresses || [],
+        isVerified: action.payload.isVerified,
         token: action.payload.token,
       };
       localStorage.setItem("user", JSON.stringify(state.user));
@@ -30,9 +31,13 @@ const userSlice = createSlice({
       state.user = null;
       localStorage.removeItem("user");
     },
+    setAllAddresses(state,action){
+      state.user.addresses = action.payload;
+      localStorage.setItem("user", JSON.stringify(state.user));
+    }
   },
 });
 
 export const selectedUser = (state) => state.user.user;
-export const { setUser, verifyUser, logoutUser } = userSlice.actions;
+export const { setUser, verifyUser, logoutUser, setAllAddresses } = userSlice.actions;
 export default userSlice.reducer;

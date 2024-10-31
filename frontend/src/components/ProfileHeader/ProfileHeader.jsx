@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -20,6 +20,8 @@ import {
 import UserProfileCard from "../UserProfileCard/UserProfileCard";
 import { useSelector } from "react-redux";
 import { selectedUser } from "../../features/user/userSlice";
+import AddressCard from "../AddessCard/AddessCard";
+import { toast } from "react-toastify";
 
 const Input = styled("input")({
   display: "none",
@@ -79,8 +81,12 @@ const ProfileHeader = () => {
             alt="Profile Picture"
           />
           <Box>
-            <Typography variant="h5">{user.name}</Typography>
-            <Typography variant="subtitle1">{user.email}</Typography>
+            <Typography variant="h5" color="black">
+              {user.name}
+            </Typography>
+            <Typography variant="subtitle1" color="black">
+              {user.email}
+            </Typography>
           </Box>
         </Box>
         {/* Upload Button */}
@@ -117,7 +123,6 @@ const ProfileHeader = () => {
         scrollButtons="auto"
         sx={{
           display: "flex",
-          //   justifyContent: "end",
           marginTop: 2,
           "& .MuiTabs-indicator": {
             backgroundColor: "#FF7F11",
@@ -132,11 +137,11 @@ const ProfileHeader = () => {
 
       {/* Content Section */}
       <Box mt={3}>
-        {tabIndex === 0 && <UserProfileCard user={user}/>}
-        {tabIndex === 1 && <Typography>Address content goes here.</Typography>}
-        {tabIndex === 2 && (
+        {tabIndex === 0 && <UserProfileCard user={user} />}
+        {tabIndex === 1 && (
           <Typography>Reset Password content goes here.</Typography>
         )}
+        {tabIndex === 2 && <AddressCard />}
       </Box>
     </Box>
   );
