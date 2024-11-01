@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header/Header";
 import headphoneImg from "../../../assets/images/products/headphone.jpeg";
 import { Box, Divider, Typography } from "@mui/material";
@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   decrementQuantity,
   incrementQuantity,
+  removeFromCart,
   selectedCart,
 } from "../../../features/user/cartSlice";
 
@@ -18,6 +19,44 @@ const CartPage = () => {
 
   const dispatch = useDispatch();
 
+  const [summary, setSummary] = useState({
+    summary: 0,
+    tax: 0,
+    subTotal: 0,
+    total: 0,
+    delivery: 0,
+    offer: 0,
+    taxPercent: "",
+    offerPercentage: "",
+  });
+
+  const calculateSummary = () => {
+    const subTotal = cartItems.reduce(
+      (total, item) => total + item.quantity * item.price,
+      0
+    );
+    const taxRate = 0.035; //3.5%
+    const offerDiscount = 0.2; // 20%
+
+    const tax = subTotal * taxRate;
+    console.log("tax rate: " + tax);
+    const discount = subTotal * offerDiscount;
+    const deliveryFee = subTotal > 500 ? 0 : 40;
+    const total = (subTotal + tax + deliveryFee - discount).toFixed(2);
+    const taxPercentage = (taxRate * 100).toFixed(1) + "%";
+    const offerPercentage = (offerDiscount * 100).toFixed(0) + "%";
+
+    setSummary({
+      subTotal,
+      tax,
+      delivery: deliveryFee,
+      discount,
+      total,
+      taxPercent: taxPercentage,
+      offerPercentage,
+    });
+  };
+
   const handleQuantityChange = (e, item) => {
     if (e.target.value === "+") {
       dispatch(incrementQuantity(item.id));
@@ -25,6 +64,14 @@ const CartPage = () => {
       dispatch(decrementQuantity(item.id));
     }
   };
+
+  const handleDelete = (item) => {
+    dispatch(removeFromCart(item.id));
+  };
+
+  useEffect(() => {
+    calculateSummary();
+  }, [cartItems]);
 
   return (
     <>
@@ -38,12 +85,14 @@ const CartPage = () => {
             color: "white",
           }}
         >
-          Your shopping cart (4)
+          {cartItems.length > 0
+            ? `Your shopping cart (${cartItems.length})`
+            : "Your shopping cart is empty"}
         </Typography>
         <Row style={{ marginTop: "30px" }}>
           {/* cart items */}
           <Col sm={12} md={6} lg={8}>
-            {cartItems.length > 0 ? (
+            {cartItems.length > 0 &&
               cartItems.map((item) => (
                 <Row key={item.id} style={{ marginBottom: "20px" }}>
                   <Col lg={2} md={2} sm={2}>
@@ -68,6 +117,8 @@ const CartPage = () => {
                       }}
                     >
                       {item.name}
+                      <br />
+                      {item.price}
                     </Typography>
                     <Typography
                       sx={{
@@ -83,7 +134,9 @@ const CartPage = () => {
                   <Col lg={1} md={1} sm={1}>
                     <div className="cart-item-qty-div">
                       <button
-                      style={{backgroundColor:item.quantity === 1 ? "gray":""}}
+                        style={{
+                          backgroundColor: item.quantity === 1 ? "gray" : "",
+                        }}
                         disabled={item.quantity === 1}
                         onClick={(e) => handleQuantityChange(e, item)}
                         value="-"
@@ -94,7 +147,9 @@ const CartPage = () => {
                         {item.quantity}
                       </Typography>
                       <button
-                      style={{backgroundColor:item.quantity === 10 ? "gray":""}}
+                        style={{
+                          backgroundColor: item.quantity === 10 ? "gray" : "",
+                        }}
                         disabled={item.quantity === 10}
                         onClick={(e) => handleQuantityChange(e, item)}
                         value="+"
@@ -121,15 +176,17 @@ const CartPage = () => {
                           color: "white",
                         }}
                       >
-                        Rs. {item.price.toLocaleString()}
+                        Rs. {Number(item.quantity * item.price)}
                       </Typography>
-                      <DeleteIcon
-                        sx={{
-                          color: "white",
-                          marginLeft: "20px",
-                          cursor: "pointer",
-                        }}
-                      />
+                      <span onClick={() => handleDelete(item)}>
+                        <DeleteIcon
+                          sx={{
+                            color: "white",
+                            marginLeft: "20px",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </span>
                     </div>
                   </Col>
                   <Divider
@@ -141,82 +198,82 @@ const CartPage = () => {
                     }}
                   />
                 </Row>
-              ))
-            ) : (
-              <>
-                <Typography>Cart is Empty</Typography>
-              </>
-            )}
+              ))}
           </Col>
 
           {/* product summary details */}
-          <Col
-            style={{
-              backgroundColor: "#333",
-              padding: "20px",
-              borderRadius: "8px",
-            }}
-          >
-            {/* Coupon Input Section */}
-            <div
-              className="cart-coupoun"
+          {cartItems.length > 0 && (
+            <Col
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "20px",
+                backgroundColor: "#333",
+                padding: "20px",
+                borderRadius: "8px",
               }}
             >
-              <input
-                type="text"
-                placeholder="Enter coupon code"
+              {/* Coupon Input Section */}
+              <div
+                className="cart-coupoun"
                 style={{
-                  flex: 1,
-                  padding: "10px",
-                  borderRadius: "5px",
-                  border: "none",
-                  marginRight: "10px",
-                  fontSize: "16px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "20px",
                 }}
-              />
-              <OurButton text="Apply" />
-            </div>
+              >
+                <input
+                  type="text"
+                  placeholder="Enter coupon code"
+                  style={{
+                    flex: 1,
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "none",
+                    marginRight: "10px",
+                    fontSize: "16px",
+                  }}
+                />
+                <OurButton text="Apply" />
+              </div>
 
-            {/* Price Summary Section */}
-            <div
-              className="cart-total-summary"
-              style={{ color: "white", fontFamily: "Istok Web" }}
-            >
+              {/* Price Summary Section */}
               <div
-                className="d-flex"
-                style={{
-                  justifyContent: "space-between",
-                  marginBottom: "10px",
-                }}
+                className="cart-total-summary"
+                style={{ color: "white", fontFamily: "Istok Web" }}
               >
-                <p>Subtotal:</p>
-                <h6>Rs. 32,400</h6>
-              </div>
-              <div
-                className="d-flex"
-                style={{
-                  justifyContent: "space-between",
-                  marginBottom: "10px",
-                }}
-              >
-                <p>Tax:</p>
-                <h6>3.5%</h6>
-              </div>
-              <div
-                className="d-flex"
-                style={{
-                  justifyContent: "space-between",
-                  marginBottom: "10px",
-                }}
-              >
-                <p>Delivery fee:</p>
-                <h6>Rs. 40</h6>
-              </div>
-              <div
+                <div
+                  className="d-flex"
+                  style={{
+                    justifyContent: "space-between",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <p>Subtotal:</p>
+                  <h6>{summary.subTotal}</h6>
+                </div>
+                <div
+                  className="d-flex"
+                  style={{
+                    justifyContent: "space-between",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <p>Tax:</p>
+                  <h6>{summary.taxPercent}</h6>
+                </div>
+                <div
+                  className="d-flex"
+                  style={{
+                    justifyContent: "space-between",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <p>Delivery fee:</p>
+                  {summary.total > 500 ? (
+                    "Free"
+                  ) : (
+                    <h6>Rs. {summary.delivery}</h6>
+                  )}
+                </div>
+                {/* <div
                 className="d-flex"
                 style={{
                   justifyContent: "space-between",
@@ -225,38 +282,39 @@ const CartPage = () => {
               >
                 <p>Coupon Discount:</p>
                 <h6>20%</h6>
-              </div>
-              <div
-                className="d-flex"
-                style={{
-                  justifyContent: "space-between",
-                  marginBottom: "10px",
-                }}
-              >
-                <p>Offer Discount:</p>
-                <h6>30%</h6>
+              </div> */}
+                <div
+                  className="d-flex"
+                  style={{
+                    justifyContent: "space-between",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <p>Offer Discount:</p>
+                  <h6>{summary.offerPercentage}</h6>
+                </div>
+
+                {/* Total Amount */}
+                <div
+                  className="d-flex"
+                  style={{
+                    justifyContent: "space-between",
+                    marginTop: "20px",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}
+                >
+                  <p>TOTAL</p>
+                  <h6 style={{ color: "#FF7F11" }}>{summary.total}</h6>
+                </div>
               </div>
 
-              {/* Total Amount */}
-              <div
-                className="d-flex"
-                style={{
-                  justifyContent: "space-between",
-                  marginTop: "20px",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                }}
-              >
-                <p>TOTAL</p>
-                <h6 style={{ color: "#FF7F11" }}>Rs. 23,300</h6>
+              {/* Checkout Button */}
+              <div style={{ marginTop: "30px" }}>
+                <OurButton w="100" text="PROCEED TO CHECKOUT" />
               </div>
-            </div>
-
-            {/* Checkout Button */}
-            <div style={{ marginTop: "30px" }}>
-              <OurButton w="100" text="PROCEED TO CHECKOUT" />
-            </div>
-          </Col>
+            </Col>
+          )}
         </Row>
       </Box>
     </>
