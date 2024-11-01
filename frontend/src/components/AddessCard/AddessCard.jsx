@@ -14,9 +14,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
-import { createAddressApi, getAllAddressesApi } from "../../api/addressApi";
+import {
+  createAddressApi,
+  editAddressApi,
+  getAllAddressesApi,
+} from "../../api/addressApi";
 import { useSelector, useDispatch } from "react-redux";
-import { selectedUser, setAddress, setAllAddresses } from "../../features/user/userSlice";
+import { selectedUser, setAllAddresses } from "../../features/user/userSlice";
 
 const AddressCard = () => {
   const user = useSelector(selectedUser);
@@ -24,6 +28,8 @@ const AddressCard = () => {
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editAddress, setEditAddress] = useState(null);
   const [newAddress, setNewAddress] = useState({
     type: "",
     street: "",
@@ -39,9 +45,17 @@ const AddressCard = () => {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const handleEditClose = () => {
+    setEditOpen(false);
+    setEditAddress(null);
+  };
 
   const handleChange = (e) => {
     setNewAddress((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleEditChange = (e) => {
+    setEditAddress((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleAddAddress = async () => {
@@ -83,7 +97,7 @@ const AddressCard = () => {
           return;
         }
       }
-      fetchAllUserAddresses()
+      fetchAllUserAddresses();
       toast.success(result.data.message);
       handleClose(true);
     } catch (error) {
@@ -92,10 +106,50 @@ const AddressCard = () => {
     }
   };
 
+  const handleEditAddress = async () => {
+    if (
+      !editAddress.street.trim() ||
+      !editAddress.city.trim() ||
+      !editAddress.state.trim() ||
+      !editAddress.country.trim() ||
+      !editAddress.type
+    ) {
+      toast.error("All fields are required.");
+      return;
+    }
+
+    if (!/^\d+$/.test(editAddress.zip)) {
+      toast.error("Zip code must be a number.");
+      return;
+    }
+
+    if (!/^\+?\d+$/.test(editAddress.phoneNumber)) {
+      toast.error("Phone number must be numeric.");
+      return;
+    }
+
+    try {
+      const result = await editAddressApi(editAddress._id, editAddress);
+      if (
+        result.response &&
+        (result.response.status === 400 || result.response.status === 500)
+      ) {
+        toast.error(result.response.data.message);
+        return;
+      }
+      fetchAllUserAddresses();
+      toast.success(result.data.message);
+      handleEditClose();
+    } catch (error) {
+      toast.error(error);
+      console.error("Error editing address:", error);
+    }
+  };
+
   const fetchAllUserAddresses = async () => {
     try {
       const result = await getAllAddressesApi(user._id);
-      console.log("result", result.data)
+      console.log("result", result.data);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -104,7 +158,7 @@ const AddressCard = () => {
           return;
         }
       }
-      dispatch(setAllAddresses(result.data))
+      dispatch(setAllAddresses(result.data));
     } catch (err) {
       toast.error(err);
       console.error("Error fetching user addresses:", err);
@@ -241,7 +295,122 @@ const AddressCard = () => {
           </Button>
         </Box>
       </Modal>
-      
+
+      {/* Modal for Edit Address */}
+      <Modal
+        open={editOpen}
+        onClose={handleEditClose}
+        aria-labelledby="modal-title"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            maxHeight: "80vh",
+            overflowY: "auto",
+            bgcolor: "background.paper",
+            p: 4,
+            borderRadius: 2,
+            boxShadow: 24,
+          }}
+        >
+          <Box display="flex" justifyContent="space-between" mb={2}>
+            <Typography id="modal-title" variant="h6">
+              Edit Address
+            </Typography>
+            <IconButton onClick={handleEditClose}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <TextField
+            label="Type"
+            name="type"
+            value={editAddress?.type}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Street"
+            name="street"
+            value={editAddress?.street}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Apartment"
+            name="apartment"
+            value={editAddress?.apartment}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="City"
+            name="city"
+            value={editAddress?.city}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="State"
+            name="state"
+            value={editAddress?.state}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Zip code"
+            name="zip"
+            type="number"
+            value={editAddress?.zip}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Country"
+            name="country"
+            value={editAddress?.country}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            type="number"
+            label="Phone Number"
+            name="phoneNumber"
+            value={editAddress?.phoneNumber}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Email"
+            name="email"
+            value={editAddress?.email}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+
+          <Button
+            onClick={handleEditAddress}
+            variant="contained"
+            sx={{ background: "black", color: "white", mt: 2 }}
+            fullWidth
+          >
+            Update Address
+          </Button>
+        </Box>
+      </Modal>
+
       {user.addresses && (
         <Grid sx={{ marginTop: "20px" }} container spacing={2}>
           {user.addresses.map((address) => (
@@ -252,9 +421,13 @@ const AddressCard = () => {
                   padding: 2,
                   borderRadius: 2,
                   position: "relative",
-                  background:
-                    "radial-gradient(circle, rgba(255,200,152,1) 0%, rgba(255,127,17,1) 100%)",
-                  color: "white",
+                  background: "white",
+                  color: "black",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                    boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
+                  },
                 }}
               >
                 <Box
@@ -264,9 +437,18 @@ const AddressCard = () => {
                   display="flex"
                   gap={1}
                 >
-                  <IconButton color="inherit" size="small" aria-label="edit">
+                  <IconButton
+                    color="inherit"
+                    size="small"
+                    aria-label="edit"
+                    onClick={() => {
+                      setEditAddress(address);
+                      setEditOpen(true);
+                    }}
+                  >
                     <EditIcon />
                   </IconButton>
+
                   <IconButton color="inherit" size="small" aria-label="delete">
                     <DeleteIcon />
                   </IconButton>
@@ -286,8 +468,8 @@ const AddressCard = () => {
                     {address.city}, {address.state} {address.zipCode}
                   </Typography>
                   <Typography variant="body2">{address.country}</Typography>
-                  <Typography variant="body2" mt={1}>
-                    Phone: {address.phone}
+                  <Typography variant="body2">
+                    Phone: {address.phoneNumber}
                   </Typography>
                   <Typography variant="body2">
                     Email: {address.email}

@@ -5,7 +5,7 @@ const API_URL = `http://localhost:5000/api/address/`;
 export const createAddressApi = async (id, addressDetails) => {
   try {
     const token = JSON.parse(localStorage.getItem("user")).token;
-    
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -23,18 +23,35 @@ export const createAddressApi = async (id, addressDetails) => {
   }
 };
 
-
 export const getAllAddressesApi = async (id) => {
   try {
     const token = JSON.parse(localStorage.getItem("user")).token;
-    
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
-    const data = await axios.get(
-      `${API_URL}user/${id}/all_addresses`,
+    const data = await axios.get(`${API_URL}user/${id}/all_addresses`, config);
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};
+
+export const editAddressApi = async (id, address) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.patch(
+      `${API_URL}edit_address/${id}`,
+      address,
       config
     );
     return data;

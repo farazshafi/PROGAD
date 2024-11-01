@@ -84,6 +84,49 @@ export const createAddress = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    edit address
+// @route   PATCH /api/address/edit_address/:id
+// @access  private
+export const editAddress = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {
+    type,
+    street,
+    apartment,
+    city,
+    state,
+    zip,
+    country,
+    phoneNumber,
+    email,
+  } = req.body;
+
+  try {
+    const address = await Address.findById(id)
+    if (!address) {
+      return res.status(404).json({ message: "Address not found" });
+    }
+    address.type = type || address.type
+    address.street = street || address.street
+    address.apartment = apartment || address.apartment
+    address.city = city || address.city
+    address.state = state || address.state
+    address.zip = zip || address.zip
+    address.country = country || address.country
+    address.phoneNumber = phoneNumber || address.phoneNumber
+    address.email = email || address.email
+
+    await address.save()
+    res.status(200).json({ message: "Address updated successfully" });
+  
+  } catch (err) {
+    console.error("Error creating address:", err);
+    return res
+      .status(400)
+      .json({ message: "Error creating address", error: err.message });
+  }
+});
+
 // @desc    get all addresses
 // @route   GET /api/address/all_addresses
 // @access  private
