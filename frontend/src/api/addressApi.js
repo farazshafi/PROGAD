@@ -60,3 +60,24 @@ export const editAddressApi = async (id, address) => {
     return err;
   }
 };
+
+export const deleteAddressApi = async (id, userId) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.delete(
+      `${API_URL}delete_address/${id}`,
+      userId,
+      config
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};

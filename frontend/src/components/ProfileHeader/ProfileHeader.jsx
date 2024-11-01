@@ -45,6 +45,7 @@ const ProfileHeader = () => {
   };
 
   return (
+  
     <Box
       sx={{
         backgroundColor: "#262626",
@@ -82,10 +83,10 @@ const ProfileHeader = () => {
           />
           <Box>
             <Typography variant="h5" color="black">
-              {user.name}
+              {user?.name}
             </Typography>
             <Typography variant="subtitle1" color="black">
-              {user.email}
+              {user?.email}
             </Typography>
           </Box>
         </Box>

@@ -16,6 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 import {
   createAddressApi,
+  deleteAddressApi,
   editAddressApi,
   getAllAddressesApi,
 } from "../../api/addressApi";
@@ -45,6 +46,7 @@ const AddressCard = () => {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   const handleEditClose = () => {
     setEditOpen(false);
     setEditAddress(null);
@@ -140,9 +142,29 @@ const AddressCard = () => {
       fetchAllUserAddresses();
       toast.success(result.data.message);
       handleEditClose();
+      setEditAddress(null);
     } catch (error) {
       toast.error(error);
       console.error("Error editing address:", error);
+    }
+  };
+
+  const handleDeleteAddress = async (id) => {
+    try {
+      const result = await deleteAddressApi(id, user._id);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          console.log("Error deleting address");
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      fetchAllUserAddresses();
+      toast.success(result.data.message);
+    } catch (err) {
+      toast.error(err);
+      console.error("Error deleting address:", err);
     }
   };
 
@@ -419,6 +441,7 @@ const AddressCard = () => {
                 variant="outlined"
                 sx={{
                   padding: 2,
+                  height:"200px",
                   borderRadius: 2,
                   position: "relative",
                   background: "white",
@@ -449,7 +472,12 @@ const AddressCard = () => {
                     <EditIcon />
                   </IconButton>
 
-                  <IconButton color="inherit" size="small" aria-label="delete">
+                  <IconButton
+                    color="inherit"
+                    size="small"
+                    aria-label="delete"
+                    onClick={() => handleDeleteAddress(address._id)}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </Box>
@@ -471,9 +499,11 @@ const AddressCard = () => {
                   <Typography variant="body2">
                     Phone: {address.phoneNumber}
                   </Typography>
-                  <Typography variant="body2">
-                    Email: {address.email}
-                  </Typography>
+                  {address.email && (
+                    <Typography variant="body2">
+                      Email: {address.email}
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid>

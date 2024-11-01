@@ -41,7 +41,6 @@ const addressSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
   },
   default:{
     type: Boolean,

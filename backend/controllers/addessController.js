@@ -50,9 +50,11 @@ export const createAddress = asyncHandler(async (req, res) => {
     if (address) {
       return res.status(400).json({ message: "Address type already exists" });
     }
-    const user = await User.findById(id)
-    if(user.addresses.length >= 4){
-      return res.status(400).json({ message: "User can't have more than 4 addresses" });
+    const user = await User.findById(id);
+    if (user.addresses.length >= 4) {
+      return res
+        .status(400)
+        .json({ message: "User can't have more than 4 addresses" });
     }
 
     const newAddress = await Address.create({
@@ -67,15 +69,13 @@ export const createAddress = asyncHandler(async (req, res) => {
       phoneNumber,
       email,
     });
-    
+
     await User.findByIdAndUpdate(
       id,
       { $push: { addresses: newAddress._id } },
       { new: true }
     );
-    res
-      .status(201)
-      .json({message: "Address created successfully" });
+    res.status(201).json({ message: "Address created successfully" });
   } catch (err) {
     console.error("Error creating address:", err);
     return res
@@ -102,23 +102,22 @@ export const editAddress = asyncHandler(async (req, res) => {
   } = req.body;
 
   try {
-    const address = await Address.findById(id)
+    const address = await Address.findById(id);
     if (!address) {
       return res.status(404).json({ message: "Address not found" });
     }
-    address.type = type || address.type
-    address.street = street || address.street
-    address.apartment = apartment || address.apartment
-    address.city = city || address.city
-    address.state = state || address.state
-    address.zip = zip || address.zip
-    address.country = country || address.country
-    address.phoneNumber = phoneNumber || address.phoneNumber
-    address.email = email || address.email
+    address.type = type || address.type;
+    address.street = street || address.street;
+    address.apartment = apartment || address.apartment;
+    address.city = city || address.city;
+    address.state = state || address.state;
+    address.zip = zip || address.zip;
+    address.country = country || address.country;
+    address.phoneNumber = phoneNumber || address.phoneNumber;
+    address.email = email || address.email;
 
-    await address.save()
+    await address.save();
     res.status(200).json({ message: "Address updated successfully" });
-  
   } catch (err) {
     console.error("Error creating address:", err);
     return res
@@ -138,6 +137,31 @@ export const getAllAddresses = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "No addresses found" });
     }
     res.status(200).json(address);
+  } catch (err) {
+    console.error("Error getting addresses:", err.message);
+    res.status(500).json({ message: "Server error while getting addresses" });
+  }
+});
+
+// @desc    delete address by id
+// @route   DELETE /api/address/delete_address/:id
+// @access  private
+export const deleteAddress = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { addresses: id } },
+      { new: true }
+    );
+
+    if(!user){
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await Address.findByIdAndDelete(id);
+    res.status(200).json({ message: "Address deleted" });
   } catch (err) {
     console.error("Error getting addresses:", err.message);
     res.status(500).json({ message: "Server error while getting addresses" });
