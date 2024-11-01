@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import "./ProductDetail.css";
 import { Divider, Rating, Typography } from "@mui/material";
@@ -6,8 +6,31 @@ import OurButton from "../OurButton/OurButton";
 import QtyCounterInput from "../QtyCounterInput/QtyCounterInput";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
+import { toast } from "react-toastify";
+import {useDispatch} from "react-redux"
+import { addToCart } from "../../features/user/cartSlice";
 
 const ProductDetail = ({ product }) => {
+  const [quantity, setQuantity] = useState(1);
+
+  const dispatch = useDispatch()
+
+  const handleQuantityChange = (newQuantity) => {
+    setQuantity(newQuantity);
+  };
+
+  const handleAddToCart = () => {
+    const cartItem = {
+      id:product._id,
+      name: product.name,
+      price: product.discountPrice,
+      quantity: quantity,
+      image: product.images[0],
+    }
+    dispatch(addToCart(cartItem))
+    toast.success("Product added to cart!");
+  }
+
   return (
     <>
       {Object.keys(product).length > 0 && (
@@ -130,28 +153,34 @@ const ProductDetail = ({ product }) => {
                     marginBottom: { lg: "20px", xs: "20px" },
                   }}
                 ></Divider>
-                <Typography sx={{ color: "white", fontFamily: "Istok Web" }}>
-                  Select Variant
-                </Typography>
-                <div className="variants-div">
-                  <div
-                    style={{ backgroundColor: "red" }}
-                    className="variant"
-                  ></div>
-                  <div
-                    style={{ backgroundColor: "black" }}
-                    className="variant"
-                  ></div>
-                  <div
-                    style={{ backgroundColor: "white" }}
-                    className="variant"
-                  ></div>
-                </div>
+                {product.hasVariants && (
+                  <>
+                    <Typography
+                      sx={{ color: "white", fontFamily: "Istok Web" }}
+                    >
+                      Select Variant
+                    </Typography>
+                    <div className="variants-div">
+                      <div
+                        style={{ backgroundColor: "red" }}
+                        className="variant"
+                      ></div>
+                      <div
+                        style={{ backgroundColor: "black" }}
+                        className="variant"
+                      ></div>
+                      <div
+                        style={{ backgroundColor: "white" }}
+                        className="variant"
+                      ></div>
+                    </div>
+                  </>
+                )}
                 <div className="action-button">
                   <div style={{ width: "100%" }}>
-                    <QtyCounterInput />
+                  <QtyCounterInput value={quantity} onChange={handleQuantityChange} />
                   </div>
-                  <div style={{ width: "100%" }}>
+                  <div onClick={()=>handleAddToCart(product)} style={{ width: "100%" }}>
                     <OurButton page={"product_details"} text={"Add To Cart"} />
                   </div>
                 </div>

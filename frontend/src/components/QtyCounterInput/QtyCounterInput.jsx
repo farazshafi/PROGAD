@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import "./QtyCounterInput.css";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { Button, TextField, Box } from "@mui/material";
 
-const QtyCounterInput = () => {
-  const [value, setValue] = useState(1); // Default value is set to 1
-
+const QtyCounterInput = ({ value, onChange }) => {
   const handleIncrement = () => {
-    setValue((prevValue) => prevValue + 1);
+    onChange(value + 1);
   };
 
   const handleDecrement = () => {
-    setValue((prevValue) => (prevValue > 1 ? prevValue - 1 : 1)); // Prevent value from going below 1
+    if (value > 1) {
+      onChange(value - 1); 
+    }
   };
 
   return (
@@ -21,7 +21,7 @@ const QtyCounterInput = () => {
         variant="filled"
         sx={{ color: "white", backgroundColor: "#FF7F11" }}
         onClick={handleDecrement}
-        disabled={value <= 1} // Disable when the value is 1
+        disabled={value <= 1} 
       >
         <RemoveIcon />
       </Button>

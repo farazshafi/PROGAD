@@ -24,6 +24,7 @@ const uploadImageToS3 = async (file) => {
   return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/progad/${imageName}`;
 };
 
+
 // @desc    Create a new product
 // @route   POST /api/product/create_product
 // @access  private

@@ -1,43 +1,30 @@
 import React, { useState } from "react";
 import Header from "../../../components/Header/Header";
 import headphoneImg from "../../../assets/images/products/headphone.jpeg";
-import { Box, Typography } from "@mui/material";
+import { Box, Divider, Typography } from "@mui/material";
 import "./CartPage.css";
 import { Col, Row } from "react-bootstrap";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OurButton from "../../../components/OurButton/OurButton";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  decrementQuantity,
+  incrementQuantity,
+  selectedCart,
+} from "../../../features/user/cartSlice";
 
 const CartPage = () => {
-  const [items] = useState([
-    {
-      id: 1,
-      name: "Apple iPhone 15 (Black, 128 GB)",
-      price: 79000,
-      quantity: 3,
-      image: headphoneImg,
-    },
-    {
-      id: 2,
-      name: "Apple iPhone 15 (Black, 128 GB)",
-      price: 79000,
-      quantity: 3,
-      image: headphoneImg,
-    },
-    {
-      id: 3,
-      name: "Apple iPhone 15 (Black, 128 GB)",
-      price: 79000,
-      quantity: 3,
-      image: headphoneImg,
-    },
-    {
-      id: 4,
-      name: "Apple iPhone 15 (Black, 128 GB)",
-      price: 79000,
-      quantity: 3,
-      image: headphoneImg,
-    },
-  ]);
+  const cartItems = useSelector(selectedCart);
+
+  const dispatch = useDispatch();
+
+  const handleQuantityChange = (e, item) => {
+    if (e.target.value === "+") {
+      dispatch(incrementQuantity(item.id));
+    } else {
+      dispatch(decrementQuantity(item.id));
+    }
+  };
 
   return (
     <>
@@ -56,74 +43,110 @@ const CartPage = () => {
         <Row style={{ marginTop: "30px" }}>
           {/* cart items */}
           <Col sm={12} md={6} lg={8}>
-            {items.map((item) => (
-              <Row key={item.id} style={{ marginBottom: "20px" }}>
-                <Col lg={2} md={2} sm={2}>
-                  <div
-                    style={{
-                      backgroundImage: `url(${item.image})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      height: "100px",
-                    }}
-                    className="cart-item-img"
-                  />
-                </Col>
-                <Col lg={6} md={6} sm={6}>
-                  <Typography
-                    sx={{
-                      color: "white",
-                      fontFamily: "Istok Web",
-                      fontSize: "20px",
-                      fontWeight: "700",
-                      textAlign: "center",
-                    }}
-                  >
-                    {item.name}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "white",
-                      fontFamily: "Istok Web",
-                      fontSize: "15px",
-                      textAlign: "center",
-                    }}
-                  >
-                    Product description and other information, like color and model name
-                  </Typography>
-                </Col>
-                <Col lg={1} md={1} sm={1}>
-                  <div className="cart-item-qty-div">
-                    <button>-</button>
-                    <Typography sx={{ color: "white" }}>{item.quantity}</Typography>
-                    <button>+</button>
-                  </div>
-                </Col>
-                <Col lg={3} md={3} sm={3}>
-                  <div
-                    className="cart-item-price_remove"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: "100%",
-                    }}
-                  >
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <Row key={item.id} style={{ marginBottom: "20px" }}>
+                  <Col lg={2} md={2} sm={2}>
+                    <div
+                      style={{
+                        backgroundImage: `url(${item.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        height: "100px",
+                      }}
+                      className="cart-item-img"
+                    />
+                  </Col>
+                  <Col lg={6} md={6} sm={6}>
                     <Typography
                       sx={{
-                        fontFamily: "Istok Web",
-                        fontWeight: "700",
-                        fontSize: "20px",
                         color: "white",
+                        fontFamily: "Istok Web",
+                        fontSize: "20px",
+                        fontWeight: "700",
+                        textAlign: "center",
                       }}
                     >
-                      Rs. {item.price.toLocaleString()}
+                      {item.name}
                     </Typography>
-                    <DeleteIcon sx={{ color: "white", marginLeft: "20px", cursor: "pointer" }} />
-                  </div>
-                </Col>
-              </Row>
-            ))}
+                    <Typography
+                      sx={{
+                        color: "white",
+                        fontFamily: "Istok Web",
+                        fontSize: "15px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {item.description}
+                    </Typography>
+                  </Col>
+                  <Col lg={1} md={1} sm={1}>
+                    <div className="cart-item-qty-div">
+                      <button
+                      style={{backgroundColor:item.quantity === 1 ? "gray":""}}
+                        disabled={item.quantity === 1}
+                        onClick={(e) => handleQuantityChange(e, item)}
+                        value="-"
+                      >
+                        -
+                      </button>
+                      <Typography sx={{ color: "white" }}>
+                        {item.quantity}
+                      </Typography>
+                      <button
+                      style={{backgroundColor:item.quantity === 10 ? "gray":""}}
+                        disabled={item.quantity === 10}
+                        onClick={(e) => handleQuantityChange(e, item)}
+                        value="+"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </Col>
+                  <Col lg={3} md={3} sm={3}>
+                    <div
+                      className="cart-item-price_remove"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontFamily: "Istok Web",
+                          fontWeight: "700",
+                          fontSize: "20px",
+                          color: "white",
+                        }}
+                      >
+                        Rs. {item.price.toLocaleString()}
+                      </Typography>
+                      <DeleteIcon
+                        sx={{
+                          color: "white",
+                          marginLeft: "20px",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </div>
+                  </Col>
+                  <Divider
+                    sx={{
+                      height: "1px",
+                      background: "white",
+                      width: "90%",
+                      marginTop: "20px",
+                    }}
+                  />
+                </Row>
+              ))
+            ) : (
+              <>
+                <Typography>Cart is Empty</Typography>
+              </>
+            )}
           </Col>
 
           {/* product summary details */}
