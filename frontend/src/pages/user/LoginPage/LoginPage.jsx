@@ -56,13 +56,11 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     try {
       const { user } = await signInWithPopup(auth, gProvider);
-      console.log("google data", user);
       const email = user.email;
       const name = user.displayName;
       const googleId = user.providerData[0].uid;
       const phoneNumber = user.phoneNumber || null;
       const data = await loginApi({ email, googleId, phoneNumber, name });
-      console.log("google data", data);
       if (
         (data && data.response && data.response.status === 400) ||
         (data && data.response && data.response.status === 500)

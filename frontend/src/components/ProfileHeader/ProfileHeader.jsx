@@ -40,7 +40,6 @@ const ProfileHeader = () => {
     const file = event.target.files[0];
     if (file) {
       // Handle file upload logic
-      console.log("File uploaded:", file);
     }
   };
 

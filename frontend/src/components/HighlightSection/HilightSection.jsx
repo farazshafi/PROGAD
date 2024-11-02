@@ -10,7 +10,6 @@ const HilightSection = ({ nav,text }) => {
   const navigateText = text.split(" ").join("").toLowerCase()
 
   const handleClick = (wow) => {
-    console.log(wow)
     navigate(`/${navigateText}`)
   }
 

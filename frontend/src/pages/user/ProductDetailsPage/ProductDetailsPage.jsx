@@ -24,7 +24,6 @@ const ProductDetailsPage = () => {
           );
         }
       } else {
-        console.log("result", result);
         setProduct(result.data);
       }
     } catch (err) {

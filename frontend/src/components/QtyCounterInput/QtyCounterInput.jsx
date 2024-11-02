@@ -6,7 +6,6 @@ import { Button, TextField, Box } from "@mui/material";
 
 const QtyCounterInput = ({ value, onChange, stock }) => {
   const handleIncrement = () => {
-    console.log("total stock", stock);
     
     if (value < 10 && value < stock) {
       onChange(value + 1);

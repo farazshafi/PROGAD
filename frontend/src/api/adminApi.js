@@ -49,7 +49,6 @@ export const deleteUserApi = async (id) => {
 
 export const getAllProductsApi = async () => {
   const token = JSON.parse(localStorage.getItem("admin")).token;
-  console.log("token: " + token);
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,

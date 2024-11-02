@@ -105,13 +105,11 @@ const ListProducts = () => {
   };
 
   const handleEdit = (product) => {
-    console.log("product edit ", selectedProduct)
     navigate(`/admin_dashboard/product/edit_product/${selectedProduct._id}`)
     handleClose();
   };
 
   const handleDelete = (productId) => {
-    console.log("Deleting product:", productId);
     handleClose()
   };
 

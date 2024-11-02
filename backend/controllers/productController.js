@@ -30,7 +30,6 @@ const uploadImageToS3 = async (file) => {
 // @access  private
 export const createProduct = asyncHandler(async (req, res) => {
   try {
-    console.log("product data: ", req.body);
     const {
       // default product
       name,
@@ -73,7 +72,6 @@ export const createProduct = asyncHandler(async (req, res) => {
     const touchControl = touchControlString === "true";
     const multiDevice = multiDeviceString === "true";
 
-    console.log("images i am getting", images);
     // validation
     if (
       !name ||
@@ -202,7 +200,6 @@ export const createProduct = asyncHandler(async (req, res) => {
     if (!product) {
       return res.status(400).json({ message: "Product creation failed" });
     }
-    console.log("Product created successfully");
     res.status(201).json({ message: "Product created successfully", product });
   } catch (error) {
     console.error("Error creating product:", error.message);
@@ -306,7 +303,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
     bluetoothRange,
     chargingTime,
   } = req.body;
-  console.log("update product", req.body)
   try {
     const product = await Product.findById(id);
     if (product) {

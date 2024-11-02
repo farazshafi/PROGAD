@@ -39,7 +39,6 @@ const CartPage = () => {
     const offerDiscount = 0.2; // 20%
 
     const tax = subTotal * taxRate;
-    console.log("tax rate: " + tax);
     const discount = subTotal * offerDiscount;
     const deliveryFee = subTotal > 500 ? 0 : 40;
     const total = (subTotal + tax + deliveryFee - discount).toFixed(2);

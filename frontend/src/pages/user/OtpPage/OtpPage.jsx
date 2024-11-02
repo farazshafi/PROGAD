@@ -66,7 +66,6 @@ const OtpPage = () => {
   const handleResendOtp = async () => {
     try {
       const result = await resendOtpApi(user.email);
-      console.log("resend api result", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {

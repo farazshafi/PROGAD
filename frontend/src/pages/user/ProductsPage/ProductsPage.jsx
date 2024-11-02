@@ -28,7 +28,6 @@ const ProductsPage = () => {
     try {
       const { data } = await getAllProductsApi();
       if (data.response) {
-        console.log(data.response);
         const { status } = data.response;
         if (status === 400 || status === 500) {
           toast.error(data.response.data.message || "An error occurred");

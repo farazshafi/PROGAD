@@ -16,7 +16,6 @@ const ProfilePage = () => {
     if(!user){
       return navigate("/login")
     }
-    console.log("user in profile page",user)
   },[])
   return (
     <>

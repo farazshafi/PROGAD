@@ -25,7 +25,6 @@ const AdminLogin = () => {
     setError(false);
     try{
         const data = await adminLoginApi({email,password})
-        console.log("bernn",data)
         if(data.response){
             const { status } = data.response;
             if(status === 400 || status === 500){

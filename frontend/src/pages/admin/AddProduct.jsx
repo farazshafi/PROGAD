@@ -240,8 +240,6 @@ const AddProduct = () => {
   };
 
   const handleSaveVariant = () => {
-    console.log(" variants array , ", variantsArray);
-    console.log("product ile variatns , ", productData.variants);
     // Validation function
     const validateFields = () => {
       if (!variantData.name || variantData.name.length < 3) {
@@ -320,9 +318,6 @@ const AddProduct = () => {
     } else {
       totalStock = Number(productData.totalStock);
     }
-    console.log("poduct data , when submit", productData);
-    console.log("variant array", variantsArray);
-
 
     try {
       if (!productData.name || productData.name.length < 3) {

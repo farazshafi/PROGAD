@@ -117,7 +117,7 @@ const EditProduct = () => {
   };
 
   const enqueueSnackbar = (message, options) => {
-    console.log("Showing snackbar:", message);
+    // console.log("Showing snackbar:", message);
   };
 
   const handleClose = () => {
@@ -174,7 +174,6 @@ const EditProduct = () => {
   const fetchProductDetails = async () => {
     try {
       const { data } = await getProductDetailsApi(id);
-      console.log("data fetched ", data);
       if (data.response) {
         toast.error(data.response.data.message);
       } else {
@@ -260,7 +259,6 @@ const EditProduct = () => {
         updatedFields.images = updatedImages;
       }
       if(state.isBluetoothSupported){
-        console.log("condition true...")
         updatedFields.isBluetoothSupported = state.isBluetoothSupported;
         updatedFields.batteryLife = state.updatedBatteryLife;
         updatedFields.bluetoothVersion = state.updatedBluetoothVersion;
@@ -275,10 +273,8 @@ const EditProduct = () => {
       }
 
       const updatedProduct = JSON.stringify(updatedFields, null, 2);
-      console.log("result : ", updatedProduct);
 
       const result = await updateProductApi(id, JSON.parse(updatedProduct));
-      console.log("data : ", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -291,7 +287,6 @@ const EditProduct = () => {
       }
 
       // Show success message
-      console.log("Product updated successfully!");
 
       // Close the dialog
       setState((prev) => ({

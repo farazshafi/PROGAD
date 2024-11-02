@@ -85,12 +85,7 @@ const AddressCard = () => {
     }
 
     try {
-      console.log("new address: ", {
-        ...newAddress,
-        apartment: newAddress.apartmentNumber,
-      });
       const result = await createAddressApi(user._id, newAddress);
-      console.log("result :", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -171,7 +166,6 @@ const AddressCard = () => {
   const fetchAllUserAddresses = async () => {
     try {
       const result = await getAllAddressesApi(user._id);
-      console.log("result", result.data);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
