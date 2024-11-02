@@ -9,11 +9,15 @@ import "react-medium-image-zoom/dist/styles.css";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../features/user/cartSlice";
+import addedTOcartAnimation from "../../assets/animations/addToCart.json";
+import Lottie from "lottie-react";
 
 const ProductDetail = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
 
   const dispatch = useDispatch();
+
+  const [showAddToCartAnimation, setShowAddToCartAnimation] = useState(false);
 
   const handleQuantityChange = (newQuantity) => {
     setQuantity(newQuantity);
@@ -26,15 +30,26 @@ const ProductDetail = ({ product }) => {
       price: product.discountPrice,
       quantity: quantity,
       image: product.images[0],
-      stock:product.totalStock
+      stock: product.totalStock,
     };
     dispatch(addToCart(cartItem));
-    toast.success("Product added to cart!");
-  }
-
+    setShowAddToCartAnimation(true);
+    setTimeout(() => setShowAddToCartAnimation(false), 2300);
+    setQuantity(1)
+  };
 
   return (
     <>
+      {showAddToCartAnimation && (
+        <div className="animation-overlay">
+          <Lottie
+            animationData={addedTOcartAnimation}
+            style={{ width: 150, height: 150, backgroundColor:"white", borderRadius:"15%", padding:"20px" }}
+            autoPlay={true}
+          />
+        </div>
+      )}
+
       {Object.keys(product).length > 0 && (
         <div className="product-details-container">
           <Row className="rows">
@@ -120,7 +135,7 @@ const ProductDetail = ({ product }) => {
                     readOnly
                     sx={{
                       "& .MuiRating-iconFilled": {
-                        color: "#FF7F11", 
+                        color: "#FF7F11",
                       },
                       "& .MuiRating-iconEmpty": {
                         color: "white",

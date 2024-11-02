@@ -52,6 +52,7 @@ const Header = ({ navbar = true }) => {
                   <Navbar.Brand>
                     <Text
                       fontSize={{ base: "15px" }}
+                      display={{base:"none", lg:"inline-block"}}
                       pt={{ md: "20px" }}
                       className="nav-progad"
                     >
@@ -63,21 +64,6 @@ const Header = ({ navbar = true }) => {
                   <Navbar.Toggle aria-controls="basic-navbar-nav" />
                   <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto nav-items-div">
-                      {/* Using Link from react-router-dom */}
-                      <Nav.Link
-                        as={Link}
-                        to="/accounts"
-                        className="nav-link-chakra"
-                      >
-                        <i className="fa-solid fa-user"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "0px", lg: "0px" }}
-                        >
-                          Accounts
-                        </Text>
-                      </Nav.Link>
                       <Nav.Link as={Link} to="/" className="nav-link-chakra">
                         <i className="fa-solid fa-house"></i>
                         <Text
@@ -102,7 +88,7 @@ const Header = ({ navbar = true }) => {
                           Products
                         </Text>
                       </Nav.Link>
-                      <Nav.Link
+                      {/* <Nav.Link
                         as={Link}
                         to="/wishlist"
                         className="nav-link-chakra"
@@ -115,8 +101,8 @@ const Header = ({ navbar = true }) => {
                         >
                           Wishlist
                         </Text>
-                      </Nav.Link>
-                      <Nav.Link
+                      </Nav.Link> */}
+                      {/* <Nav.Link
                         as={Link}
                         to="/orders"
                         className="nav-link-chakra"
@@ -129,7 +115,7 @@ const Header = ({ navbar = true }) => {
                         >
                           Orders
                         </Text>
-                      </Nav.Link>
+                      </Nav.Link> */}
                       <Nav.Link
                         as={Link}
                         to="/cart"
