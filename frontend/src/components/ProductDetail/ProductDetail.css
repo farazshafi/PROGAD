@@ -7,9 +7,6 @@
   padding: 0 !important;
 }
 
-.multi-images {
-}
-
 .image-div {
   width: 70px;
   height: 70px;
@@ -45,6 +42,20 @@
   display: flex;
 }
 
+.stock-management-is{
+  background-color: color(display-p3 0.14 0.92 0.42);
+  display: inline-block;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.stock-management-os{
+  background-color: color(display-p3 0.92 0.14 0.14);
+  display: inline-block;
+  padding: 5px;
+  border-radius: 3px;
+}
+
 .variants-div {
   display: flex;
   margin-top: 10px;
@@ -65,6 +76,8 @@
   gap: 20px; /* Adjust the gap between the quantity input and button */
   margin-top: 20px; /* Optional margin for spacing */
 }
+
+
 @media (max-width: 576px) {
   .image-div {
     margin-bottom: 20px;

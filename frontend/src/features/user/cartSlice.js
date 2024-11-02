@@ -29,7 +29,7 @@ const cartSlice = createSlice({
     incrementQuantity(state,action){
         const itemId = action.payload
         const product = state.cartItems.find((item)=>item.id === itemId)
-        if(product && product.quantity < 10){
+        if(product && product.quantity < 10 && product.stock > product.quantity){
             product.quantity += 1
         }
         localStorage.setItem("cart", JSON.stringify(state.cartItems))

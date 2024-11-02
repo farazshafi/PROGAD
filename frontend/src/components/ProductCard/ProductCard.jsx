@@ -24,17 +24,14 @@ const ProductCard = ({ page }) => {
     navigate(`/product_details/${productId}`);
   };
 
-  useEffect(() => {
-    console.log("produts...", products);
-  }, [products]);
-
   return (
     <React.Fragment>
       <Container>
         <Row>
           {products.length > 0 ? (
-            products.map((product) => (
+            products.map((product, i) => (
               <Col
+                key={i}
                 className="mb-5"
                 xs={6}
                 sm={6}
@@ -105,7 +102,7 @@ const ProductCard = ({ page }) => {
             ))
           ) : (
             <div style={{ textAlign: "center" }}>
-              <h2 style={{color:"white"}}>No Products Found</h2>
+              <h2 style={{ color: "white" }}>No Products Found</h2>
             </div>
           )}
         </Row>

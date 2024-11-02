@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import "./ProductDetail.css";
 import { Divider, Rating, Typography } from "@mui/material";
@@ -7,13 +7,13 @@ import QtyCounterInput from "../QtyCounterInput/QtyCounterInput";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { toast } from "react-toastify";
-import {useDispatch} from "react-redux"
+import { useDispatch } from "react-redux";
 import { addToCart } from "../../features/user/cartSlice";
 
 const ProductDetail = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleQuantityChange = (newQuantity) => {
     setQuantity(newQuantity);
@@ -21,15 +21,17 @@ const ProductDetail = ({ product }) => {
 
   const handleAddToCart = () => {
     const cartItem = {
-      id:product._id,
+      id: product._id,
       name: product.name,
       price: product.discountPrice,
       quantity: quantity,
       image: product.images[0],
-    }
-    dispatch(addToCart(cartItem))
+      stock:product.totalStock
+    };
+    dispatch(addToCart(cartItem));
     toast.success("Product added to cart!");
   }
+
 
   return (
     <>
@@ -118,10 +120,10 @@ const ProductDetail = ({ product }) => {
                     readOnly
                     sx={{
                       "& .MuiRating-iconFilled": {
-                        color: "#FF7F11", // Rated star color
+                        color: "#FF7F11", 
                       },
                       "& .MuiRating-iconEmpty": {
-                        color: "white", // Default unfilled star color
+                        color: "white",
                       },
                       marginTop: "20px",
                     }}
@@ -153,6 +155,26 @@ const ProductDetail = ({ product }) => {
                     marginBottom: { lg: "20px", xs: "20px" },
                   }}
                 ></Divider>
+                {/* if in stock */}
+                {product.totalStock > 1 ? (
+                  <>
+                    <div className="stock-management-is">
+                      <Typography
+                        sx={{ color: "white", fontFamily: "Istok Web" }}
+                      >
+                        In Stock
+                      </Typography>
+                    </div>
+                  </>
+                ) : (
+                  <div className="stock-management-os">
+                    <Typography
+                      sx={{ color: "white", fontFamily: "Istok Web" }}
+                    >
+                      Out of Stock
+                    </Typography>
+                  </div>
+                )}
                 {product.hasVariants && (
                   <>
                     <Typography
@@ -178,9 +200,16 @@ const ProductDetail = ({ product }) => {
                 )}
                 <div className="action-button">
                   <div style={{ width: "100%" }}>
-                  <QtyCounterInput value={quantity} onChange={handleQuantityChange} />
+                    <QtyCounterInput
+                      value={quantity}
+                      onChange={handleQuantityChange}
+                      stock={product.totalStock}
+                    />
                   </div>
-                  <div onClick={()=>handleAddToCart(product)} style={{ width: "100%" }}>
+                  <div
+                    onClick={() => handleAddToCart(product)}
+                    style={{ width: "100%" }}
+                  >
                     <OurButton page={"product_details"} text={"Add To Cart"} />
                   </div>
                 </div>

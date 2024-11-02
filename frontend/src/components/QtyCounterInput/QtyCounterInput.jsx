@@ -4,14 +4,18 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { Button, TextField, Box } from "@mui/material";
 
-const QtyCounterInput = ({ value, onChange }) => {
+const QtyCounterInput = ({ value, onChange, stock }) => {
   const handleIncrement = () => {
-    onChange(value + 1);
+    console.log("total stock", stock);
+    
+    if (value < 10 && value < stock) {
+      onChange(value + 1);
+    }
   };
 
   const handleDecrement = () => {
     if (value > 1) {
-      onChange(value - 1); 
+      onChange(value - 1);
     }
   };
 
@@ -21,7 +25,7 @@ const QtyCounterInput = ({ value, onChange }) => {
         variant="filled"
         sx={{ color: "white", backgroundColor: "#FF7F11" }}
         onClick={handleDecrement}
-        disabled={value <= 1} 
+        disabled={value <= 1}
       >
         <RemoveIcon />
       </Button>
@@ -36,11 +40,12 @@ const QtyCounterInput = ({ value, onChange }) => {
       />
 
       <Button
+        disabled={value >= 10}
         variant="outlined"
         sx={{ color: "white", backgroundColor: "#FF7F11" }}
         onClick={handleIncrement}
       >
-        <AddIcon />
+        <AddIcon color={value > 10 ? "grey" : "white"}/>
       </Button>
     </Box>
   );
