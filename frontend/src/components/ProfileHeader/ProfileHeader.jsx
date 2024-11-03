@@ -1,24 +1,13 @@
-import React, {useState } from "react";
-import {
-  Avatar,
-  Box,
-  Tab,
-  Tabs,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Avatar, Box, Tab, Tabs, Typography, IconButton } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { styled } from "@mui/material/styles";
-import {
-  FaShoppingCart,
-  FaLock,
-  FaAddressCard,
-  FaUser,
-} from "react-icons/fa";
+import { FaShoppingCart, FaLock, FaAddressCard, FaUser } from "react-icons/fa";
 import UserProfileCard from "../UserProfileCard/UserProfileCard";
 import { useSelector } from "react-redux";
 import { selectedUser } from "../../features/user/userSlice";
 import AddressCard from "../AddressCard/AddressCard";
+import OrderList from "../../pages/user/OrderList/OrderList";
 
 const Input = styled("input")({
   display: "none",
@@ -41,11 +30,10 @@ const ProfileHeader = () => {
   };
 
   const handleClick = () => {
-    // 
-  }
+    //
+  };
 
   return (
-  
     <Box
       sx={{
         backgroundColor: "#262626",
@@ -139,10 +127,8 @@ const ProfileHeader = () => {
       {/* Content Section */}
       <Box mt={3}>
         {tabIndex === 0 && <UserProfileCard user={user} />}
-        {tabIndex === 1 && (
-          <Typography>Reset Password content goes here.</Typography>
-        )}
-        {tabIndex === 2 && <AddressCard onAddressClick={handleClick}/>}
+        {tabIndex === 1 && <OrderList />}
+        {tabIndex === 2 && <AddressCard onAddressClick={handleClick} />}
       </Box>
     </Box>
   );

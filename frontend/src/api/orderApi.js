@@ -21,3 +21,43 @@ export const makeOrderApi = async (OrderData) => {
     return err;
   }
 };
+
+
+export const getAllOrdersApi = async (userId) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.get(
+      `${API_URL}get_all_orders/userId/${userId}`,
+      config
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};
+
+
+export const getOrderDetailsApi = async (orderId) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.get(
+      `${API_URL}get_order_details/${orderId}`,
+      config
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};

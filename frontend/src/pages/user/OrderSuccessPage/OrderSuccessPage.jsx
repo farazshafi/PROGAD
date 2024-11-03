@@ -43,7 +43,7 @@ const orderSuccessPage = () => {
               Go Home
             </Button>
           </Link>
-          <Link to={"/orders"}>
+          <Link to={"/profile"}>
             <OurButton text={"View Order"} />
           </Link>
         </Box>

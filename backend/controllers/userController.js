@@ -139,8 +139,9 @@ export const login = asyncHandler(async (req, res) => {
 
   if (googleId) {
     userExist = await User.findOne({ googleId }).populate({
-      path: 'address',
-      select: '_id type street apartment city state zip country phoneNumber email',
+      path: "address",
+      select:
+        "_id type street apartment city state zip country phoneNumber email",
     });
     if (!userExist) {
       userExist = await User.findOne({ email });
@@ -174,8 +175,9 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   userExist = await User.findOne({ email }).populate({
-    path: 'addresses',
-    select: '_id type street apartment city state zip country phoneNumber email',
+    path: "addresses",
+    select:
+      "_id type street apartment city state zip country phoneNumber email",
   });
   if (!userExist) {
     return res.status(400).json({ message: "User does not exist" });

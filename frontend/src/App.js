@@ -19,6 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import AdminLogin from "./pages/admin/AdminLogin";
 import EditProduct from "./pages/admin/EditProduct";
+import OrderDetailsCard from "./components/OrderDetailsCard/OrderDetailsCard";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/cart_process" element={<CartProcess />} /> 
           <Route path="/order_success" element={<OrderSuccessPage />} /> 
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/order_details/:id" element={<OrderDetailsCard />} />
 
           
           {/* admin route */}

@@ -53,12 +53,16 @@ export const makeOrder = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Product not found" });
       }
 
-      if(product.stock < item.quantity){
-        return res.status(400).json({ message: `Product ${product.name} has only ${product.stock} left` });
+      if (product.stock < item.quantity) {
+        return res
+          .status(400)
+          .json({
+            message: `Product ${product.name} has only ${product.stock} left`,
+          });
       }
 
-      product.totalStock -= item.quantity
-      await product.save()
+      product.totalStock -= item.quantity;
+      await product.save();
     }
 
     await Order.create({
@@ -77,5 +81,44 @@ export const makeOrder = asyncHandler(async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
+  }
+});
+
+
+// @desc    get all orders
+// @route   GET /api/order/get_all_orders/userId/:id
+// @access  private
+export const getAllOrders = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const allOrders = await Order.find({user:id}).populate("shippingAddress")
+    if (!allOrders) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+    res.status(200).json(allOrders)
+    
+  } catch (err) {
+    console.error("Error getting orders:", err.message);
+    res.status(500).json({ message: "Server error while getting orders" });
+  }
+});
+
+
+// @desc    get order by id
+// @route   GET /api/order/get_order_details/:id
+// @access  private
+export const getOrderDetails = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const orderDetails = await Order.findById(id).populate("shippingAddress").populate("items.id", "images name")
+    if (!orderDetails) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+    res.status(200).json(orderDetails)
+  } catch (err) {
+    console.error("Error getting orders:", err.message);
+    res.status(500).json({ message: "Server error while getting orders" });
   }
 });

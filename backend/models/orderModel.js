@@ -30,7 +30,7 @@ const orderSchema = mongoose.Schema({
   status:{
     type: String,
     required: true,
-    enum: ["pending", "processing", "shipped", "delivered", "canceled"],
+    enum: ["pending", "shipped", "delivered", "cancelled"],
     default: "pending"
   },
   tax:{
