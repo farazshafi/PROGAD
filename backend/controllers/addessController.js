@@ -13,6 +13,8 @@ export const createAddress = asyncHandler(async (req, res) => {
     apartmentNumber: apartment,
     city,
     state,
+    name,
+    address:homeAddress,
     zipCode: zip,
     country,
     phone: phoneNumber,
@@ -25,6 +27,12 @@ export const createAddress = asyncHandler(async (req, res) => {
   }
   if (street === undefined || street.trim() === "") {
     return res.status(400).json({ message: "Street address is required" });
+  }
+  if (name === undefined || name.trim() === "") {
+    return res.status(400).json({ message: "name is required" });
+  }
+  if (homeAddress === undefined || homeAddress.trim() === "") {
+    return res.status(400).json({ message: "address is required" });
   }
   if (city === undefined || city.trim() === "") {
     return res.status(400).json({ message: "City is required" });
@@ -65,6 +73,8 @@ export const createAddress = asyncHandler(async (req, res) => {
       city,
       state,
       zip,
+      name,
+      address:homeAddress,
       country,
       phoneNumber,
       email,
@@ -95,6 +105,8 @@ export const editAddress = asyncHandler(async (req, res) => {
     apartment,
     city,
     state,
+    name,
+    address:homeAddress,
     zip,
     country,
     phoneNumber,
@@ -112,6 +124,8 @@ export const editAddress = asyncHandler(async (req, res) => {
     address.city = city || address.city;
     address.state = state || address.state;
     address.zip = zip || address.zip;
+    address.name = name || address.name;
+    address.address = homeAddress || address.address;
     address.country = country || address.country;
     address.phoneNumber = phoneNumber || address.phoneNumber;
     address.email = email || address.email;
