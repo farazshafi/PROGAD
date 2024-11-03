@@ -6,7 +6,6 @@ import OurButton from "../OurButton/OurButton";
 import QtyCounterInput from "../QtyCounterInput/QtyCounterInput";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../features/user/cartSlice";
 import addedTOcartAnimation from "../../assets/animations/addToCart.json";
@@ -31,6 +30,7 @@ const ProductDetail = ({ product }) => {
       quantity: quantity,
       image: product.images[0],
       stock: product.totalStock,
+      subTotal: product.discountPrice * quantity
     };
     dispatch(addToCart(cartItem));
     setShowAddToCartAnimation(true);

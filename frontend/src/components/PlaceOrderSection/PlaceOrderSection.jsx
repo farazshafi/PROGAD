@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  Card,
-  Paper,
-  Divider,
-} from "@mui/material";
+import { Box, Grid, Typography, Card, Paper, Divider } from "@mui/material";
 import { useSelector } from "react-redux";
 import { selectedOrder } from "../../features/user/orderSlice";
 import { selectedUser } from "../../features/user/userSlice";
 import { selectedCart } from "../../features/user/cartSlice";
+import { makeOrderApi } from "../../api/orderApi";
+import { toast } from "react-toastify";
+import { Button, ChakraProvider } from "@chakra-ui/react";
 
 const PlaceOrderSection = () => {
   const orderDetails = useSelector(selectedOrder);
   const user = useSelector(selectedUser);
   const cartItems = useSelector(selectedCart);
 
+  const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState({
     summary: 0,
     tax: 0,
@@ -28,6 +24,15 @@ const PlaceOrderSection = () => {
     taxPercent: "",
     offerPercentage: "",
   });
+  const [orderData, setOrderData] = useState({
+    user: user._id,
+    items: cartItems,
+    status: "pending",
+    tax: orderDetails.tax,
+    deliveryCost: 0,
+    shippingAddress: orderDetails.shippingAddress.id,
+    paymentMethod: orderDetails.paymentMethod,
+  });
 
   const calculateSummary = () => {
     const subTotal = cartItems.reduce(
@@ -36,7 +41,6 @@ const PlaceOrderSection = () => {
     );
     const taxRate = 0.011; //1.1%
     // const offerDiscount = 0.2; // 20%
-
     const tax = subTotal * taxRate;
     // const discount = subTotal * offerDiscount;
     const deliveryFee = subTotal > 500 ? 0 : 40;
@@ -55,9 +59,53 @@ const PlaceOrderSection = () => {
     });
   };
 
-  useEffect(()=>{
-    calculateSummary()
-  },[])
+  const handlePayment = async () => {
+    try {
+      setLoading(true);
+
+      const filteredItems = cartItems.map(
+        ({ id, quantity, price, subTotal }) => ({
+          id,
+          quantity,
+          price,
+          subTotal,
+        })
+      );
+
+      const formattedOrderData = {
+        ...orderData,
+        items: filteredItems,
+        deliveryCost: summary.delivery,
+        tax: summary.tax,
+        totalPrice: summary.total,
+        paymentMethod:
+          orderDetails.paymentMethod === "cashOnDelivery"
+            ? "cash on delivery"
+            : orderDetails.paymentMethod,
+      };
+
+      const result = await makeOrderApi(formattedOrderData);
+      console.log("order api result", result);
+
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          setLoading(false);
+          return;
+        }
+      }
+      toast.success("Order placed successfully!");
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    calculateSummary();
+  }, []);
 
   return (
     <Box
@@ -113,7 +161,6 @@ const PlaceOrderSection = () => {
             <Typography sx={{ mb: "20px" }} variant="body2">
               {/* Pay securely using your PayPal account. */}
             </Typography>
-            {/* <OurButton w={"100"} text={`Proceed with ${orderDetails.paymentMethod}`} /> */}
           </Paper>
         </Grid>
 
@@ -136,16 +183,16 @@ const PlaceOrderSection = () => {
                   />
                 </Grid>
                 <Grid item xs={4}>
-                  <Typography variant="body1">
-                    {item.name}
-                  </Typography>
+                  <Typography variant="body1">{item.name}</Typography>
                 </Grid>
                 <Grid item xs={3} textAlign="center">
                   <Typography variant="body1">X{item.quantity}</Typography>
                   <Typography variant="body1">Rs. {item.price}</Typography>
                 </Grid>
                 <Grid item xs={3} textAlign="right">
-                  <Typography variant="body1">Rs. {Number(item.quantity * item.price)}</Typography>
+                  <Typography variant="body1">
+                    Rs. {Number(item.quantity * item.price)}
+                  </Typography>
                 </Grid>
               </Grid>
             ))}
@@ -168,8 +215,7 @@ const PlaceOrderSection = () => {
                 variant="body1"
                 sx={{ fontFamily: '"Istok Web", sans-serif' }}
               >
-                Rs. {summary.subTotal
-                }
+                Rs. {summary.subTotal}
               </Typography>
             </Grid>
             <Grid container justifyContent="space-between">
@@ -197,7 +243,7 @@ const PlaceOrderSection = () => {
                 variant="body1"
                 sx={{ fontFamily: '"Istok Web", sans-serif' }}
               >
-                {summary.delivery === 0 ? "free" : "Rs. "+summary.delivery}
+                {summary.delivery === 0 ? "free" : "Rs. " + summary.delivery}
               </Typography>
             </Grid>
             <Divider sx={{ height: "1px", background: "white", mt: "20px" }} />
@@ -231,12 +277,9 @@ const PlaceOrderSection = () => {
               textAlign: "center",
             }}
           >
-            <Button
-              variant="contained"
-              sx={{ margin: "10px", backgroundColor: "#FF7F11" }}
-            >
-              Place Order
-            </Button>
+            <ChakraProvider>
+              <Button onClick={handlePayment} sx={{width:"100%", bg:"#ff7f11" , paddingTop:"30px", paddingBottom:"30px"}} isLoading={loading}>Place Order</Button>
+            </ChakraProvider>
           </Card>
         </Grid>
       </Grid>

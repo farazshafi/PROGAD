@@ -29,8 +29,8 @@ const ShippingSection = ({selectedAddress}) => {
   });
 
   const handleAddressClick = (address) => {
-    console.log("addressaan ith ", address)
     setAddress({
+      id:address._id,
       type: address.type,
       name: address.name,
       phoneNumber: address.phoneNumber,

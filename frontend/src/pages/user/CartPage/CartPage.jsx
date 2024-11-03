@@ -14,6 +14,7 @@ import {
   selectedCart,
 } from "../../../features/user/cartSlice";
 import { useNavigate } from "react-router-dom";
+import { setSummaryData } from "../../../features/user/orderSlice";
 
 const CartPage = () => {
   const cartItems = useSelector(selectedCart);
@@ -54,6 +55,7 @@ const CartPage = () => {
       // discount,
       total,
       taxPercent: taxPercentage,
+      taxRate
       // offerPercentage,
     });
   };
@@ -65,6 +67,15 @@ const CartPage = () => {
       dispatch(decrementQuantity(item.id));
     }
   };
+
+  const handleCheckout = () => {
+    const sendSummary = {
+      totalAmount: summary.total,
+      tax: summary.taxRate
+    }
+    dispatch(setSummaryData(sendSummary))
+    navigate("/cart_process")
+  }
 
   const handleDelete = (item) => {
     dispatch(removeFromCart(item.id));
@@ -311,7 +322,7 @@ const CartPage = () => {
               </div>
 
               {/* Checkout Button */}
-              <div onClick={()=>navigate("/cart_process")} style={{ marginTop: "30px" }}>
+              <div onClick={handleCheckout} style={{ marginTop: "30px" }}>
                 <OurButton w="100" text="PROCEED TO CHECKOUT" />
               </div>
             </Col>
