@@ -13,11 +13,13 @@ import {
   removeFromCart,
   selectedCart,
 } from "../../../features/user/cartSlice";
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
   const cartItems = useSelector(selectedCart);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate()
 
   const [summary, setSummary] = useState({
     summary: 0,
@@ -35,24 +37,24 @@ const CartPage = () => {
       (total, item) => total + item.quantity * item.price,
       0
     );
-    const taxRate = 0.035; //3.5%
-    const offerDiscount = 0.2; // 20%
+    const taxRate = 0.011; //1.1%
+    // const offerDiscount = 0.2; // 20%
 
     const tax = subTotal * taxRate;
-    const discount = subTotal * offerDiscount;
+    // const discount = subTotal * offerDiscount;
     const deliveryFee = subTotal > 500 ? 0 : 40;
-    const total = (subTotal + tax + deliveryFee - discount).toFixed(2);
+    const total = (subTotal + tax + deliveryFee).toFixed(2);
     const taxPercentage = (taxRate * 100).toFixed(1) + "%";
-    const offerPercentage = (offerDiscount * 100).toFixed(0) + "%";
+    // const offerPercentage = (offerDiscount * 100).toFixed(0) + "%";
 
     setSummary({
       subTotal,
       tax,
       delivery: deliveryFee,
-      discount,
+      // discount,
       total,
       taxPercent: taxPercentage,
-      offerPercentage,
+      // offerPercentage,
     });
   };
 
@@ -210,7 +212,7 @@ const CartPage = () => {
               }}
             >
               {/* Coupon Input Section */}
-              <div
+              {/* <div
                 className="cart-coupoun"
                 style={{
                   display: "flex",
@@ -231,7 +233,7 @@ const CartPage = () => {
                   }}
                 />
                 <OurButton text="Apply" />
-              </div>
+              </div> */}
 
               {/* Price Summary Section */}
               <div
@@ -282,7 +284,7 @@ const CartPage = () => {
                 <p>Coupon Discount:</p>
                 <h6>20%</h6>
               </div> */}
-                <div
+                {/* <div
                   className="d-flex"
                   style={{
                     justifyContent: "space-between",
@@ -291,7 +293,7 @@ const CartPage = () => {
                 >
                   <p>Offer Discount:</p>
                   <h6>{summary.offerPercentage}</h6>
-                </div>
+                </div> */}
 
                 {/* Total Amount */}
                 <div
@@ -309,7 +311,7 @@ const CartPage = () => {
               </div>
 
               {/* Checkout Button */}
-              <div style={{ marginTop: "30px" }}>
+              <div onClick={()=>navigate("/cart_process")} style={{ marginTop: "30px" }}>
                 <OurButton w="100" text="PROCEED TO CHECKOUT" />
               </div>
             </Col>

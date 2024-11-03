@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import {
   Avatar,
   Box,
-  Button,
   Tab,
   Tabs,
   Typography,
@@ -12,7 +11,6 @@ import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { styled } from "@mui/material/styles";
 import {
   FaShoppingCart,
-  FaHeart,
   FaLock,
   FaAddressCard,
   FaUser,
@@ -20,8 +18,7 @@ import {
 import UserProfileCard from "../UserProfileCard/UserProfileCard";
 import { useSelector } from "react-redux";
 import { selectedUser } from "../../features/user/userSlice";
-import AddressCard from "../AddessCard/AddessCard";
-import { toast } from "react-toastify";
+import AddressCard from "../AddressCard/AddressCard";
 
 const Input = styled("input")({
   display: "none",
@@ -42,6 +39,10 @@ const ProfileHeader = () => {
       // Handle file upload logic
     }
   };
+
+  const handleClick = () => {
+    // 
+  }
 
   return (
   
@@ -141,7 +142,7 @@ const ProfileHeader = () => {
         {tabIndex === 1 && (
           <Typography>Reset Password content goes here.</Typography>
         )}
-        {tabIndex === 2 && <AddressCard />}
+        {tabIndex === 2 && <AddressCard onAddressClick={handleClick}/>}
       </Box>
     </Box>
   );

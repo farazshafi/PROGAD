@@ -20,11 +20,10 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
       <Drawer
         open={isOpen}
         onClose={toggleSidebar}
-        variant="persistent" // Use 'persistent' for open/close functionality
+        variant="persistent"
         anchor="left"
       >
         <div style={{ width: 250, padding: "1rem", textAlign: "center" }}>
-          {/* Close Button */}
           <IconButton
             onClick={toggleSidebar}
             style={{ position: "absolute", top: 10, right: 10 }}
@@ -32,7 +31,6 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
             <CloseIcon />
           </IconButton>
 
-          {/* Filter Header */}
           <Typography
             variant="h4"
             gutterBottom
@@ -49,7 +47,6 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
 
           <TextField label="Search" variant="outlined" fullWidth />
 
-          {/* Categories */}
           <Typography sx={{ mb: "20px", mt: "30px" }} variant="h6" gutterBottom>
             Categories
           </Typography>
@@ -151,7 +148,6 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
             />
           </RadioGroup>
 
-          {/* Custom Price Slider */}
           <Slider
             defaultValue={[0, 50000]}
             min={0}
@@ -176,7 +172,6 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
             sx={{ border: "1px solid black", mt: "10px", mb: "20px" }}
           />
 
-          {/* Brands */}
           <Typography variant="h6" gutterBottom>
             Brands
           </Typography>

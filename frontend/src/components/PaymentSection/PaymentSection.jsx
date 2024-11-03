@@ -7,13 +7,23 @@ import {
   Button,
   Typography,
 } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { setPaymentMethod } from "../../features/user/orderSlice";
+import { toast } from "react-toastify";
 
-const PaymentSection = ({ address, onEditAddress }) => {
-  const [paymentMethod, setPaymentMethod] = useState("creditCard");
+const PaymentSection = () => {
+  const [payment, setPayment] = useState("paypal");
+
+  const dispatch = useDispatch()
 
   const handlePaymentChange = (event) => {
-    setPaymentMethod(event.target.value);
+    setPayment(event.target.value);
   };
+
+  const handlePaymentMethod = () => {
+    dispatch(setPaymentMethod(payment))
+    toast.success("Saved Payment method")
+  }
 
   return (
     <Box
@@ -26,12 +36,11 @@ const PaymentSection = ({ address, onEditAddress }) => {
         color: "#FFFF",
       }}
     >
-      {/* Payment Method Selection */}
       <Typography variant="h6" sx={{ marginBottom: 2, color: "#fff" }}>
         Select Payment Method
       </Typography>
       <RadioGroup
-        value={paymentMethod}
+        value={payment}
         onChange={handlePaymentChange}
         sx={{ color: "#FFF" }}
       >
@@ -50,19 +59,16 @@ const PaymentSection = ({ address, onEditAddress }) => {
           control={<Radio sx={{ color: "#fff" }} />}
           label="Cash on Delivery"
         />
-      </RadioGroup>
-
-      {/* Display Selected Address */}
-      
+      </RadioGroup>      
 
       {/* Place Order Button */}
       <Button
         variant="contained"
         fullWidth
         sx={{ mt: 3, backgroundColor: "#FF7F11", color: "#FFF" }}
-        onClick={() => alert("Order Placed!")}
+        onClick={handlePaymentMethod}
       >
-        Place Order
+        Save Payment Method
       </Button>
     </Box>
   );

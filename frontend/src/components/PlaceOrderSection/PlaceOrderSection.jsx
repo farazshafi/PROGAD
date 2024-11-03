@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -6,15 +6,59 @@ import {
   Button,
   Card,
   Paper,
-  IconButton,
   Divider,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import Img1 from "../../assets/images/products/boat.jpeg";
-import Img2 from "../../assets/images/products/jbl.jpeg";
-import OurButton from "../OurButton/OurButton";
+import { useSelector } from "react-redux";
+import { selectedOrder } from "../../features/user/orderSlice";
+import { selectedUser } from "../../features/user/userSlice";
+import { selectedCart } from "../../features/user/cartSlice";
 
 const PlaceOrderSection = () => {
+  const orderDetails = useSelector(selectedOrder);
+  const user = useSelector(selectedUser);
+  const cartItems = useSelector(selectedCart);
+
+  const [summary, setSummary] = useState({
+    summary: 0,
+    tax: 0,
+    subTotal: 0,
+    total: 0,
+    delivery: 0,
+    offer: 0,
+    taxPercent: "",
+    offerPercentage: "",
+  });
+
+  const calculateSummary = () => {
+    const subTotal = cartItems.reduce(
+      (total, item) => total + item.quantity * item.price,
+      0
+    );
+    const taxRate = 0.011; //1.1%
+    // const offerDiscount = 0.2; // 20%
+
+    const tax = subTotal * taxRate;
+    // const discount = subTotal * offerDiscount;
+    const deliveryFee = subTotal > 500 ? 0 : 40;
+    const total = (subTotal + tax + deliveryFee).toFixed(2);
+    const taxPercentage = (taxRate * 100).toFixed(1) + "%";
+    // const offerPercentage = (offerDiscount * 100).toFixed(0) + "%";
+
+    setSummary({
+      subTotal,
+      tax,
+      delivery: deliveryFee,
+      // discount,
+      total,
+      taxPercent: taxPercentage,
+      // offerPercentage,
+    });
+  };
+
+  useEffect(()=>{
+    calculateSummary()
+  },[])
+
   return (
     <Box
       sx={{
@@ -24,7 +68,6 @@ const PlaceOrderSection = () => {
       }}
     >
       <Grid container spacing={4}>
-        {/* Address Section */}
         <Grid item lg={4} xs={12}>
           <Paper
             sx={{ padding: "20px", background: "#212121", color: "white" }}
@@ -35,23 +78,19 @@ const PlaceOrderSection = () => {
             />
             <Grid container justifyContent="space-between" alignItems="center">
               <Typography variant="body1">
-                Address: India, Kerala, Kasaragod, 671124, ABCo mahal po pattu,
-                house 314
+                Address: {orderDetails.shippingAddress.country},{" "}
+                {orderDetails.shippingAddress.state},{" "}
+                {orderDetails.shippingAddress.city},{" "}
+                {orderDetails.shippingAddress.zipCode},
+                {orderDetails.shippingAddress.street},{" "}
+                {orderDetails.shippingAddress.address},
+                {orderDetails.shippingAddress.apartment},{" "}
+                {orderDetails.shippingAddress.phoneNumber}
               </Typography>
             </Grid>
             <Typography variant="body1">User Details</Typography>
-            <Typography variant="body1">Faraz Shafi</Typography>
-            <Typography variant="body1">farazpchu777@gmail.com</Typography>
-            <IconButton
-              sx={{
-                color: "#fff",
-                backgroundColor: "#FF7F11",
-                marginTop: "10px",
-              }}
-              aria-label="edit address"
-            >
-              <EditIcon />
-            </IconButton>
+            <Typography variant="body1">{user.name}</Typography>
+            <Typography variant="body1">{user.email}</Typography>
           </Paper>
         </Grid>
 
@@ -68,11 +107,13 @@ const PlaceOrderSection = () => {
             <Divider
               sx={{ height: "1px", background: "white", margin: "10px 0" }}
             />
-            <Typography variant="body1">PayPal</Typography>
-            <Typography sx={{ mb: "20px" }} variant="body2">
-              Pay securely using your PayPal account.
+            <Typography variant="body1">
+              {orderDetails.paymentMethod}
             </Typography>
-            <OurButton w={"100"} text="Proceed with PayPal" />
+            <Typography sx={{ mb: "20px" }} variant="body2">
+              {/* Pay securely using your PayPal account. */}
+            </Typography>
+            {/* <OurButton w={"100"} text={`Proceed with ${orderDetails.paymentMethod}`} /> */}
           </Paper>
         </Grid>
 
@@ -85,57 +126,29 @@ const PlaceOrderSection = () => {
             <Divider
               sx={{ height: "1px", background: "white", margin: "10px 0" }}
             />
-            {/* Product 1 */}
-            <Grid container alignItems="center">
-              <Grid item xs={2}>
-                <img
-                  src={Img1}
-                  alt="Apple iPhone 15"
-                  style={{ width: "80px", height: "auto" }}
-                />
+            {cartItems.map((item) => (
+              <Grid key={item.id} container alignItems="center">
+                <Grid item xs={2}>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    style={{ width: "80px", height: "auto" }}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography variant="body1">
+                    {item.name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={3} textAlign="center">
+                  <Typography variant="body1">X{item.quantity}</Typography>
+                  <Typography variant="body1">Rs. {item.price}</Typography>
+                </Grid>
+                <Grid item xs={3} textAlign="right">
+                  <Typography variant="body1">Rs. {Number(item.quantity * item.price)}</Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body1">
-                  Apple iPhone 15 (Black, 128 GB)
-                </Typography>
-                <Typography variant="body2">
-                  A brief description will be placed here about the product...
-                </Typography>
-              </Grid>
-              <Grid item xs={3} textAlign="center">
-                <Typography variant="body1">X3</Typography>
-                <Typography variant="body1">Rs. 79,000</Typography>
-              </Grid>
-              <Grid item xs={3} textAlign="right">
-                <Typography variant="body1">Rs. 237,000</Typography>
-              </Grid>
-            </Grid>
-
-            {/* Product 2 */}
-            <Grid container alignItems="center" mt={2}>
-              <Grid item xs={2}>
-                <img
-                  src={Img2}
-                  alt="Apple iPhone 15"
-                  style={{ width: "80px", height: "auto" }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body1">
-                  Apple iPhone 15 (Black, 128 GB)
-                </Typography>
-                <Typography variant="body2">
-                  A brief description will be placed here about the product...
-                </Typography>
-              </Grid>
-              <Grid item xs={3} textAlign="center">
-                <Typography variant="body1">X3</Typography>
-                <Typography variant="body1">Rs. 79,000</Typography>
-              </Grid>
-              <Grid item xs={3} textAlign="right">
-                <Typography variant="body1">Rs. 237,000</Typography>
-              </Grid>
-            </Grid>
+            ))}
           </Paper>
         </Grid>
 
@@ -155,7 +168,8 @@ const PlaceOrderSection = () => {
                 variant="body1"
                 sx={{ fontFamily: '"Istok Web", sans-serif' }}
               >
-                Rs. 3,830,000/-
+                Rs. {summary.subTotal
+                }
               </Typography>
             </Grid>
             <Grid container justifyContent="space-between">
@@ -169,7 +183,7 @@ const PlaceOrderSection = () => {
                 variant="body1"
                 sx={{ fontFamily: '"Istok Web", sans-serif' }}
               >
-                3.5%
+                {summary.taxPercent}
               </Typography>
             </Grid>
             <Grid container justifyContent="space-between">
@@ -183,21 +197,7 @@ const PlaceOrderSection = () => {
                 variant="body1"
                 sx={{ fontFamily: '"Istok Web", sans-serif' }}
               >
-                Rs. 80/-
-              </Typography>
-            </Grid>
-            <Grid container justifyContent="space-between">
-              <Typography
-                variant="body1"
-                sx={{ fontFamily: '"Istok Web", sans-serif' }}
-              >
-                Coupon Discount
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ fontFamily: '"Istok Web", sans-serif' }}
-              >
-                20%
+                {summary.delivery === 0 ? "free" : "Rs. "+summary.delivery}
               </Typography>
             </Grid>
             <Divider sx={{ height: "1px", background: "white", mt: "20px" }} />
@@ -216,7 +216,7 @@ const PlaceOrderSection = () => {
                   color: "#FF7F11",
                 }}
               >
-                Rs. 2,330,000/-
+                Rs. {summary.total}/-
               </Typography>
             </Grid>
           </Card>
@@ -233,27 +233,9 @@ const PlaceOrderSection = () => {
           >
             <Button
               variant="contained"
-              sx={{ margin: "10px", backgroundColor: "#FFC439" }}
+              sx={{ margin: "10px", backgroundColor: "#FF7F11" }}
             >
-              PayPal
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ margin: "10px", backgroundColor: "#0079FF" }}
-            >
-              Venmo
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ margin: "10px", backgroundColor: "#FFCB01" }}
-            >
-              Pay Later
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ margin: "10px", backgroundColor: "#000" }}
-            >
-              Debit or Credit Card
+              Place Order
             </Button>
           </Card>
         </Grid>

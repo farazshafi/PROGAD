@@ -38,6 +38,7 @@ function App() {
           <Route path="/product_details/:id" element={<ProductDetailsPage />} />
           <Route path="/cart_process" element={<CartProcess />} /> 
           <Route path="/profile" element={<ProfilePage />} />
+          
           {/* admin route */}
           <Route path="/admin_login" element={<AdminLogin />} />
           <Route path="/admin_dashboard" element={<AdminDashboard />} />

@@ -18,7 +18,6 @@ const BreadCrums = ({text}) => {
             Profile
           </Link>
 
-          {/* Product Details Breadcrumb */}
           <Typography color="white">{text}</Typography>
         </Breadcrumbs>
       </div>

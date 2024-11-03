@@ -9,13 +9,26 @@ import Header from "../../../components/Header/Header";
 import ShippingSection from "../../../components/ShippingSection/ShippingSection";
 import PaymentSection from "../../../components/PaymentSection/PaymentSection";
 import PlaceOrderSection from "../../../components/PlaceOrderSection/PlaceOrderSection";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { selectedOrder, setShippingAddress } from "../../../features/user/orderSlice";
 
 const CartProcess = () => { 
-  const [tabIndex, setTabIndex] = useState(0); // state for tab switching
+  const orderDetails = useSelector(selectedOrder)
+
+  const [tabIndex, setTabIndex] = useState(0);
+
+  const dispatch = useDispatch()
 
   const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue); // updates the selected tab index
+    setTabIndex(newValue);
   };
+
+  const handleSelectedAddress = (address) => {
+    console.log("selected address" , address)
+    dispatch(setShippingAddress(address))
+    toast.success("Address saved")
+  }
 
   return (
     <>
@@ -32,8 +45,8 @@ const CartProcess = () => {
         {/* Tabs for switching between sections */}
         <Tabs
           sx={{ width: "100%" }}
-          value={tabIndex} // Controlled by tabIndex state
-          onChange={handleTabChange} // Handles tab change
+          value={tabIndex}
+          onChange={handleTabChange}
           centered
           TabIndicatorProps={{
             style: { backgroundColor: "#FF7F11" },
@@ -80,8 +93,8 @@ const CartProcess = () => {
         />
 
         {/* Conditionally Render Sections Based on the Selected Tab */}
-        {tabIndex === 0 && <ShippingSection />} {/* Shows ShippingSection if tab 0 is selected */}
-        {tabIndex === 1 && <PaymentSection />} {/* Shows PaymentSection if tab 1 is selected */}
+        {tabIndex === 0 && <ShippingSection selectedAddress={handleSelectedAddress}/>} 
+        {tabIndex === 1 && <PaymentSection />}
         {tabIndex === 2 && <PlaceOrderSection />}
       </Box>
     </>

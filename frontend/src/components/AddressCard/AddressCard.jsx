@@ -23,12 +23,15 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { selectedUser, setAllAddresses } from "../../features/user/userSlice";
 
-const AddressCard = () => {
+const AddressCard = ({ onAddressClick }) => {
   const user = useSelector(selectedUser);
 
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState("")
+
   const [editOpen, setEditOpen] = useState(false);
   const [editAddress, setEditAddress] = useState(null);
   const [newAddress, setNewAddress] = useState({
@@ -39,6 +42,8 @@ const AddressCard = () => {
     state: "",
     zipCode: "",
     country: "",
+    name: "",
+    address: "",
     phone: "",
     email: "",
     default: false,
@@ -61,13 +66,25 @@ const AddressCard = () => {
   };
 
   const handleAddAddress = async () => {
-    const { street, city, state, zipCode, phone, country, type } = newAddress;
+    const {
+      street,
+      city,
+      state,
+      zipCode,
+      phone,
+      country,
+      type,
+      name,
+      address,
+    } = newAddress;
 
     if (
       !street.trim() ||
       !city.trim() ||
       !state.trim() ||
       !country.trim() ||
+      !address.trim() ||
+      !name.trim() ||
       !type
     ) {
       toast.error("All fields are required.");
@@ -85,21 +102,26 @@ const AddressCard = () => {
     }
 
     try {
+      setLoading(true);
       const result = await createAddressApi(user._id, newAddress);
+      setLoading(false)
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
           console.log("Error fetching user address");
           toast.error(result.response.data.message);
+          setLoading(false);
           return;
         }
       }
       fetchAllUserAddresses();
       toast.success(result.data.message);
+      setLoading(false);
       handleClose(true);
     } catch (error) {
       toast.error(error);
       console.error("Error creating address:", error);
+      setLoading(false);
     }
   };
 
@@ -191,7 +213,6 @@ const AddressCard = () => {
         Add Address
       </Button>
 
-      {/* Modal for Creating Address */}
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-title">
         <Box
           sx={{
@@ -222,6 +243,26 @@ const AddressCard = () => {
             name="type"
             placeholder="Home"
             value={newAddress.type}
+            onChange={handleChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            required
+            label="Name"
+            name="name"
+            placeholder="John Smith"
+            value={newAddress.name}
+            onChange={handleChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            required
+            label="Address"
+            name="address"
+            placeholder="123 Main street"
+            value={newAddress.address}
             onChange={handleChange}
             fullWidth
             margin="dense"
@@ -312,7 +353,6 @@ const AddressCard = () => {
         </Box>
       </Modal>
 
-      {/* Modal for Edit Address */}
       <Modal
         open={editOpen}
         onClose={handleEditClose}
@@ -345,6 +385,22 @@ const AddressCard = () => {
             label="Type"
             name="type"
             value={editAddress?.type}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Name"
+            name="name"
+            value={editAddress?.name}
+            onChange={handleEditChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Address"
+            name="address"
+            value={editAddress?.address}
             onChange={handleEditChange}
             fullWidth
             margin="dense"
@@ -415,15 +471,25 @@ const AddressCard = () => {
             fullWidth
             margin="dense"
           />
-
-          <Button
-            onClick={handleEditAddress}
-            variant="contained"
-            sx={{ background: "black", color: "white", mt: 2 }}
-            fullWidth
-          >
-            Update Address
-          </Button>
+          {!loading ? (
+            <Button
+              onClick={handleEditAddress}
+              variant="contained"
+              sx={{ background: "black", color: "white", mt: 2 }}
+              fullWidth
+            >
+              Update Address
+            </Button>
+          ) : (
+            <Button
+              onClick={handleEditAddress}
+              variant="contained"
+              sx={{ background: "black", color: "white", mt: 2 }}
+              fullWidth
+            >
+              Updating....
+            </Button>
+          )}
         </Box>
       </Modal>
 
@@ -431,75 +497,85 @@ const AddressCard = () => {
         <Grid sx={{ marginTop: "20px" }} container spacing={2}>
           {user.addresses.map((address) => (
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={address.id}>
-              <Card
-                variant="outlined"
-                sx={{
-                  padding: 2,
-                  height:"200px",
-                  borderRadius: 2,
-                  position: "relative",
-                  background: "white",
-                  color: "black",
-                  transition: "transform 0.3s, box-shadow 0.3s",
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                    boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
-                  },
+              <div
+                onClick={() => {
+                  onAddressClick(address);
+                  setSelectedAddress(address._id);
                 }}
               >
-                <Box
-                  position="absolute"
-                  top={8}
-                  right={8}
-                  display="flex"
-                  gap={1}
+                <Card
+                  variant="outlined"
+                  sx={{
+                    border: selectedAddress === address._id ? "5px solid orange" : "",
+                    padding: 2,
+                    height: "250px",
+                    borderRadius: 2,
+                    position: "relative",
+                    background: "white",
+                    color: "black",
+                    transition: "transform 0.3s, box-shadow 0.3s",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
+                    },
+                  }}
                 >
-                  <IconButton
-                    color="inherit"
-                    size="small"
-                    aria-label="edit"
-                    onClick={() => {
-                      setEditAddress(address);
-                      setEditOpen(true);
-                    }}
+                  <Box
+                    position="absolute"
+                    top={8}
+                    right={8}
+                    display="flex"
+                    gap={1}
                   >
-                    <EditIcon />
-                  </IconButton>
+                    <IconButton
+                      color="inherit"
+                      size="small"
+                      aria-label="edit"
+                      onClick={() => {
+                        setEditAddress(address);
+                        setEditOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
 
-                  <IconButton
-                    color="inherit"
-                    size="small"
-                    aria-label="delete"
-                    onClick={() => handleDeleteAddress(address._id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
+                    <IconButton
+                      color="inherit"
+                      size="small"
+                      aria-label="delete"
+                      onClick={() => handleDeleteAddress(address._id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
 
-                <CardContent>
-                  <Typography variant="h6" fontWeight="bold">
-                    {address.type} {address.default && "(Default)"}
-                  </Typography>
-                  <Typography variant="body2">{address.street}</Typography>
-                  {address.apartmentNumber && (
-                    <Typography variant="body2">
-                      Apt/Suite: {address.apartmentNumber}
+                  <CardContent>
+                    <Typography variant="h6" fontWeight="bold">
+                      {address.type} {address.default && "(Default)"}
                     </Typography>
-                  )}
-                  <Typography variant="body2">
-                    {address.city}, {address.state} {address.zipCode}
-                  </Typography>
-                  <Typography variant="body2">{address.country}</Typography>
-                  <Typography variant="body2">
-                    Phone: {address.phoneNumber}
-                  </Typography>
-                  {address.email && (
+                    <Typography variant="body2">{address.name}</Typography>
+                    <Typography variant="body2">{address.address}</Typography>
+                    <Typography variant="body2">{address.street}</Typography>
+                    {address.apartmentNumber && (
+                      <Typography variant="body2">
+                        Apt/Suite: {address.apartmentNumber}
+                      </Typography>
+                    )}
                     <Typography variant="body2">
-                      Email: {address.email}
+                      {address.city}, {address.state} {address.zipCode}
                     </Typography>
-                  )}
-                </CardContent>
-              </Card>
+                    <Typography variant="body2">{address.country}</Typography>
+                    <Typography variant="body2">
+                      Phone: {address.phoneNumber}
+                    </Typography>
+                    {address.email && (
+                      <Typography variant="body2">
+                        Email: {address.email}
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </Grid>
           ))}
         </Grid>

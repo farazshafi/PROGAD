@@ -69,12 +69,10 @@ export const deleteAddressApi = async (id, userId) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      data: { userId },
     };
-    const data = await axios.delete(
-      `${API_URL}delete_address/${id}`,
-      userId,
-      config
-    );
+    console.log("test token ", config);
+    const data = await axios.delete(`${API_URL}delete_address/${id}`, config);
     return data;
   } catch (err) {
     console.log(err);
