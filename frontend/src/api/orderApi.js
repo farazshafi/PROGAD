@@ -94,3 +94,23 @@ export const listOrdersApi = async () => {
     return err;
   }
 };
+
+export const updateOrderStatusApi = async (id,status) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.patch(
+      `${API_URL}update_status/${id}`,
+      {status},
+      config
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};

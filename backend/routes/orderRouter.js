@@ -5,6 +5,7 @@ import {
   getOrderDetails,
   listAllOrders,
   makeOrder,
+  updateStatus,
 } from "../controllers/orderController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
@@ -15,5 +16,6 @@ router.get("/get_all_orders/userId/:id", protect, getAllOrders);
 router.get("/get_order_details/:id", protect, getOrderDetails);
 router.patch("/cancel_order/:id", protect, cancelOrder);
 router.get("/list_orders", protect, admin, listAllOrders);
+router.patch("/update_status/:id", protect, admin, updateStatus);
 
 export default router;

@@ -127,7 +127,7 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
 // @desc    cancel order
 // @route   GET /api/order/cancel_order/:id
 // @access  private
-export const cancelOrder = asyncHandler(async (req, res) => {
+export const  cancelOrder = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -155,6 +155,34 @@ export const listAllOrders = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "No orders found" });
     }
     res.status(200).json(allOrders)
+  } catch (err) {
+    console.error("Error getting orders:", err.message);
+    res.status(500).json({ message: "Server error while getting orders" });
+  }
+});
+
+
+// @desc    update order status 
+// @route   PATCH /api/order/update_order_status/:id
+// @access  private admin
+export const updateStatus = asyncHandler(async (req, res) => {
+  try {
+    const {status} = req.body
+    const { id } = req.params;
+
+    const orderDetails = await Order.findById(id)
+    if(!orderDetails){
+      return res.status(404).json({ message: "No orders found" });
+    }
+    const validStatuses = ["pending", "shipped", "delivered", "cancelled"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    orderDetails.status = status
+    await orderDetails.save()
+    res.status(200).json({ message: "Order status updated successfully" });
+
   } catch (err) {
     console.error("Error getting orders:", err.message);
     res.status(500).json({ message: "Server error while getting orders" });
