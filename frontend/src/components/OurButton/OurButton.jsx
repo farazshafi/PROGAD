@@ -9,7 +9,7 @@ const OurButton = ({ isLoading, text, type = "button", page, w, disabled }) => {
   return (
     <ChakraProvider>
       <Button
-        disabled = {disabled || false}
+        isDisabled = {disabled || false}
         isLoading={isLoading}
         color="white"
         type={type}

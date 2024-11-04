@@ -75,3 +75,22 @@ export const cancelOrderApi = async (orderId) => {
     return err;
   }
 };
+
+export const listOrdersApi = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.get(
+      `${API_URL}list_orders`,
+      config
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};

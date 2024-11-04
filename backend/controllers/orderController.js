@@ -85,7 +85,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
 });
 
 
-// @desc    get all orders
+// @desc    get all orders for user
 // @route   GET /api/order/get_all_orders/userId/:id
 // @access  private
 export const getAllOrders = asyncHandler(async (req, res) => {
@@ -138,6 +138,23 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     orderDetails.status = "cancelled"
     await orderDetails.save()
     res.status(200).json({ message: "Order cancelled successfully" });
+  } catch (err) {
+    console.error("Error getting orders:", err.message);
+    res.status(500).json({ message: "Server error while getting orders" });
+  }
+});
+
+
+// @desc    list all orders 
+// @route   GET /api/order/list_orders
+// @access  private admin
+export const listAllOrders = asyncHandler(async (req, res) => {
+  try {
+   const allOrders = await Order.find().populate("user","_id name email")
+    if (!allOrders) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+    res.status(200).json(allOrders)
   } catch (err) {
     console.error("Error getting orders:", err.message);
     res.status(500).json({ message: "Server error while getting orders" });

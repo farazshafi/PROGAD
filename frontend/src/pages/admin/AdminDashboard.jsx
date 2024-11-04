@@ -30,6 +30,7 @@ import { useSelector } from "react-redux";
 import { selectedAdmin } from "../../features/admin/adminSlice";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ListOrders from "./ListOrders";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -229,6 +230,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/logout":
       content = <AdminLogout />;
+      break;
+    case "/orders":
+      content = <ListOrders />;
       break;
     default:
       content = <div>Default Content</div>;

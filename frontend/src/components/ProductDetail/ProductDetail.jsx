@@ -225,7 +225,7 @@ const ProductDetail = ({ product }) => {
                     onClick={() => handleAddToCart(product)}
                     style={{ width: "100%" }}
                   >
-                    <OurButton page={"product_details"} text={"Add To Cart"} />
+                    <OurButton disabled={product.totalStock < 1 ? true : false} page={"product_details"} text={"Add To Cart"} />
                   </div>
                 </div>
               </div>
