@@ -122,3 +122,24 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while getting orders" });
   }
 });
+
+
+// @desc    cancel order
+// @route   GET /api/order/cancel_order/:id
+// @access  private
+export const cancelOrder = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const orderDetails = await Order.findById(id)
+    if (!orderDetails) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+    orderDetails.status = "cancelled"
+    await orderDetails.save()
+    res.status(200).json({ message: "Order cancelled successfully" });
+  } catch (err) {
+    console.error("Error getting orders:", err.message);
+    res.status(500).json({ message: "Server error while getting orders" });
+  }
+});

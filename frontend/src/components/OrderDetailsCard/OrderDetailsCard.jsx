@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getOrderDetailsApi } from "../../api/orderApi";
+import { cancelOrderApi, getOrderDetailsApi } from "../../api/orderApi";
 import Header from "../Header/Header";
 import BreadCrums from "../BreadCrums";
 import OurButton from "../OurButton/OurButton";
@@ -19,26 +19,44 @@ const OrderDetailsCard = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        const result = await getOrderDetailsApi(id);
-        console.log("result", result);
-        if (result.response) {
-          const { status } = result.response;
-          if (status === 400 || status === 500) {
-            toast.error(result.response.data.message);
-            return;
-          }
+  const fetchOrderDetails = async () => {
+    try {
+      const result = await getOrderDetailsApi(id);
+      console.log("result", result);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
         }
-        setOrder(result.data);
-      } catch (error) {
-        toast.error("Failed to fetch order details.");
-      } finally {
-        setLoading(false);
       }
-    };
+      setOrder(result.data);
+    } catch (error) {
+      toast.error("Failed to fetch order details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleCancelOrder = async () => {
+    try {
+      const result = await cancelOrderApi(order._id);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      toast.success(result.data.message);
+      fetchOrderDetails();
+    } catch (err) {
+      toast.error("Failed to cancel order");
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
     fetchOrderDetails();
   }, [id]);
 
@@ -71,8 +89,37 @@ const OrderDetailsCard = () => {
           <Typography variant="h6">Order ID: {order._id}</Typography>
           <Divider sx={{ marginY: "10px", background: "white" }} />
 
-          <Typography variant="body1">
-            <strong>Status:</strong> {order.status}
+          <Typography sx={{marginBottom:"10px"}} variant="body1">
+            <strong>Status:</strong>
+            <span
+              style={{
+                marginLeft:"5px",
+                padding: "3px",
+                borderRadius: "5px",
+                color:
+                  order.status === "pending"
+                    ? "black"
+                    : order.status === "shipped"
+                      ? "white"
+                      : order.status === "delivered"
+                        ? "black"
+                        : order.status === "cancelled"
+                          ? "white"
+                          : "gray",
+                backgroundColor:
+                  order.status === "pending"
+                    ? "yellow"
+                    : order.status === "shipped"
+                      ? "blue"
+                      : order.status === "delivered"
+                        ? "green"
+                        : order.status === "cancelled"
+                          ? "red"
+                          : "gray",
+              }}
+            >
+              {order.status}
+            </span>
           </Typography>
           <Typography variant="body1">
             <strong>Order Date:</strong>{" "}
@@ -139,7 +186,7 @@ const OrderDetailsCard = () => {
             </Typography>
           </Box>
           {order.status === "pending" && (
-            <div style={{ marginTop: "20px" }}>
+            <div onClick={handleCancelOrder} style={{ marginTop: "20px" }}>
               <OurButton w={"100"} text={"Cancel Order"} />
             </div>
           )}

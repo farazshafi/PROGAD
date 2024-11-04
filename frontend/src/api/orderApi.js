@@ -10,18 +10,13 @@ export const makeOrderApi = async (OrderData) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    const data = await axios.post(
-      `${API_URL}make_order`,
-      OrderData,
-      config
-    );
+    const data = await axios.post(`${API_URL}make_order`, OrderData, config);
     return data;
   } catch (err) {
     console.log(err);
     return err;
   }
 };
-
 
 export const getAllOrdersApi = async (userId) => {
   try {
@@ -42,7 +37,6 @@ export const getAllOrdersApi = async (userId) => {
   }
 };
 
-
 export const getOrderDetailsApi = async (orderId) => {
   try {
     const token = JSON.parse(localStorage.getItem("user")).token;
@@ -53,6 +47,26 @@ export const getOrderDetailsApi = async (orderId) => {
     };
     const data = await axios.get(
       `${API_URL}get_order_details/${orderId}`,
+      config
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};
+
+export const cancelOrderApi = async (orderId) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.patch(
+      `${API_URL}cancel_order/${orderId}`,
+      null,
       config
     );
     return data;
