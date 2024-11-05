@@ -68,3 +68,23 @@ export const editUserApi = async (userDetails) => {
     return e;
   }
 };
+
+export const updatePasswordApi = async (password) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const { data } = await axios.patch(
+      `${API_URL}/update_password`,
+      password,
+      config
+    );
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};

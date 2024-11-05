@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { selectedUser } from "../../features/user/userSlice";
 import AddressCard from "../AddressCard/AddressCard";
 import OrderList from "../../pages/user/OrderList/OrderList";
+import ResetPassword from "../../pages/user/ResetPasswordPage/ResetPasswordPage";
 
 const Input = styled("input")({
   display: "none",
@@ -131,6 +132,7 @@ const ProfileHeader = () => {
             {tabIndex === 0 && <UserProfileCard user={user} />}
             {tabIndex === 1 && <OrderList />}
             {tabIndex === 2 && <AddressCard onAddressClick={handleClick} />}
+            {tabIndex === 3 && <ResetPassword />}
           </>
         )}
       </Box>

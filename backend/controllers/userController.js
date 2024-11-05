@@ -316,3 +316,33 @@ export const editUser = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while updating user" });
   }
 });
+
+// @desc    Update password
+// @route   PATCH /api/user/update_password/
+// @access  private
+export const updatePassword = asyncHandler(async (req, res) => {
+  try {
+    const {currentPassword, newPassword , confirmPassword, userId} = req.body
+
+    const user = await User.findById(userId)
+    if(!user){
+      return res.status(400).json({ message: "User not found" });
+    }
+    
+    const isMatch = await user.matchPassword(currentPassword)
+    if(!isMatch){
+      return res.status(400).json({ message: "Invalid current password" });
+    }
+    
+    if(newPassword!== confirmPassword){
+      return res.status(400).json({ message: "New password and confirm password do not match" });
+    }
+    
+    user.password = newPassword
+    await user.save()
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Error updating password:", err);
+    res.status(500).json({ message: "Server error while updating password" });
+  }
+});
