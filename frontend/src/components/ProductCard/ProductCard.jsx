@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { Row, Col, Container } from "react-bootstrap";
-import sonyImg from "../../assets/images/products/sony.jpeg";
 import OurButton from "../OurButton/OurButton";
 import { useSelector } from "react-redux";
 import { selectedProduct } from "../../features/product/productSlice";

@@ -3,10 +3,20 @@ import Header from "../../../components/Header/Header";
 import Footer from "../../../components/Footer/Footer";
 import FilterSideBar from "../../../components/FilterSideBar/FilterSideBar";
 import ProductCard from "../../../components/ProductCard/ProductCard";
-import { Breadcrumbs, Button, Link, Typography } from "@mui/material";
-import { getAllProductsApi } from "../../../api/productApi";
+import {
+  Breadcrumbs,
+  Button,
+  Link,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
+import {
+  getAllProductsApi,
+  getSortedProductApi,
+} from "../../../api/productApi";
 import { useDispatch, useSelector } from "react-redux";
-import {Link as RouterLink} from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom";
 import {
   selectedProduct,
   setProducts,
@@ -17,8 +27,13 @@ const ProductsPage = () => {
   const products = useSelector(selectedProduct);
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [sortOption, setSortOption] = useState("default");
 
   const dispatch = useDispatch();
+
+  const handleSortChange = (event) => {
+    setSortOption(event.target.value);
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
@@ -41,9 +56,27 @@ const ProductsPage = () => {
     }
   };
 
+  const fetchSortedProducts = async () => {
+    try {
+      const { data } = await getSortedProductApi(sortOption);
+      if (data) {
+        dispatch(setProducts(data));
+      }
+    } catch (err) {
+      toast.error("Failed to sort products. Please try again.");
+      console.error("Fetch Sorted Products Error:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (sortOption !== "default") {
+      fetchSortedProducts();
+    }
+  }, [sortOption]);
 
   return (
     <React.Fragment>
@@ -72,26 +105,36 @@ const ProductsPage = () => {
 
       <FilterSideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Flexbox container for aligning button to the right */}
-      
-
-      <div style={{ padding: "10px 50px", marginBottom: "10px" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: "20px",
-          }}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          padding: "10px 50px",
+        }}
+      >
+        <Select
+          value={sortOption}
+          onChange={handleSortChange}
+          displayEmpty
+          sx={{ minWidth: 150, background: "#ffff", marginRight: "10px" }}
         >
-          <Button
-            size="small"
-            sx={{ backgroundColor: "#FF7F11" }}
-            variant="contained"
-            onClick={toggleSidebar}
-          >
-            <Typography>{isSidebarOpen ? "Close" : "Filter"}</Typography>
-          </Button>
-        </div>
+          <MenuItem value="default">Sort By</MenuItem>
+          <MenuItem value="lowToHigh">Low to High</MenuItem>
+          <MenuItem value="highToLow">High to Low</MenuItem>
+          <MenuItem value="Aa-Zz">Aa-Zz</MenuItem>
+          <MenuItem value="zZ-aA">zZ-aA</MenuItem>
+          <MenuItem value="newArrival">New Arrival</MenuItem>
+          <MenuItem value="featured">Featured</MenuItem>
+        </Select>
+
+        <Button
+          size="small"
+          sx={{ backgroundColor: "#FF7F11" }}
+          variant="contained"
+          onClick={toggleSidebar}
+        >
+          <Typography>{isSidebarOpen ? "Close" : "Filter"}</Typography>
+        </Button>
       </div>
 
       <Typography

@@ -171,8 +171,8 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
           <Divider
             sx={{ border: "1px solid black", mt: "10px", mb: "20px" }}
           />
-
-          <Typography variant="h6" gutterBottom>
+          {/* brand */}
+          {/* <Typography variant="h6" gutterBottom>
             Brands
           </Typography>
           <FormGroup>
@@ -216,7 +216,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
               }
               label="Samsung"
             />
-          </FormGroup>
+          </FormGroup> */}
         </div>
       </Drawer>
     </React.Fragment>
