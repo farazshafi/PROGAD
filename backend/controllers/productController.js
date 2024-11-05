@@ -278,6 +278,7 @@ export const getProductDetails = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while getting products" });
   }
 });
+
 // @desc    update product by id
 // @route   PUT /api/product/update_product/:id
 // @access  private admin
@@ -336,5 +337,47 @@ export const updateProduct = asyncHandler(async (req, res) => {
   } catch (err) {
     console.error("Error updating product:", err.message);
     res.status(500).json({ message: "Server error while updating product" });
+  }
+});
+
+// @desc    get sorted product
+// @route   GET /api/product/sort_product?sortBy=""
+// @access  Public
+export const getSortedProduct = asyncHandler(async (req, res) => {
+  try {
+    const { sortBy } = req.query;
+    if(sortBy === undefined){
+      return res.status(400).json({ message: "Sort by query parameter is required" });
+    }
+    let sortCriteria = {}
+
+    switch(sortBy){
+      case "lowToHigh":
+        sortCriteria = {discountPrice:1};
+        break;
+      case "highToLow":
+        sortCriteria = {discountPrice:-1};
+        break;
+      case "newArrival":
+        sortCriteria = {createdAt:-1};
+        break;
+      case "Aa-Zz":
+        sortCriteria = {name:-1};
+        break;
+      case "zZ-aA":
+        sortCriteria = {name:1};
+        break;
+      case "featured":
+        sortCriteria = {isFeatured:1};
+        break;
+      default:
+    }
+    
+    const sortedProduct = await Product.find().sort(sortCriteria)
+    res.status(200).json(sortedProduct)
+
+  } catch (err) {
+    console.error("Error sorting product:", err.message);
+    res.status(500).json({ message: "Server error while sorting product" });
   }
 });
