@@ -17,6 +17,7 @@ import { FaSearch, FaUser } from "react-icons/fa";
 import "./Header.css";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, selectedUser } from "../../features/user/userSlice";
+import AnimatedSearchBar from "../AnimatedSearchBar";
 
 const Header = ({ navbar = true }) => {
   const user = useSelector(selectedUser);
@@ -52,9 +53,9 @@ const Header = ({ navbar = true }) => {
                   <Navbar.Brand>
                     <Text
                       fontSize={{ base: "15px" }}
-                      display={{base:"none", lg:"inline-block"}}
+                      display={{ base: "none", lg: "inline-block" }}
                       pt={{ md: "20px" }}
-                      className="nav-progad"
+                      className="nav-progad "
                     >
                       PROGAD
                     </Text>
@@ -164,16 +165,8 @@ const Header = ({ navbar = true }) => {
                 <Box id="box3" display={{ base: "none", lg: "flex" }}>
                   <Box className="nav-icons">
                     {/* Search Icon */}
-                    <Center
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        borderRadius: "50%",
-                        backgroundColor: "#262626",
-                      }}
-                    >
-                      <FaSearch color="white" />
-                    </Center>
+
+                    <AnimatedSearchBar />
 
                     {/* Profile Dropdown */}
                     <Menu>

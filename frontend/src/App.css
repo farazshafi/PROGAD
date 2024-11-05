@@ -2,3 +2,8 @@ body{
     margin: 0;
     background-color: #262626 !important;
 }
+
+/* index.css or App.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
