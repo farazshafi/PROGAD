@@ -210,6 +210,8 @@ export const login = asyncHandler(async (req, res) => {
           isAdmin: userExist.isAdmin,
           isVerified: userExist.isVerified,
           phoneNumber: userExist.phoneNumber,
+          city: userExist.city,
+          country: userExist.country,
           addresses: userExist.addresses || null,
           token: generateTokens(),
         },
@@ -237,6 +239,9 @@ export const login = asyncHandler(async (req, res) => {
       role: userExist.role,
       isAdmin: userExist.isAdmin,
       isVerified: userExist.isVerified,
+      city: userExist.city,
+      country: userExist.country,
+      phone: userExist.phone,
       addresses: userExist.addresses || null,
       token: generateTokens(userExist._id),
     },
@@ -274,5 +279,40 @@ export const resendOtp = asyncHandler(async (req, res) => {
   } catch (err) {
     console.error("Error sending OTP:", err);
     res.status(400).json({ message: "Error sending OTP", error: err.message });
+  }
+});
+
+// @desc    Edit User
+// @route   PATCH /api/user/edit_user/
+// @access  private
+export const editUser = asyncHandler(async (req, res) => {
+  try {
+    const { userId, name, email, city, country, phone } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    if (email) {
+      const userExist = await User.findOne({ email });
+      if (userExist && userExist._id.toString() !== userId) {
+        return res
+          .status(400)
+          .json({ message: "Email already associated with another account." });
+      }
+    }
+
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (city) updateFields.city = city;
+    if (country) updateFields.country = country;
+    if (phone) updateFields.phoneNumber = phone;
+
+    await User.findByIdAndUpdate(userId, updateFields, { new: true });
+    res.status(200).json({ message: "updated successfully" });
+
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ message: "Server error while updating user" });
   }
 });

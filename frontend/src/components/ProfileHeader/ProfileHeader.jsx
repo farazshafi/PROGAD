@@ -126,9 +126,13 @@ const ProfileHeader = () => {
 
       {/* Content Section */}
       <Box mt={3}>
-        {tabIndex === 0 && <UserProfileCard user={user} />}
-        {tabIndex === 1 && <OrderList />}
-        {tabIndex === 2 && <AddressCard onAddressClick={handleClick} />}
+        {user && (
+          <>
+            {tabIndex === 0 && <UserProfileCard user={user} />}
+            {tabIndex === 1 && <OrderList />}
+            {tabIndex === 2 && <AddressCard onAddressClick={handleClick} />}
+          </>
+        )}
       </Box>
     </Box>
   );

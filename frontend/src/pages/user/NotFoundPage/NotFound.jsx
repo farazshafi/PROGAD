@@ -9,15 +9,17 @@ import {
   ChakraProvider,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import Header from "../../../components/Header/Header";
 
 const NotFoundPage = () => {
   return (
     <ChakraProvider>
+      <Header />
       <Box
         textAlign="center"
         py={10}
         px={6}
-        h="100vh"
+        h="70vh"
         display="flex"
         flexDirection="column"
         justifyContent="center"
