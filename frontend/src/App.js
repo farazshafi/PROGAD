@@ -41,13 +41,15 @@ function App() {
           <Route path="/cart_process" element={<CartProcess />} /> 
           <Route path="/order_success" element={<OrderSuccessPage />} /> 
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/order_details/:id" element={<OrderDetailsCard />} />
+          <Route path="/order_details/:id" element={<OrderDetailsCard isAdmin={false}/>} />
 
           
           {/* admin route */}
           <Route path="/admin_login" element={<AdminLogin />} />
           <Route path="/admin_dashboard" element={<AdminDashboard />} />
           <Route path="/admin_dashboard/product/edit_product/:id" element={<EditProduct />} />
+          <Route path="/admin_dashboard/order_details/:id" element={<OrderDetailsCard isAdmin={true}/>} />
+
 
           {/* 404 page */}
           <Route path="*" element={<NotFoundPage />} />

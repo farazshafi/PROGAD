@@ -187,7 +187,7 @@ const AddressCard = ({ onAddressClick }) => {
 
   const fetchAllUserAddresses = async () => {
     try {
-      const result = await getAllAddressesApi(user._id);
+      const result = await getAllAddressesApi(user?._id);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -493,7 +493,7 @@ const AddressCard = ({ onAddressClick }) => {
         </Box>
       </Modal>
 
-      {user.addresses && (
+      {user?.addresses && (
         <Grid sx={{ marginTop: "20px" }} container spacing={2}>
           {user.addresses.map((address) => (
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={address.id}>

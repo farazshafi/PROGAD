@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Tabs,
@@ -12,13 +12,17 @@ import PlaceOrderSection from "../../../components/PlaceOrderSection/PlaceOrderS
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedOrder, setShippingAddress } from "../../../features/user/orderSlice";
+import { selectedUser } from "../../../features/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
-const CartProcess = () => { 
+const CartProcess = () => {
+  const user = useSelector(selectedUser)
   const orderDetails = useSelector(selectedOrder)
 
   const [tabIndex, setTabIndex] = useState(0);
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -29,6 +33,13 @@ const CartProcess = () => {
     dispatch(setShippingAddress(address))
     toast.success("Address saved")
   }
+
+  useEffect(()=>{
+    if(!user){
+      toast.error("Please login to proceed")
+      navigate("/login")
+    }
+  },[])
 
   return (
     <>

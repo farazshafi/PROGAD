@@ -14,7 +14,7 @@ import Header from "../Header/Header";
 import BreadCrums from "../BreadCrums";
 import OurButton from "../OurButton/OurButton";
 
-const OrderDetailsCard = () => {
+const OrderDetailsCard = ({ isAdmin }) => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -65,7 +65,7 @@ const OrderDetailsCard = () => {
 
   return (
     <>
-      <Header />
+      {!isAdmin && <Header />}
       <Box
         sx={{
           padding: "20px",
@@ -77,7 +77,7 @@ const OrderDetailsCard = () => {
         <Typography variant="h4" sx={{ mb: 3, textAlign: "center" }}>
           Order Details
         </Typography>
-        <BreadCrums text={"Order Details"} />
+        <BreadCrums isAdmin={true} text={"Order Details"} />
         <Card
           sx={{
             padding: "20px",
@@ -89,11 +89,11 @@ const OrderDetailsCard = () => {
           <Typography variant="h6">Order ID: {order._id}</Typography>
           <Divider sx={{ marginY: "10px", background: "white" }} />
 
-          <Typography sx={{marginBottom:"10px"}} variant="body1">
+          <Typography sx={{ marginBottom: "10px" }} variant="body1">
             <strong>Status:</strong>
             <span
               style={{
-                marginLeft:"5px",
+                marginLeft: "5px",
                 padding: "3px",
                 borderRadius: "5px",
                 color:

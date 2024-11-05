@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MenuItem,
   TextField,
@@ -13,8 +13,13 @@ import {
 import OurButton from "../OurButton/OurButton";
 import AddressCard from "../AddressCard/AddressCard";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { selectedUser } from "../../features/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const ShippingSection = ({selectedAddress}) => {
+  const user = useSelector(selectedUser)
+
   const [address, setAddress] = useState({
     name: "",
     address: "",
@@ -27,6 +32,8 @@ const ShippingSection = ({selectedAddress}) => {
     phoneNumber: "",
     email: "",
   });
+
+  const navigate = useNavigate()
 
   const handleAddressClick = (address) => {
     setAddress({
@@ -51,6 +58,13 @@ const ShippingSection = ({selectedAddress}) => {
     }
     selectedAddress(address)
   }
+
+  // useEffect(()=>{
+  //   if(!user){
+  //     toast.error("Please login to proceed")
+  //     navigate("/login")
+  //   }
+  // },[])
 
   return (
     <Box sx={{ padding: { sm: "0px 10px", lg: "0px 80px", xs: "0px 7px" } }}>

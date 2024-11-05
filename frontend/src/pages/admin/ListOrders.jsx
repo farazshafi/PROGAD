@@ -212,7 +212,7 @@ const ListOrders = () => {
                     onClose={handleMenuClose}
                   >
                     <MenuItem
-                      onClick={() => navigate(`/order/${selectedOrder?._id}`)}
+                      onClick={() => navigate(`/admin_dashboard/order_details/${selectedOrder._id}`)}
                     >
                       <FaEye style={{ marginRight: 8 }} /> View
                     </MenuItem>
