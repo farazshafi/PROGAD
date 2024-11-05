@@ -62,6 +62,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
       }
 
       product.totalStock -= item.quantity;
+      product.sold += item.quantity;
       await product.save();
     }
 
@@ -136,6 +137,7 @@ export const  cancelOrder = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "No orders found" });
     }
     orderDetails.status = "cancelled"
+    
     await orderDetails.save()
     res.status(200).json({ message: "Order cancelled successfully" });
   } catch (err) {

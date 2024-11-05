@@ -381,3 +381,19 @@ export const getSortedProduct = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while sorting product" });
   }
 });
+
+
+// @desc    get sorted product
+// @route   GET /api/product/search_product?keyword=""
+// @access  Public
+export const searchProducts = asyncHandler(async (req, res) => {
+  try {
+    const {keyword} = req.query
+    if(keyword === undefined){
+      return res.status(400).json({ message: "Keyword query parameter is required" });
+    }
+  } catch (err) {
+    console.error("Error searching product:", err.message);
+    res.status(500).json({ message: "Server error while searching product" });
+  }
+});
