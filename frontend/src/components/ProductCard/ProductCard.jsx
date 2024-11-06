@@ -104,7 +104,7 @@ const ProductCard = ({ page }) => {
               <h2 style={{ color: "white" }}>No Products Found</h2>
             </div>
           )}
-        </Row>
+        </Row>        
       </Container>
     </React.Fragment>
   );

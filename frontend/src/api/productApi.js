@@ -71,5 +71,15 @@ export const getSortedProductApi = async (sort) => {
   }
 }
 
+export const getRelatedProductApi = async (id) => {
+  try{
+    const response = await axios.get(`${API_URL}/related_product/${id}`)
+    return response;
+  }catch(err){
+    console.log(err);
+    return err;
+  }
+}
+
 
 

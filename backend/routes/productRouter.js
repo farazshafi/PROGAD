@@ -3,6 +3,7 @@ import {
   createProduct,
   getAllProduct,
   getProductDetails,
+  getRelatedProduct,
   getSortedProduct,
   handlePublicChange,
   updateProduct
@@ -27,5 +28,6 @@ router.patch("/handle_public_change/:id", handlePublicChange);
 router.get("/product_details/:id", getProductDetails);
 router.put("/update_product/:id",updateProduct);
 router.get("/sort_product",getSortedProduct)
+router.get("/related_product/:id",getRelatedProduct)
 
 export default router;

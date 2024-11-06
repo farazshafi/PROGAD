@@ -394,3 +394,21 @@ export const getSortedProduct = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while sorting product" });
   }
 });
+
+
+// @desc    get sorted product
+// @route   GET /api/product/relatedProduct/category_id/:id
+// @access  Public
+export const getRelatedProduct = asyncHandler(async (req, res) => {
+  try {
+    const {id} = req.params
+    const product = await Product.find({category:id})
+    if(!product){
+      return res.status(404).json({ message: "No related product found" });
+    }
+    res.status(200).json(product);
+  } catch (err) {
+    console.error("Error related product:", err.message);
+    res.status(500).json({ message: "Server error while related product" });
+  }
+});
