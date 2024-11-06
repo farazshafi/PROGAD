@@ -13,6 +13,8 @@ import {
   Box,
   IconButton,
   Menu,
+  Stack,
+  Pagination,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +32,9 @@ const ListOrders = () => {
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [page,setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1);
+
 
   const navigate = useNavigate();
 
@@ -84,18 +89,23 @@ const ListOrders = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await listOrdersApi();
+      const { data } = await listOrdersApi(page);
       console.log("fetched orders", data);
-      setOrders(data);
+      setOrders(data.allOrders);
+      setTotalPages(data.totalPages)
     } catch (err) {
       toast.error("Failed to fetch orders. Please try again.");
       console.error("Fetch Orders Error:", err);
     }
   };
 
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
+
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [page]);
 
   const filteredOrders = orders?.filter((order) => {
     const matchesStatus =
@@ -240,6 +250,19 @@ const ListOrders = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Stack spacing={2} alignItems="center" marginTop={4}>
+        <Pagination
+          shape="rounded"
+          sx={{
+            "& .MuiPaginationItem-root": {
+              color: "white", 
+            },
+          }}
+          count={totalPages}
+          page={page}
+          onChange={handleChange}
+        />
+      </Stack>
     </Box>
   );
 };

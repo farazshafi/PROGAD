@@ -54,11 +54,9 @@ export const makeOrder = asyncHandler(async (req, res) => {
       }
 
       if (product.stock < item.quantity) {
-        return res
-          .status(400)
-          .json({
-            message: `Product ${product.name} has only ${product.stock} left`,
-          });
+        return res.status(400).json({
+          message: `Product ${product.name} has only ${product.stock} left`,
+        });
       }
 
       product.totalStock -= item.quantity;
@@ -85,7 +83,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
   }
 });
 
-
 // @desc    get all orders for user
 // @route   GET /api/order/get_all_orders/userId/:id
 // @access  private
@@ -93,18 +90,18 @@ export const getAllOrders = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const allOrders = await Order.find({user:id}).populate("shippingAddress")
+    const allOrders = await Order.find({ user: id }).populate(
+      "shippingAddress"
+    );
     if (!allOrders) {
       return res.status(404).json({ message: "No orders found" });
     }
-    res.status(200).json(allOrders)
-    
+    res.status(200).json(allOrders);
   } catch (err) {
     console.error("Error getting orders:", err.message);
     res.status(500).json({ message: "Server error while getting orders" });
   }
 });
-
 
 // @desc    get order by id
 // @route   GET /api/order/get_order_details/:id
@@ -113,32 +110,33 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const orderDetails = await Order.findById(id).populate("shippingAddress").populate("items.id", "images name")
+    const orderDetails = await Order.findById(id)
+      .populate("shippingAddress")
+      .populate("items.id", "images name");
     if (!orderDetails) {
       return res.status(404).json({ message: "No orders found" });
     }
-    res.status(200).json(orderDetails)
+    res.status(200).json(orderDetails);
   } catch (err) {
     console.error("Error getting orders:", err.message);
     res.status(500).json({ message: "Server error while getting orders" });
   }
 });
 
-
 // @desc    cancel order
 // @route   GET /api/order/cancel_order/:id
 // @access  private
-export const  cancelOrder = asyncHandler(async (req, res) => {
+export const cancelOrder = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const orderDetails = await Order.findById(id)
+    const orderDetails = await Order.findById(id);
     if (!orderDetails) {
       return res.status(404).json({ message: "No orders found" });
     }
-    orderDetails.status = "cancelled"
-    
-    await orderDetails.save()
+    orderDetails.status = "cancelled";
+
+    await orderDetails.save();
     res.status(200).json({ message: "Order cancelled successfully" });
   } catch (err) {
     console.error("Error getting orders:", err.message);
@@ -146,34 +144,46 @@ export const  cancelOrder = asyncHandler(async (req, res) => {
   }
 });
 
-
-// @desc    list all orders 
+// @desc    list all orders
 // @route   GET /api/order/list_orders
 // @access  private admin
 export const listAllOrders = asyncHandler(async (req, res) => {
   try {
-   const allOrders = await Order.find().populate("user","_id name email")
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const totalOrders = await Order.countDocuments();
+    const allOrders = await Order.find()
+      .populate("user", "_id name email")
+      .limit(limit)
+      .skip(skip);
     if (!allOrders) {
       return res.status(404).json({ message: "No orders found" });
     }
-    res.status(200).json(allOrders)
+    res
+      .status(200)
+      .json({
+        allOrders,
+        currentPage: page,
+        totalPages: Math.ceil(totalOrders / limit),
+        totalOrders,
+      });
   } catch (err) {
     console.error("Error getting orders:", err.message);
     res.status(500).json({ message: "Server error while getting orders" });
   }
 });
 
-
-// @desc    update order status 
+// @desc    update order status
 // @route   PATCH /api/order/update_order_status/:id
 // @access  private admin
 export const updateStatus = asyncHandler(async (req, res) => {
   try {
-    const {status} = req.body
+    const { status } = req.body;
     const { id } = req.params;
 
-    const orderDetails = await Order.findById(id)
-    if(!orderDetails){
+    const orderDetails = await Order.findById(id);
+    if (!orderDetails) {
       return res.status(404).json({ message: "No orders found" });
     }
     const validStatuses = ["pending", "shipped", "delivered", "cancelled"];
@@ -181,10 +191,9 @@ export const updateStatus = asyncHandler(async (req, res) => {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    orderDetails.status = status
-    await orderDetails.save()
+    orderDetails.status = status;
+    await orderDetails.save();
     res.status(200).json({ message: "Order status updated successfully" });
-
   } catch (err) {
     console.error("Error getting orders:", err.message);
     res.status(500).json({ message: "Server error while getting orders" });

@@ -76,7 +76,7 @@ export const cancelOrderApi = async (orderId) => {
   }
 };
 
-export const listOrdersApi = async () => {
+export const listOrdersApi = async (page) => {
   try {
     const token = JSON.parse(localStorage.getItem("admin")).token;
     const config = {
@@ -85,7 +85,7 @@ export const listOrdersApi = async () => {
       },
     };
     const data = await axios.get(
-      `${API_URL}list_orders`,
+      `${API_URL}list_orders?page=${page}&limit=${10}`,
       config
     );
     return data;

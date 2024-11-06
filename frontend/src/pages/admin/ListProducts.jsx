@@ -17,6 +17,8 @@ import {
   Divider,
   IconButton,
   Menu,
+  Stack,
+  Pagination,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
 import { getAllProductsApi } from "../../api/adminApi";
@@ -27,17 +29,21 @@ import {
   setAdminProducts,
 } from "../../features/admin/adminSlice";
 import { handlePublicChangeApi } from "../../api/productApi";
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 const ListProducts = () => {
   const products = useSelector(selectedAdminProducts);
+
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStock, setSelectedStock] = useState("All");
   const [selectedPublishStatus, setSelectedPublishStatus] = useState("All");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // State for handling the Menu component for each product
   const [anchorEl, setAnchorEl] = useState(null);
@@ -66,14 +72,16 @@ const ListProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await getAllProductsApi();
+      const { data } = await getAllProductsApi(page);
+      console.log("the data , ", data);
       if (data.response) {
         const { status } = data.response;
         if (status === 400 || status === 500) {
           toast.error(data.response.data.message);
         }
       } else {
-        dispatch(setAdminProducts(data));
+        dispatch(setAdminProducts(data.products));
+        setTotalPages(data.totalPages);
       }
     } catch (err) {
       toast.error("Failed to fetch products. Please try again.");
@@ -105,17 +113,21 @@ const ListProducts = () => {
   };
 
   const handleEdit = (product) => {
-    navigate(`/admin_dashboard/product/edit_product/${selectedProduct._id}`)
+    navigate(`/admin_dashboard/product/edit_product/${selectedProduct._id}`);
     handleClose();
   };
 
   const handleDelete = (productId) => {
-    handleClose()
+    handleClose();
+  };
+
+  const handleChange = (event, value) => {
+    setPage(value);
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts(page);
+  }, [page]);
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
@@ -291,6 +303,19 @@ const ListProducts = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Stack spacing={2} alignItems="center" marginTop={4}>
+        <Pagination
+          shape="rounded"
+          sx={{
+            "& .MuiPaginationItem-root": {
+              color: "white", 
+            },
+          }}
+          count={totalPages}
+          page={page}
+          onChange={handleChange}
+        />
+      </Stack>
     </Box>
   );
 };

@@ -17,16 +17,13 @@ import {
   IconButton,
   Menu,
   Divider,
+  Stack,
+  Pagination,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
-import {
-  getAllUsers,
-  blockUnblockUser,
-  deleteUserApi,
-} from "../../api/adminApi";
+import { getAllUsers, blockUnblockUser } from "../../api/adminApi";
 import { MdEdit, MdBlock } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
-import { FaRegTrashAlt } from "react-icons/fa";
 
 const ListUsers = () => {
   const [users, setUsers] = useState([]);
@@ -36,6 +33,8 @@ const ListUsers = () => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Filter users based on search term, role, and banned status
   const filteredUsers = users.filter((user) => {
@@ -49,16 +48,17 @@ const ListUsers = () => {
   });
 
   const fetchUsers = async () => {
-    const data = await getAllUsers();
-    setUsers(data);
+    const data = await getAllUsers(page);
+    setUsers(data.users);
+    setTotalPages(data.totalPages);
   };
 
   const totalUsers = users.length;
   const bannedUsers = users.filter((user) => user.isBlocked).length;
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers(page);
+  }, [page]);
 
   const handleMenuClick = (event, user) => {
     setAnchorEl(event.currentTarget);
@@ -92,9 +92,13 @@ const ListUsers = () => {
     handleClose();
   };
 
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
+
   const handleView = async () => {
     // const data = await deleteUserApi(selectedUser._id);
-    fetchUsers()
+    fetchUsers();
     handleClose();
   };
 
@@ -285,6 +289,19 @@ const ListUsers = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Stack spacing={2} alignItems="center" marginTop={4}>
+        <Pagination
+          shape="rounded"
+          sx={{
+            "& .MuiPaginationItem-root": {
+              color: "white",
+            },
+          }}
+          count={totalPages}
+          page={page}
+          onChange={handleChange}
+        />
+      </Stack>
     </Box>
   );
 };

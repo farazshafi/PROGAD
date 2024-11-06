@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Card, Paper, Divider } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectedOrder } from "../../features/user/orderSlice";
 import { selectedUser } from "../../features/user/userSlice";
-import { selectedCart } from "../../features/user/cartSlice";
+import { clearCart, selectedCart } from "../../features/user/cartSlice";
 import { makeOrderApi } from "../../api/orderApi";
 import { toast } from "react-toastify";
 import { Button, ChakraProvider } from "@chakra-ui/react";
@@ -17,6 +17,7 @@ const PlaceOrderSection = () => {
   const cartItems = useSelector(selectedCart);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const [showOrderedAnimation, setShowOrderedAnimation] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -104,7 +105,9 @@ const PlaceOrderSection = () => {
       setShowOrderedAnimation(true);
       setTimeout(() => {
         setShowOrderedAnimation(false);
+        dispatch(clearCart())
         navigate("/order_success");
+        
       }, 4000);
       setLoading(false);
     } catch (err) {

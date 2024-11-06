@@ -1,14 +1,34 @@
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
-import Product from "../models/productModel.js"
-import generateTokens from "../utils/generateToken.js"
+import Product from "../models/productModel.js";
+import generateTokens from "../utils/generateToken.js";
 
 // @desc    get all users details
 // @route   GET /api/admin/get_users
 // @access  private admin
 export const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({isAdmin:false}).select("-password");
-  res.status(200).json(users);
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const totalUsers = await User.countDocuments();
+    const users = await User.find({ isAdmin: false })
+      .select("-password")
+      .limit(limit)
+      .skip(skip);
+
+    res
+      .status(200)
+      .json({
+        users,
+        currentPage: page,
+        totalPages: Math.ceil(totalUsers / limit),
+        totalUsers,
+      });
+  } catch (err) {
+    console.error("Error getting users:", err.message);
+    res.status(500).json({ message: "Server error while getting users" });
+  }
 });
 
 // @desc    Block / Unblock the user
@@ -21,7 +41,7 @@ export const blockUnblockUser = asyncHandler(async (req, res) => {
     id,
     { isBlocked },
     { new: true }
-  ).select("-password")
+  ).select("-password");
   if (!updatedUser) {
     return res.status(404).json({ message: "User not found" });
   }
@@ -42,27 +62,33 @@ export const delteUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User deleted successfully" });
 });
 
-
-
 // @desc    get all products
 // @route   GET /api/admin/all_products/
 // @access  Private admin
 export const getAllProducts = asyncHandler(async (req, res) => {
-  try{
-    const products = await Product.find({});
-    res.status(200).json(products);
-  }catch(err){
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const totalProducts = await Product.countDocuments({});
+    const products = await Product.find({}).limit(limit).skip(skip);
+    res.status(200).json({
+      products,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      totalProducts,
+    });
+  } catch (err) {
     console.error("Error getting products:", err.message);
     res.status(500).json({ message: "Server error while getting products" });
   }
 });
 
-
 // @desc    admin validation
 // @route   POST /api/admin/admin_login
 // @access  public admin
 export const adminLogin = asyncHandler(async (req, res) => {
-  const { email, password} = req.body;
+  const { email, password } = req.body;
   let userExist;
 
   // if (googleId) {
@@ -101,7 +127,7 @@ export const adminLogin = asyncHandler(async (req, res) => {
   if (!userExist) {
     return res.status(400).json({ message: "User does not exist" });
   }
-  if(!userExist.isAdmin && userExist.role !== "admin" ){
+  if (!userExist.isAdmin && userExist.role !== "admin") {
     return res.status(400).json({ message: "You are not an admin" });
   }
 
