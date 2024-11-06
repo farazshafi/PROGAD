@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { selectedProduct, setProducts } from "../features/product/productSlice";
+import { selectedProduct, selectedProductPage, setProducts } from "../features/product/productSlice";
 import { getAllProductsApi } from "../api/productApi";
 
 const AnimatedSearchBar = () => {
   const products = useSelector(selectedProduct);
+  const page = useSelector(selectedProductPage)
+
+  const dispatch = useDispatch();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [allProducts, setAllProducts] = useState([]);
 
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await getAllProductsApi();
-        setAllProducts(data);
-        dispatch(setProducts(data));
+        const { data } = await getAllProductsApi(page);
+        setAllProducts(data.products);
+        dispatch(setProducts(data.products));
       } catch (error) {
         console.error("Error fetching all products:", error);
       }

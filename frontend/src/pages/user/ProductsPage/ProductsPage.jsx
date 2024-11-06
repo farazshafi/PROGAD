@@ -8,6 +8,7 @@ import {
   Button,
   Link,
   MenuItem,
+  Pagination,
   Select,
   Typography,
 } from "@mui/material";
@@ -19,15 +20,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import {
   selectedProduct,
+  selectedProductPage,
+  setPage,
   setProducts,
 } from "../../../features/product/productSlice";
 import { toast } from "react-toastify";
+import { Stack } from "@chakra-ui/react";
 
 const ProductsPage = () => {
   const products = useSelector(selectedProduct);
+  const page = useSelector(selectedProductPage)
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [sortOption, setSortOption] = useState("default");
+  const [totalPages, setTotalPages] = useState(1);
 
   const dispatch = useDispatch();
 
@@ -35,20 +41,25 @@ const ProductsPage = () => {
     setSortOption(event.target.value);
   };
 
+  const handleChange = (event, value) => {
+    dispatch(setPage(value))
+  };
+
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (page) => {
     try {
-      const { data } = await getAllProductsApi();
+      const { data } = await getAllProductsApi(page);
       if (data.response) {
         const { status } = data.response;
         if (status === 400 || status === 500) {
           toast.error(data.response.data.message || "An error occurred");
         }
       } else {
-        dispatch(setProducts(data));
+        dispatch(setProducts(data.products));
+        setTotalPages(data.totalPages);
       }
     } catch (error) {
       toast.error("Failed to fetch products. Please try again.");
@@ -69,8 +80,8 @@ const ProductsPage = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts(page);
+  }, [page]);
 
   useEffect(() => {
     if (sortOption !== "default") {
@@ -151,6 +162,23 @@ const ProductsPage = () => {
       </Typography>
 
       <ProductCard page={"products"} />
+      <Stack spacing={2} alignItems="center" marginTop={4}>
+        <Pagination
+          shape="rounded"
+          sx={{
+            "& .MuiPaginationItem-root": {
+              color: "white",
+            },
+            "& .Mui-selected": {
+              color: "white",
+              backgroundColor: "#ff7f11",
+            },
+          }}
+          count={totalPages}
+          page={page}
+          onChange={handleChange}
+        />
+      </Stack>
       <Footer />
     </React.Fragment>
   );

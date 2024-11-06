@@ -24,7 +24,6 @@ const uploadImageToS3 = async (file) => {
   return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/progad/${imageName}`;
 };
 
-
 // @desc    Create a new product
 // @route   POST /api/product/create_product
 // @access  private
@@ -225,11 +224,20 @@ export const createProduct = asyncHandler(async (req, res) => {
 // @access  public
 export const getAllProduct = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find({ isPublished: true }).populate(
-      "category",
-      "_id name"
-    );
-    res.json(products);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const totalProducts = await Product.countDocuments({});
+    const products = await Product.find({ isPublished: true })
+      .limit(limit)
+      .skip(skip)
+      .populate("category", "_id name");
+    res.json({
+      products,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      totalProducts,
+    });
   } catch (err) {
     console.error("Error getting products:", err.message);
     res.status(500).json({ message: "Server error while getting products" });
@@ -314,20 +322,24 @@ export const updateProduct = asyncHandler(async (req, res) => {
       product.warranty = warranty ?? product.warranty;
       product.isPublished = isPublished ?? product.isPublished;
       // if bluetooth support
-      if(isBluetoothSupported){
-        product.isBluetoothSupported = isBluetoothSupported?? product.isBluetoothSupported;
-        product.batteryLife = batteryLife?? product.batteryLife;
-        product.bluetoothVersion = bluetoothVersion?? product.bluetoothVersion;
-        product.bluetoothRange = bluetoothRange?? product.bluetoothRange;
-        product.chargingTime = chargingTime?? product.chargingTime;
-        product.noiseCancellation = noiseCancellation?? product.noiseCancellation;
-        product.dualPlayConnection = dualPlayConnection?? product.dualPlayConnection;
-        product.appControl = appControl?? product.appControl;
-        product.waterResistant = waterResistant?? product.waterResistant;
-        product.touchControl = touchControl?? product.touchControl;
-        product.multiDevice = multiDevice?? product.multiDevice;
-      }else{
-        product.isBluetoothSupported = isBluetoothSupported?? product.isBluetoothSupported;
+      if (isBluetoothSupported) {
+        product.isBluetoothSupported =
+          isBluetoothSupported ?? product.isBluetoothSupported;
+        product.batteryLife = batteryLife ?? product.batteryLife;
+        product.bluetoothVersion = bluetoothVersion ?? product.bluetoothVersion;
+        product.bluetoothRange = bluetoothRange ?? product.bluetoothRange;
+        product.chargingTime = chargingTime ?? product.chargingTime;
+        product.noiseCancellation =
+          noiseCancellation ?? product.noiseCancellation;
+        product.dualPlayConnection =
+          dualPlayConnection ?? product.dualPlayConnection;
+        product.appControl = appControl ?? product.appControl;
+        product.waterResistant = waterResistant ?? product.waterResistant;
+        product.touchControl = touchControl ?? product.touchControl;
+        product.multiDevice = multiDevice ?? product.multiDevice;
+      } else {
+        product.isBluetoothSupported =
+          isBluetoothSupported ?? product.isBluetoothSupported;
       }
       await product.save();
       res.status(200).json({ message: "Product updated successfully" });
@@ -346,54 +358,39 @@ export const updateProduct = asyncHandler(async (req, res) => {
 export const getSortedProduct = asyncHandler(async (req, res) => {
   try {
     const { sortBy } = req.query;
-    if(sortBy === undefined){
-      return res.status(400).json({ message: "Sort by query parameter is required" });
+    if (sortBy === undefined) {
+      return res
+        .status(400)
+        .json({ message: "Sort by query parameter is required" });
     }
-    let sortCriteria = {}
+    let sortCriteria = {};
 
-    switch(sortBy){
+    switch (sortBy) {
       case "lowToHigh":
-        sortCriteria = {discountPrice:1};
+        sortCriteria = { discountPrice: 1 };
         break;
       case "highToLow":
-        sortCriteria = {discountPrice:-1};
+        sortCriteria = { discountPrice: -1 };
         break;
       case "newArrival":
-        sortCriteria = {createdAt:-1};
+        sortCriteria = { createdAt: -1 };
         break;
       case "Aa-Zz":
-        sortCriteria = {name:-1};
+        sortCriteria = { name: -1 };
         break;
       case "zZ-aA":
-        sortCriteria = {name:1};
+        sortCriteria = { name: 1 };
         break;
       case "featured":
-        sortCriteria = {isFeatured:1};
+        sortCriteria = { isFeatured: 1 };
         break;
       default:
     }
-    
-    const sortedProduct = await Product.find().sort(sortCriteria)
-    res.status(200).json(sortedProduct)
 
+    const sortedProduct = await Product.find().sort(sortCriteria);
+    res.status(200).json(sortedProduct);
   } catch (err) {
     console.error("Error sorting product:", err.message);
     res.status(500).json({ message: "Server error while sorting product" });
-  }
-});
-
-
-// @desc    get sorted product
-// @route   GET /api/product/search_product?keyword=""
-// @access  Public
-export const searchProducts = asyncHandler(async (req, res) => {
-  try {
-    const {keyword} = req.query
-    if(keyword === undefined){
-      return res.status(400).json({ message: "Keyword query parameter is required" });
-    }
-  } catch (err) {
-    console.error("Error searching product:", err.message);
-    res.status(500).json({ message: "Server error while searching product" });
   }
 });

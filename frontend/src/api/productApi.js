@@ -17,9 +17,9 @@ export const createProductApi = async (productDetails) => {
   }
 };
 
-export const getAllProductsApi = async () => {
+export const getAllProductsApi = async (page) => {
   try{
-    const data = await axios.get(`${API_URL}/get_products`)
+    const data = await axios.get(`${API_URL}/get_products?page=${page}&limit=${10}`)
     return data;
   }catch(err){
     console.log(err);
