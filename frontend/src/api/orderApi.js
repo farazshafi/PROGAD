@@ -18,6 +18,55 @@ export const makeOrderApi = async (OrderData) => {
   }
 };
 
+export const handleRazorpayApi = async (totalPrice, user, shippingAddress) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const { data: razorpayOrder } = await axios.post(
+      `${API_URL}create_razorpay_order`,
+      { totalPrice },
+      config
+    );
+
+    return new Promise((resolve, reject) => {
+      const options = {
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        name: "Progad",
+        description: "Thank you for your purchase",
+        order_id: razorpayOrder.orderId,
+        handler: (response) => {
+          resolve(response);
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: shippingAddress.phoneNumber,
+        },
+        theme: {
+          color: "#FF7F11",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+      rzp.on("payment.failed", (error) => {
+        reject(error);
+      });
+    });
+  } catch (error) {
+    console.error("Error creating Razorpay order:", error);
+    throw error;
+  }
+};
+
 export const getAllOrdersApi = async (userId) => {
   try {
     const token = JSON.parse(localStorage.getItem("user")).token;

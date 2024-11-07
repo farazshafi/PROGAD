@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
+import razorpayInstance from "../config/razorpay.js"
 
 // @desc    make a order
 // @route   POST /api/order/make_order
@@ -16,17 +17,8 @@ export const makeOrder = asyncHandler(async (req, res) => {
       shippingAddress,
       paymentMethod,
     } = req.body;
-    console.log("Payload:", {
-      user,
-      items,
-      status,
-      tax,
-      deliveryCost,
-      shippingAddress,
-      paymentMethod,
-    });
 
-    // validation
+    // Validation
     if (
       !user ||
       !items ||
@@ -47,6 +39,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
 
     const totalPrice = orderSubTotal + (tax || 0) + (deliveryCost || 0);
 
+    // Check product stock and update stock
     for (const item of items) {
       const product = await Product.findById(item.id);
       if (!product) {
@@ -64,7 +57,30 @@ export const makeOrder = asyncHandler(async (req, res) => {
       await product.save();
     }
 
-    await Order.create({
+    let razorpayOrderId = null;
+
+    // create Razorpay order
+    if (paymentMethod === "razorpay") {
+      const totalAmount = Math.round(totalPrice * 100);
+      
+      const razorpayOrder = await razorpayInstance.orders.create({
+        amount: totalAmount,
+        currency: "INR",
+        receipt: `receipt_${Date.now()}`,
+        payment_capture: 1,
+      });
+
+      if (!razorpayOrder || !razorpayOrder.id) {
+        return res
+          .status(500)
+          .json({ message: "Failed to create Razorpay order" });
+      }
+
+      razorpayOrderId = razorpayOrder.id; 
+    }
+
+    // Create the order in the database
+    const order = await Order.create({
       user,
       items: itemWithSubTotal,
       status,
@@ -74,12 +90,48 @@ export const makeOrder = asyncHandler(async (req, res) => {
       subTotal: orderSubTotal,
       shippingAddress,
       paymentMethod,
+      razorpayOrderId, 
+      paymentStatus: paymentMethod === "razorpay" ? "paid" : "unpaid",
     });
 
-    res.status(201).json({ message: "Order created successfully" });
+    res.status(201).json({
+      message: "Order created successfully",
+      orderId: razorpayOrderId || order._id,
+      order,
+    });
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
     res.status(500).send("Server Error");
+  }
+});
+
+// @desc    handling razorpay transaction
+// @route   POST /api/order/create_razorpay_order
+// @access  private
+export const createRazorpayOrder = asyncHandler(async (req, res) => {
+  const { totalPrice } = req.body;
+
+  try {
+    const options = {
+      amount: Math.round(totalPrice * 100),
+      currency: "INR",
+      receipt: `receipt_order_${Math.floor(Math.random() * 10000)}`,
+    };
+
+    const order = await razorpayInstance.orders.create(options);
+
+    if (!order) {
+      return res.status(500).json({ message: "Unable to create order" });
+    }
+
+    res.status(200).json({
+      orderId: order.id,
+      currency: order.currency,
+      amount: order.amount,
+    });
+  } catch (error) {
+    console.error("Razorpay order creation error:", error);
+    res.status(500).json({ message: "Razorpay order creation failed" });
   }
 });
 
@@ -160,14 +212,12 @@ export const listAllOrders = asyncHandler(async (req, res) => {
     if (!allOrders) {
       return res.status(404).json({ message: "No orders found" });
     }
-    res
-      .status(200)
-      .json({
-        allOrders,
-        currentPage: page,
-        totalPages: Math.ceil(totalOrders / limit),
-        totalOrders,
-      });
+    res.status(200).json({
+      allOrders,
+      currentPage: page,
+      totalPages: Math.ceil(totalOrders / limit),
+      totalOrders,
+    });
   } catch (err) {
     console.error("Error getting orders:", err.message);
     res.status(500).json({ message: "Server error while getting orders" });

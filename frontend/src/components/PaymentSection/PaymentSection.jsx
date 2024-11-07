@@ -12,7 +12,7 @@ import { setPaymentMethod } from "../../features/user/orderSlice";
 import { toast } from "react-toastify";
 
 const PaymentSection = () => {
-  const [payment, setPayment] = useState("paypal");
+  const [payment, setPayment] = useState("razorpay");
 
   const dispatch = useDispatch()
 
@@ -50,9 +50,9 @@ const PaymentSection = () => {
           label="Credit Card"
         />
         <FormControlLabel
-          value="paypal"
+          value="razorpay"
           control={<Radio sx={{ color: "#ffff" }} />}
-          label="PayPal"
+          label="Razorpay"
         />
         <FormControlLabel
           value="cashOnDelivery"

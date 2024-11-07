@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectedOrder } from "../../features/user/orderSlice";
 import { selectedUser } from "../../features/user/userSlice";
 import { clearCart, selectedCart } from "../../features/user/cartSlice";
-import { makeOrderApi } from "../../api/orderApi";
+import { handleRazorpayApi, makeOrderApi } from "../../api/orderApi";
 import { toast } from "react-toastify";
 import { Button, ChakraProvider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,7 @@ const PlaceOrderSection = () => {
   const cartItems = useSelector(selectedCart);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const [showOrderedAnimation, setShowOrderedAnimation] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,6 +31,7 @@ const PlaceOrderSection = () => {
     taxPercent: "",
     offerPercentage: "",
   });
+
   const [orderData, setOrderData] = useState({
     user: user._id,
     items: cartItems,
@@ -69,16 +70,14 @@ const PlaceOrderSection = () => {
   const handlePayment = async () => {
     try {
       setLoading(true);
-
-      const filteredItems = cartItems.map(
-        ({ id, quantity, price, subTotal }) => ({
-          id,
-          quantity,
-          price,
-          subTotal,
-        })
-      );
-
+  
+      const filteredItems = cartItems.map(({ id, quantity, price, subTotal }) => ({
+        id,
+        quantity,
+        price,
+        subTotal,
+      }));
+  
       const formattedOrderData = {
         ...orderData,
         items: filteredItems,
@@ -90,28 +89,49 @@ const PlaceOrderSection = () => {
             ? "cash on delivery"
             : orderDetails.paymentMethod,
       };
-
-      const result = await makeOrderApi(formattedOrderData);
-      console.log("order api result", result);
-
-      if (result.response) {
-        const { status } = result.response;
-        if (status === 400 || status === 500) {
+  
+      if (orderDetails.paymentMethod === "razorpay") {
+        try {
+          const paymentResult = await handleRazorpayApi(
+            summary.total,
+            user,
+            orderDetails.shippingAddress
+          );
+  
+          const result = await makeOrderApi(formattedOrderData);
+          if (result.response && (result.response.status === 400 || result.response.status === 500)) {
+            toast.error(result.response.data.message);
+            setLoading(false);
+            return;
+          }
+  
+          setShowOrderedAnimation(true);
+          setTimeout(() => {
+            setShowOrderedAnimation(false);
+            dispatch(clearCart());
+            navigate("/order_success");
+          }, 4000);
+        } catch (error) {
+          toast.error("Payment failed, please try again");
+          console.error(error);
+        }
+      } else {
+        const result = await makeOrderApi(formattedOrderData);
+        if (result.response && (result.response.status === 400 || result.response.status === 500)) {
           toast.error(result.response.data.message);
           setLoading(false);
           return;
         }
+  
+        setShowOrderedAnimation(true);
+        setTimeout(() => {
+          setShowOrderedAnimation(false);
+          dispatch(clearCart());
+          navigate("/order_success");
+        }, 4000);
       }
-      setShowOrderedAnimation(true);
-      setTimeout(() => {
-        setShowOrderedAnimation(false);
-        dispatch(clearCart())
-        navigate("/order_success");
-        
-      }, 4000);
-      setLoading(false);
     } catch (err) {
-      console.log(err);
+      console.error("Error processing order", err);
       setLoading(false);
     }
   };
