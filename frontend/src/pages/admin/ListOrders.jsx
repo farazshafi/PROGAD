@@ -171,7 +171,7 @@ const ListOrders = () => {
               <TableRow key={order._id}>
                 <TableCell sx={{ color: "white" }}>{order._id}</TableCell>
                 <TableCell sx={{ color: "white" }}>
-                  {order.user.email}
+                  {order?.user?.email}
                 </TableCell>
                 <TableCell sx={{ color: "white" }}>
                   {new Date(order.orderDate).toLocaleDateString()}

@@ -10,6 +10,8 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { onCreateCategory } from '../../api/categoryApi';
+import {toast} from "react-toastify"
+
 
 const AddCategory = () => {
   const [name, setName] = useState('');
@@ -28,6 +30,7 @@ const AddCategory = () => {
       setName('');
       setDescription('');
       setIsPublished(true); 
+      toast.success("Category created successfully")
     } catch (err) {
       console.error(err);
     }

@@ -6,6 +6,7 @@ import adminRoute from "./routes/adminRouter.js";
 import categoryRoute from "./routes/categoryRouter.js";
 import productRoute from "./routes/productRouter.js";
 import addressRoute from "./routes/addressRouter.js";
+import brandRoute from "./routes/brandRouter.js";
 import orderRoute from "./routes/orderRouter.js";
 import connectDB from "./config/db.js";
 import cors from "cors"
@@ -33,6 +34,7 @@ app.use("/api/category/", categoryRoute);
 app.use("/api/product/", productRoute );
 app.use("/api/address/", addressRoute);
 app.use("/api/order/", orderRoute);
+app.use("/api/brand/", brandRoute);
 
 app.get("/", (req, res) => {
   res.send("Api is running...");
