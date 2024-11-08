@@ -35,18 +35,56 @@ export const createWishlist = asyncHandler(async (req, res) => {
 });
 
 // @desc    get all wishlist
-// @route   GET /api/wishlist/get_wishlist
+// @route   GET /api/wishlist/get_wishlist/:id
 // @access  private
 export const getAllWishlist = asyncHandler(async (req, res) => {
-  const { userId } = req.body;
+  const { id } = req.params;
+  const { productId } = req.body;
+  console.log("id", id);
   // validation
-  if (!userId) {
+  if (!id) {
     return res.status(400).json({ message: "Invalid userId" });
   }
-  const existWishlist = await Wishlist.find({ user: userId });
+  const existWishlist = await Wishlist.findOne({ user: id }).populate(
+    "products",
+    "name id images discountPrice originalPrice"
+  );
   if (existWishlist) {
-    res.status(201).json({ products: existWishlist.products });
+    res.status(201).json({ wishlistedProducts: existWishlist?.products });
+    return;
   } else {
     res.status(400).json({ message: "No wishlist found" });
+  }
+});
+
+// @desc    Delete a product from wishlist
+// @route   DELETE /api/wishlist/delete_product
+// @access  Private
+export const deleteWishlistProduct = asyncHandler(async (req, res) => {
+  const { userId, productId } = req.body;
+
+  // Validation
+  if (!userId || !productId) {
+    return res.status(400).json({ message: "Invalid request" });
+  }
+
+  const updatedWishlist = await Wishlist.findOneAndUpdate(
+    { user: userId },
+    { $pull: { products: productId } },
+    { new: true }
+  );
+
+  if (!updatedWishlist) {
+    return res.status(404).json({ message: "Wishlist not found" });
+  }
+
+  const isProductRemoved = !updatedWishlist.products.includes(productId);
+
+  if (isProductRemoved) {
+    return res
+      .status(200)
+      .json({ message: "Removed from wishlist successfully" });
+  } else {
+    return res.status(404).json({ message: "Product not found in wishlist" });
   }
 });

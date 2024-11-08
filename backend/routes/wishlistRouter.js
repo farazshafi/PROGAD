@@ -1,10 +1,11 @@
 import express from "express"
 import { protect } from "../middleware/authMiddleware.js"
-import { createWishlist, getAllWishlist } from "../controllers/wishlistController.js"
+import { createWishlist, deleteWishlistProduct, getAllWishlist } from "../controllers/wishlistController.js"
 
 const router = express.Router()
 
 router.post("/create_wishlist",protect,createWishlist)
-router.post("/get_wishlist",protect,getAllWishlist)
+router.get("/get_wishlist/:id",protect,getAllWishlist)
+router.delete("/delete_product/",protect,deleteWishlistProduct)
 
 export default router
