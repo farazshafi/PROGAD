@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Avatar, Box, Tab, Tabs, Typography, IconButton } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { styled } from "@mui/material/styles";
-import { FaShoppingCart, FaLock, FaAddressCard, FaUser } from "react-icons/fa";
+import { FaShoppingCart, FaLock, FaAddressCard, FaUser, FaHeart } from "react-icons/fa";
 import UserProfileCard from "../UserProfileCard/UserProfileCard";
 import { useSelector } from "react-redux";
 import { selectedUser } from "../../features/user/userSlice";
 import AddressCard from "../AddressCard/AddressCard";
 import OrderList from "../../pages/user/OrderList/OrderList";
 import ResetPassword from "../../pages/user/ResetPasswordPage/ResetPasswordPage";
+import WishlistPage from "../../pages/user/WishlistPage"
 
 const Input = styled("input")({
   display: "none",
@@ -122,6 +123,7 @@ const ProfileHeader = () => {
         <Tab icon={<FaUser />} label="Details" />
         <Tab icon={<FaShoppingCart />} label="Orders" />
         <Tab icon={<FaAddressCard />} label="Address" />
+        <Tab icon={<FaHeart />} label="Wishlist" />
         <Tab icon={<FaLock />} label="Reset Password" />
       </Tabs>
 
@@ -132,7 +134,8 @@ const ProfileHeader = () => {
             {tabIndex === 0 && <UserProfileCard user={user} />}
             {tabIndex === 1 && <OrderList />}
             {tabIndex === 2 && <AddressCard onAddressClick={handleClick} />}
-            {tabIndex === 3 && <ResetPassword />}
+            {tabIndex === 3 && <WishlistPage />}
+            {tabIndex === 4 && <ResetPassword />}
           </>
         )}
       </Box>
