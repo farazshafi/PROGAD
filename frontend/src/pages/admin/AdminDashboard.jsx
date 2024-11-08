@@ -31,6 +31,7 @@ import { selectedAdmin } from "../../features/admin/adminSlice";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ListOrders from "./ListOrders";
+import AddCoupon from "./AddCoupon";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -227,6 +228,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/categories/add_category":
       content = <AddCategory />;
+      break;
+    case "/coupons/add_coupon":
+      content = <AddCoupon />; 
       break;
     case "/logout":
       content = <AdminLogout />;
