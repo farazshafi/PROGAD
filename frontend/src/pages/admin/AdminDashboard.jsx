@@ -18,7 +18,6 @@ import { GoGraph } from "react-icons/go";
 import { MdCategory } from "react-icons/md";
 import { IoIosExit } from "react-icons/io";
 
-
 // Components
 import ListUsers from "./ListUsers";
 import ListProduct from "./ListProducts";
@@ -32,6 +31,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ListOrders from "./ListOrders";
 import AddCoupon from "./AddCoupon";
+import ListCoupons from "./listCoupons";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -135,8 +135,8 @@ const NAVIGATION = [
         icon: <IoMdAdd />,
       },
       {
-        segment: "list brand",
-        title: "List Brand",
+        segment: "list_coupons",
+        title: "List Coupons",
         icon: <FaListUl />,
       },
     ],
@@ -230,7 +230,10 @@ function DemoPageContent({ pathname }) {
       content = <AddCategory />;
       break;
     case "/coupons/add_coupon":
-      content = <AddCoupon />; 
+      content = <AddCoupon />;
+      break;
+    case "/coupons/list_coupons":
+      content = <ListCoupons />;
       break;
     case "/logout":
       content = <AdminLogout />;
@@ -248,8 +251,8 @@ function DemoPageContent({ pathname }) {
 function AdminDashboard(props) {
   const { window } = props;
 
-  const admin = useSelector(selectedAdmin)
-  const navigate = useNavigate()
+  const admin = useSelector(selectedAdmin);
+  const navigate = useNavigate();
 
   // Define state to manage the current route
   const [pathname, setPathname] = React.useState("/dashboard");
@@ -265,11 +268,11 @@ function AdminDashboard(props) {
 
   const demoWindow = window !== undefined ? window() : undefined;
 
-  useEffect(()=>{
-    if(!admin){
-      navigate("/admin_login")
+  useEffect(() => {
+    if (!admin) {
+      navigate("/admin_login");
     }
-  },[])
+  }, []);
 
   return (
     <AppProvider

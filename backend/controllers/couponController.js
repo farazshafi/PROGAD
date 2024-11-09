@@ -4,7 +4,6 @@ import Coupon from "../models/couponModel.js";
 // @desc    create new coupon
 // @route   POST /api/coupon/create_coupon
 // @access  private admin
-
 export const createCoupon = asyncHandler(async (req, res) => {
   const {
     name,
@@ -50,4 +49,17 @@ export const createCoupon = asyncHandler(async (req, res) => {
   } else {
     res.status(400).json({ message: "Invalid coupon data" });
   }
+});
+
+
+
+// @desc    get all coupons
+// @route   GET /api/coupon/get_coupons
+// @access  private admin
+export const getAllCoupons = asyncHandler(async (req, res) => {
+  const coupons = await Coupon.find({})
+  if(!coupons){
+    return res.status(400).json({message: 'Coupons not found'})
+  }
+  res.status(200).json(coupons)
 });

@@ -21,3 +21,19 @@ export const createCouponApi = async (couponDetails) => {
     return e;
   }
 };
+
+export const getAllCouponsApi = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.get(`${API_URL}/get_coupon`, config);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
