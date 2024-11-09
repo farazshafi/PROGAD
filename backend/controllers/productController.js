@@ -412,3 +412,21 @@ export const getRelatedProduct = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while related product" });
   }
 });
+
+
+// @desc    get all public products
+// @route   GET /api/product/public_products
+// @access  private admin
+export const getAllPublicProducts = asyncHandler(async (req, res) => {
+  try {
+    
+    const product = await Product.find({isPublished:true}).select("name id")
+    if(!product){
+      return res.status(404).json({ message: "No related product found" });
+    }
+    res.status(200).json(product);
+  } catch (err) {
+    console.error("Error related product:", err.message);
+    res.status(500).json({ message: "Server error while related product" });
+  }
+});

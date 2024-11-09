@@ -81,5 +81,21 @@ export const getRelatedProductApi = async (id) => {
   }
 }
 
+export const getAllPublicProductsForAdminApi = async (id) => {
+  try{
+    const token = JSON.parse(localStorage.getItem("admin")).token
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+    const response = await axios.get(`${API_URL}/public_products`,config)
+    return response;
+  }catch(err){
+    console.log(err);
+    return err;
+  }
+}
+
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextField,
   Switch,
@@ -16,9 +16,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import { toast } from "react-toastify";
+import {
+  getAllProductsApi,
+  getAllPublicProductsForAdminApi,
+} from "../../api/productApi";
+import { getPublishedCategoriesApi } from "../../api/categoryApi";
+import { createOfferApi } from "../../api/offerApi";
 
 const AddOffer = () => {
-  // State management for form fields
   const [offerDetails, setOfferDetails] = useState({
     name: "",
     offerCode: "",
@@ -31,21 +37,9 @@ const AddOffer = () => {
     productIds: [],
     categoryIds: [],
   });
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  // Mock data for products and categories
-  const products = [
-    { id: "prod1", name: "Product 1" },
-    { id: "prod2", name: "Product 2" },
-    { id: "prod3", name: "Product 3" },
-  ];
-
-  const categories = [
-    { id: "cat1", name: "Category 1" },
-    { id: "cat2", name: "Category 2" },
-    { id: "cat3", name: "Category 3" },
-  ];
-
-  // Handler for input changes
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
     setOfferDetails((prevState) => ({
@@ -54,7 +48,6 @@ const AddOffer = () => {
     }));
   };
 
-  // Handler for multiple selection (productIds)
   const handleProductChange = (event) => {
     const { value } = event.target;
     setOfferDetails((prevState) => ({
@@ -64,11 +57,76 @@ const AddOffer = () => {
   };
 
   // Submit handler
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Add submit logic here
+    try {
+      const result = await createOfferApi(offerDetails);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      toast.success("Offer created!");
+      setOfferDetails({
+        name: "",
+        offerCode: "",
+        expirationDate: null,
+        status: "active",
+        discountType: "percentage",
+        applyToProducts: false,
+        applyToCategories: false,
+        discount: "",
+        productIds: [],
+        categoryIds: [],
+      });
+    } catch (err) {
+      toast.error("Failed to add offer. Please try again.");
+      console.log(err);
+    }
     console.log(offerDetails);
   };
+
+  const fetchAllProducts = async () => {
+    try {
+      const result = await getAllPublicProductsForAdminApi();
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      setProducts(result.data);
+    } catch (err) {
+      toast.error("Error When fetching Products");
+      console.log(err);
+    }
+  };
+
+  const fetchAllCategories = async () => {
+    try {
+      const result = await getPublishedCategoriesApi();
+      console.log("categoriess : ", result);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      setCategories(result);
+    } catch (err) {
+      toast.error("Error When fetching Products");
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllProducts();
+    fetchAllCategories();
+  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -80,7 +138,7 @@ const AddOffer = () => {
           borderRadius: "8px",
         }}
       >
-        <h2>Create Offer</h2>
+        <p className="text-2xl text-center mt-2 font-semibold">Create Offer</p>
         <form onSubmit={handleSubmit}>
           {/* Name and Offer Code */}
           <TextField
@@ -232,16 +290,16 @@ const AddOffer = () => {
                   selected
                     .map(
                       (id) =>
-                        products.find((product) => product.id === id)?.name
+                        products.find((product) => product._id === id)?.name
                     )
                     .join(", ")
                 }
                 style={{ backgroundColor: "#444", color: "#ffffff" }}
               >
                 {products.map((product) => (
-                  <MenuItem key={product.id} value={product.id}>
+                  <MenuItem key={product._id} value={product._id}>
                     <Checkbox
-                      checked={offerDetails.productIds.includes(product.id)}
+                      checked={offerDetails.productIds.includes(product._id)}
                     />
                     <ListItemText primary={product.name} />
                   </MenuItem>
@@ -268,16 +326,16 @@ const AddOffer = () => {
                   selected
                     .map(
                       (id) =>
-                        categories.find((category) => category.id === id)?.name
+                        categories.find((category) => category._id === id)?.name
                     )
                     .join(", ")
                 }
                 style={{ backgroundColor: "#444", color: "#ffffff" }}
               >
-                {categories.map((category) => (
-                  <MenuItem key={category.id} value={category.id}>
+                {categories?.map((category) => (
+                  <MenuItem key={category._id} value={category._id}>
                     <Checkbox
-                      checked={offerDetails.categoryIds.includes(category.id)}
+                      checked={offerDetails.categoryIds.includes(category._id)}
                     />
                     <ListItemText primary={category.name} />
                   </MenuItem>
@@ -287,7 +345,11 @@ const AddOffer = () => {
           )}
 
           {/* Submit Button */}
-          <Button className="mt-4 w-full bg-white" variant="contained" type="submit">
+          <Button
+            className="mt-4 w-full bg-white"
+            variant="contained"
+            type="submit"
+          >
             Submit Offer
           </Button>
         </form>

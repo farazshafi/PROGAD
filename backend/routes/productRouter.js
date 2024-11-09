@@ -2,6 +2,7 @@ import express from "express";
 import {
   createProduct,
   getAllProduct,
+  getAllPublicProducts,
   getProductDetails,
   getRelatedProduct,
   getSortedProduct,
@@ -9,6 +10,8 @@ import {
   updateProduct
 } from "../controllers/productController.js";
 import multer from "multer";
+import { admin, protect } from "../middleware/authMiddleware.js"
+
 const router = express.Router();
 
 const storage = multer.memoryStorage();
@@ -29,5 +32,6 @@ router.get("/product_details/:id", getProductDetails);
 router.put("/update_product/:id",updateProduct);
 router.get("/sort_product",getSortedProduct)
 router.get("/related_product/:id",getRelatedProduct)
+router.get("/public_products",protect, admin,getAllPublicProducts)
 
 export default router;

@@ -17,6 +17,7 @@ export const createOffer = asyncHandler(async (req, res) => {
     categoryIds,
     status,
   } = req.body;
+  console.log("req body bro. ", req.body);
   // validation
   if (
     !name ||
@@ -26,7 +27,7 @@ export const createOffer = asyncHandler(async (req, res) => {
     !discount ||
     applyToProducts === undefined ||
     applyToCategories === undefined ||
-    status
+    !status
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -41,7 +42,7 @@ export const createOffer = asyncHandler(async (req, res) => {
       .json({ message: "Please select at least one product" });
   }
 
-  const existingOffer = Offer.findOne({ offerCode });
+  const existingOffer = await Offer.findOne({ offerCode });
   if (existingOffer) {
     return res.status(400).json({ message: "Offer code already exists" });
   }
