@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import ListOrders from "./ListOrders";
 import AddCoupon from "./AddCoupon";
 import ListCoupons from "./listCoupons";
+import AddOffer from "./AddOffer";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -153,8 +154,8 @@ const NAVIGATION = [
         icon: <IoMdAdd />,
       },
       {
-        segment: "list brand",
-        title: "List Brand",
+        segment: "",
+        title: "List Offer",
         icon: <FaListUl />,
       },
     ],
@@ -231,6 +232,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/coupons/add_coupon":
       content = <AddCoupon />;
+      break;
+    case "/offers/add_offer":
+      content = <AddOffer />;
       break;
     case "/coupons":
       content = <ListCoupons />;
