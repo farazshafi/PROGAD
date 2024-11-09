@@ -74,3 +74,24 @@ export const deleteCoupon = asyncHandler(async (req, res) => {
     res.status(400).json({message: "Coudn't Delete Coupon" });
   }
 });
+
+// @desc    Edit coupon
+// @route   Patch /api/coupon/edit_coupon/:id
+// @access  private admin
+export const editCoupon = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {status, code, discount, minPurchasePrice} = req.body
+  if(discount > 70){
+    return res.status(400).json({message: "Discount can't be more than 70%"})
+  }
+  const coupon = await Coupon.findById(id)
+  if(!coupon){
+    return res.status(400).json({message: "Coupon not found"})
+  }
+  coupon.status = status || coupon.status
+  coupon.code = code || coupon.code
+  coupon.discount = discount || coupon.discount
+  coupon.minPurchasePrice = minPurchasePrice || coupon.minPurchasePrice
+  await coupon.save()
+  res.status(200).json({message: "Coupon Updated"})
+});

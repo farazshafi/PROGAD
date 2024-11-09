@@ -53,3 +53,23 @@ export const deleteCouponApi = async (id) => {
     return e;
   }
 };
+
+export const editCouponApi = async (id, newData) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.patch(
+      `${API_URL}/edit_coupon/${id}`,
+      newData,
+      config
+    );
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};

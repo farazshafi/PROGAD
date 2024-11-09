@@ -13,12 +13,21 @@ import {
   Menu,
   Divider,
   MenuItem,
+  Button,
+  Select,
+  InputLabel,
+  FormControl,
+  Modal,
 } from "@mui/material";
 import { format } from "date-fns";
 import { IoMdMore } from "react-icons/io";
 import { MdEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
-import { deleteCouponApi, getAllCouponsApi } from "../../api/couponApi";
+import {
+  deleteCouponApi,
+  editCouponApi,
+  getAllCouponsApi,
+} from "../../api/couponApi";
 import { toast } from "react-toastify";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -31,6 +40,13 @@ const ListCoupons = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [couponData, setCouponData] = useState({
+    status: "",
+    discount: "",
+    code: "",
+    minPurchasePrice: "",
+  });
 
   const fetchCoupons = async () => {
     try {
@@ -62,10 +78,6 @@ const ListCoupons = () => {
     return matchesSearch && matchesExpired && matchesDate;
   });
 
-  useEffect(() => {
-    fetchCoupons();
-  }, []);
-
   const handleMenuClick = (event, coupon) => {
     setAnchorEl(event.currentTarget);
     setSelectedCoupon(coupon);
@@ -77,15 +89,53 @@ const ListCoupons = () => {
   };
 
   const handleEdit = () => {
-    //
+    setModalOpen(true);
+    setCouponData({
+      status: selectedCoupon.status,
+      discount: selectedCoupon.discount,
+      code: selectedCoupon.code,
+      minPurchasePrice: selectedCoupon.minPurchasePrice,
+    });
+  };
+
+  const handleInputChange = (e) => {
+    setCouponData({
+      ...couponData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSave = async () => {
+    setModalOpen(false);
+    try {
+      console.log("new data", couponData);
+      const result = await editCouponApi(selectedCoupon._id, couponData);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      toast.success(result.data.message);
+      fetchCoupons();
+      handleClose();
+    } catch (err) {
+      console.error("Error updating coupon:", err);
+      return;
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
   };
 
   const handleDelete = async () => {
     try {
-      const result = await deleteCouponApi(selectedCoupon._id)
-      if(result.response){
+      const result = await deleteCouponApi(selectedCoupon._id);
+      if (result.response) {
         const { status } = result.response;
-        if(status === 400 || status === 500){
+        if (status === 400 || status === 500) {
           toast.error(result.response.data.message);
           return;
         }
@@ -97,6 +147,10 @@ const ListCoupons = () => {
     }
     handleClose();
   };
+
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
@@ -206,6 +260,64 @@ const ListCoupons = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Modal open={modalOpen} onClose={handleModalClose}>
+        <Box
+          sx={{
+            backgroundColor: "black",
+            padding: 3,
+            width: 400,
+            margin: "auto",
+            marginTop: "10%",
+            maxHeight: "80vh",
+            overflow: "auto",
+          }}
+        >
+          <h2 className="mb-5 text-xl text-center">Edit Coupon</h2>
+
+          <TextField
+            label="Code"
+            value={couponData.code}
+            onChange={handleInputChange}
+            name="code"
+            fullWidth
+            sx={{ marginBottom: 2 }}
+          />
+          <TextField
+            label="Discount"
+            value={couponData.discount}
+            onChange={handleInputChange}
+            name="discount"
+            type="number"
+            fullWidth
+            sx={{ marginBottom: 2 }}
+          />
+          <TextField
+            label="Min Purchase"
+            value={couponData.minPurchasePrice}
+            onChange={handleInputChange}
+            name="minPurchasePrice"
+            type="number"
+            fullWidth
+            sx={{ marginBottom: 2 }}
+          />
+          <FormControl fullWidth sx={{ marginBottom: 2 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={couponData.status}
+              onChange={handleInputChange}
+              name="status"
+              label="Status"
+            >
+              <MenuItem value="active">Active</MenuItem>
+              <MenuItem value="inactive">Inactive</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Button variant="contained" onClick={handleSave}>
+            Save
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   );
 };
