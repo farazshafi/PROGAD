@@ -44,3 +44,21 @@ export const deleteOfferApi = async (id) => {
     return err;
   }
 };
+
+export const editOfferApi = async (id, offerData) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    };
+    const data = await axios.patch(
+      `${API_URL}edit_offer/${id}`,
+      offerData,
+      config
+    );
+    return data;
+  } catch (err) {
+    return err;
+  }
+};

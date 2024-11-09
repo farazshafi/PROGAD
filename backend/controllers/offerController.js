@@ -82,3 +82,23 @@ export const deleteOffer = asyncHandler(async (req, res) => {
   await Offer.findByIdAndDelete(id);
   res.status(200).json({ message: "Offer deleted" });
 });
+
+// @desc    Edit offer
+// @route   Patch /api/offer/edit_offer/:id
+// @access  private admin
+export const editOffer = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {status, name, discount, discountType} = req.body
+  if(discountType === "percentage" && discount > 70){
+    return res.status(400).json({message: "Discount can't be more than 70%"})
+  }
+  const offer = await Offer.findById(id)
+  if(!offer){
+    return res.status(400).json({message: "offer not found"})
+  }
+  offer.status = status || offer.status
+  offer.name = name || offer.name
+  offer.discount = discount || offer.discount
+  await offer.save()
+  res.status(200).json({message: "Offer Updated"})
+});

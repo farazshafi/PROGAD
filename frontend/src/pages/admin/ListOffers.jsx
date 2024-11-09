@@ -27,7 +27,11 @@ import { toast } from "react-toastify";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { deleteOfferApi, getAllOffersAdminApi } from "../../api/offerApi"; // Assuming you have an API for offers
+import {
+  deleteOfferApi,
+  editOfferApi,
+  getAllOffersAdminApi,
+} from "../../api/offerApi"; // Assuming you have an API for offers
 
 const ListOffers = () => {
   const [offers, setOffers] = useState([]);
@@ -37,11 +41,12 @@ const ListOffers = () => {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [expiredCount, setExpiredCount] = useState(0);
   const [offerData, setOfferData] = useState({
     status: "",
     discount: "",
-    code: "",
-    minPurchasePrice: "",
+    name: "",
+    discountType: "percentage",
   });
 
   // Fetch offers data
@@ -58,6 +63,10 @@ const ListOffers = () => {
         }
       }
       setOffers(offers.data);
+      const expired = offers.data.filter(
+        (offer) => new Date(offer.expirationDate) < new Date()
+      ).length;
+      setExpiredCount(expired);
     } catch (err) {
       console.error("Error fetching offers:", err);
     }
@@ -90,8 +99,8 @@ const ListOffers = () => {
     setOfferData({
       status: selectedOffer.status,
       discount: selectedOffer.discount,
-      code: selectedOffer.code,
-      minPurchasePrice: selectedOffer.minPurchasePrice,
+      name: selectedOffer.name,
+      discountType: selectedOffer.discountType,
     });
   };
 
@@ -105,7 +114,16 @@ const ListOffers = () => {
   const handleSave = async () => {
     setModalOpen(false);
     try {
-      //  edit logic here
+      const result = await editOfferApi(selectedOffer._id, offerData);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      toast.success(result.data.message);
+      fetchOffers();
       handleClose();
     } catch (err) {
       console.error("Error updating offer:", err);
@@ -116,19 +134,23 @@ const ListOffers = () => {
     setModalOpen(false);
   };
 
+  const handleExpiredClick = () => {
+    setShowExpiredOnly((prev) => !prev);
+  };
+
   const handleDelete = async () => {
     try {
-        const result = await deleteOfferApi(selectedOffer._id)
-        console.log("result delete ", result);
-      if(result.response){
+      const result = await deleteOfferApi(selectedOffer._id);
+      console.log("result delete ", result);
+      if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
           toast.error(result.response.data.message);
           return;
         }
       }
-      toast.success(result.data.message)
-      fetchOffers()
+      toast.success(result.data.message);
+      fetchOffers();
       handleClose();
     } catch (err) {
       console.error("Error deleting offer:", err);
@@ -156,25 +178,50 @@ const ListOffers = () => {
         fullWidth
         mb={3}
       />
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-          label="Filter by Expiry Date"
-          value={selectedDate}
-          onChange={(newDate) => setSelectedDate(newDate)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              sx={{
-                backgroundColor: "#2c2c3a",
-                borderRadius: 1,
-                input: { color: "white" },
-                label: { color: "white" },
-              }}
-              fullWidth
+      <div className="flex justify-between">
+        <div>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Filter by Expiry Date"
+              value={selectedDate}
+              onChange={(newDate) => setSelectedDate(newDate)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  sx={{
+                    backgroundColor: "#2c2c3a",
+                    borderRadius: 1,
+                    input: { color: "white" },
+                    label: { color: "white" },
+                  }}
+                  fullWidth
+                />
+              )}
             />
-          )}
-        />
-      </LocalizationProvider>
+          </LocalizationProvider>
+        </div>
+        <div>
+          <Box
+            onClick={handleExpiredClick}
+            sx={{
+              color: showExpiredOnly ? "white" : "grey",
+              marginBottom: "10px",
+              cursor: "pointer",
+            }}
+          >
+            Expired
+            <span
+              className={`px-2 py-1 text-white rounded-sm ml-2 ${
+                showExpiredOnly
+                  ? "bg-red-500"
+                  : "bg-rose-400"
+              }`}
+            >
+              {expiredCount}
+            </span>
+          </Box>
+        </div>
+      </div>
 
       <TableContainer
         component={Paper}
@@ -183,6 +230,7 @@ const ListOffers = () => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell sx={{ color: "white" }}>Name</TableCell>
               <TableCell sx={{ color: "white" }}>Code</TableCell>
               <TableCell sx={{ color: "white" }}>Discount</TableCell>
               <TableCell sx={{ color: "white" }}>Status</TableCell>
@@ -193,8 +241,17 @@ const ListOffers = () => {
           <TableBody>
             {filteredOffers?.map((offer) => (
               <TableRow key={offer._id}>
+                <TableCell sx={{ color: "white" }}>{offer.name}</TableCell>
                 <TableCell sx={{ color: "white" }}>{offer.offerCode}</TableCell>
-                <TableCell sx={{ color: "white" }}>{offer.discount}%</TableCell>
+                {offer.discountType === "percentage" ? (
+                  <TableCell sx={{ color: "white" }}>
+                    {offer.discount}%
+                  </TableCell>
+                ) : (
+                  <TableCell sx={{ color: "white" }}>
+                    Rs. {offer.discount}
+                  </TableCell>
+                )}
                 <TableCell sx={{ color: "white" }}>
                   <span
                     style={{
@@ -259,9 +316,9 @@ const ListOffers = () => {
           <h2 className="mb-5 text-xl text-center">Edit Offer</h2>
 
           <TextField
-            label="Offer Code"
-            name="code"
-            value={offerData.code}
+            label="Offer Name"
+            name="name"
+            value={offerData.name}
             onChange={handleInputChange}
             fullWidth
             sx={{ marginBottom: "10px" }}
@@ -276,15 +333,19 @@ const ListOffers = () => {
             sx={{ marginBottom: "10px" }}
             InputLabelProps={{ style: { color: "white" } }}
           />
-          <TextField
-            label="Minimum Purchase Price"
-            name="minPurchasePrice"
-            value={offerData.minPurchasePrice}
-            onChange={handleInputChange}
-            fullWidth
-            sx={{ marginBottom: "10px" }}
-            InputLabelProps={{ style: { color: "white" } }}
-          />
+          <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+            <InputLabel sx={{ color: "white" }}>Status</InputLabel>
+            <Select
+              label="Status"
+              name="status"
+              value={offerData.status}
+              onChange={handleInputChange}
+              sx={{ color: "white", backgroundColor: "#2c2c3a" }}
+            >
+              <MenuItem value="active">Active</MenuItem>
+              <MenuItem value="inactive">Inactive</MenuItem>
+            </Select>
+          </FormControl>
 
           <Button
             onClick={handleSave}
