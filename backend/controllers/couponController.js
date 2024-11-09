@@ -29,8 +29,8 @@ export const createCoupon = asyncHandler(async (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
-  const existCoupon = await Coupon.findOne({code})
-  if(existCoupon) {
+  const existCoupon = await Coupon.findOne({ code });
+  if (existCoupon) {
     return res.status(400).json({ message: "Coupon code already exists" });
   }
   const newCoupon = await Coupon.create({
@@ -51,15 +51,26 @@ export const createCoupon = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 // @desc    get all coupons
 // @route   GET /api/coupon/get_coupons
 // @access  private admin
 export const getAllCoupons = asyncHandler(async (req, res) => {
-  const coupons = await Coupon.find({})
-  if(!coupons){
-    return res.status(400).json({message: 'Coupons not found'})
+  const coupons = await Coupon.find({});
+  if (!coupons) {
+    return res.status(400).json({ message: "Coupons not found" });
   }
-  res.status(200).json(coupons)
+  res.status(200).json(coupons);
+});
+
+// @desc    delete coupon
+// @route   Delete /api/coupon/delete_coupon/:id
+// @access  private admin
+export const deleteCoupon = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const coupons = await Coupon.findByIdAndDelete(id);
+  if (coupons) {
+    return res.status(200).json({ message: "Coupon Deleted" });
+  } else {
+    res.status(400).json({message: "Coudn't Delete Coupon" });
+  }
 });

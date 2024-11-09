@@ -63,18 +63,25 @@ const AddCoupon = () => {
         toast.error("All fields are required");
         return;
       }
-      const newCategories = coupon.categories.slice(1)
+      console.log("test aan ok", Number(coupon.discount))
+      if (Number(coupon.discount > 70)) {
+
+        return toast.error(" discount must be less than 70%");
+      }
+      const newCategories = coupon.categories.slice(1);
       const couponWithDate = {
         ...coupon,
         expirationDate: dayjs(coupon.expirationDate).toDate(),
-        categories: newCategories
+        categories: newCategories,
       };
       const result = await createCouponApi(couponWithDate);
       console.log("result coupon ", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
-          toast.error(result.response.data.message);
+          toast.error(
+            result.response.data.message || result.response.statusText
+          );
           return;
         }
       }

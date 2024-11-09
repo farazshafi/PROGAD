@@ -135,7 +135,7 @@ const NAVIGATION = [
         icon: <IoMdAdd />,
       },
       {
-        segment: "list_coupons",
+        segment: "",
         title: "List Coupons",
         icon: <FaListUl />,
       },
@@ -232,7 +232,7 @@ function DemoPageContent({ pathname }) {
     case "/coupons/add_coupon":
       content = <AddCoupon />;
       break;
-    case "/coupons/list_coupons":
+    case "/coupons":
       content = <ListCoupons />;
       break;
     case "/logout":

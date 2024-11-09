@@ -18,7 +18,7 @@ import { format } from "date-fns";
 import { IoMdMore } from "react-icons/io";
 import { MdEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
-import { getAllCouponsApi } from "../../api/couponApi";
+import { deleteCouponApi, getAllCouponsApi } from "../../api/couponApi";
 import { toast } from "react-toastify";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -82,7 +82,15 @@ const ListCoupons = () => {
 
   const handleDelete = async () => {
     try {
-      //   await deleteCoupon(selectedCoupon._id);
+      const result = await deleteCouponApi(selectedCoupon._id)
+      if(result.response){
+        const { status } = result.response;
+        if(status === 400 || status === 500){
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      toast.success(result.data.message);
       fetchCoupons();
     } catch (err) {
       console.error("Error deleting coupon:", err);
@@ -176,6 +184,7 @@ const ListCoupons = () => {
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl && selectedCoupon === coupon)}
                     onClose={handleClose}
+                    sx={{ "& .MuiPaper-root": { backgroundColor: "white" } }}
                   >
                     <MenuItem
                       onClick={handleEdit}

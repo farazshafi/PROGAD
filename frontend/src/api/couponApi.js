@@ -37,3 +37,19 @@ export const getAllCouponsApi = async () => {
     return e;
   }
 };
+
+export const deleteCouponApi = async (id) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.delete(`${API_URL}/delete_coupon/${id}`, config);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
