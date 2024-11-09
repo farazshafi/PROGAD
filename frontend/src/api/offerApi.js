@@ -10,7 +10,21 @@ export const createOfferApi = async (offerData) => {
         Authorization: `Bearer ${adminToken}`,
       },
     };
-    const data = await axios.post(`${API_URL}create_offer`,offerData ,config);
+    const data = await axios.post(`${API_URL}create_offer`, offerData, config);
+    return data;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getAllOffersAdminApi = async () => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    };
+    const data = await axios.get(`${API_URL}get_offers_admin`, config);
     return data;
   } catch (err) {
     return err;

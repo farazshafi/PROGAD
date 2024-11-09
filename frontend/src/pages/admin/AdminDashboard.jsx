@@ -32,12 +32,13 @@ import { useNavigate } from "react-router-dom";
 import ListOrders from "./ListOrders";
 import AddCoupon from "./AddCoupon";
 import ListCoupons from "./listCoupons";
+import ListOffers from "./ListOffers";
 import AddOffer from "./AddOffer";
 
 // Navigation menu items
 const NAVIGATION = [
   {
-    kind: "header",
+    kind: "header", 
     title: "Main items",
   },
   // dashboard
@@ -238,6 +239,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/coupons":
       content = <ListCoupons />;
+      break;
+    case "/offers":
+      content = <ListOffers />;
       break;
     case "/logout":
       content = <AdminLogout />;

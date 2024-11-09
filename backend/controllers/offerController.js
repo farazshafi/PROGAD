@@ -62,3 +62,14 @@ export const createOffer = asyncHandler(async (req, res) => {
   await offer.save();
   res.status(201).json({ message: "Offer Created" });
 });
+
+// @desc    get all offers
+// @route   GET /api/offer/get_offers_admin
+// @access  private admin
+export const getAllOffersAdmin = asyncHandler(async (req, res) => {
+  const existingOffer = await Offer.find();
+  if (!existingOffer) {
+    return res.status(404).json({ message: "No offers found" });
+  }
+  res.status(200).json(existingOffer);
+});
