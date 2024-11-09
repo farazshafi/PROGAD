@@ -9,6 +9,7 @@ import addressRoute from "./routes/addressRouter.js";
 import brandRoute from "./routes/brandRouter.js";
 import orderRoute from "./routes/orderRouter.js";
 import wishlistRoute from "./routes/wishlistRouter.js";
+import couponRoute from "./routes/couponRouter.js";
 import connectDB from "./config/db.js";
 import cors from "cors"
 
@@ -37,6 +38,7 @@ app.use("/api/address/", addressRoute);
 app.use("/api/order/", orderRoute);
 app.use("/api/brand/", brandRoute);
 app.use("/api/wishlist/", wishlistRoute);
+app.use("/api/coupon/", couponRoute);
 
 app.get("/", (req, res) => {
   res.send("Api is running...");

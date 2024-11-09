@@ -1,29 +1,33 @@
-import React, { useState } from 'react';
-import { TextField, Button, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { Select, InputLabel, FormControl } from '@mui/material';
-
-const categories = [
-  { id: 1, name: 'Electronics' },
-  { id: 2, name: 'Fashion' },
-  { id: 3, name: 'Groceries' },
-  { id: 4, name: 'Books' },
-  { id: 5, name: 'Toys' }
-];
+import React, { useEffect, useState } from "react";
+import {
+  TextField,
+  Button,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { Select, InputLabel, FormControl } from "@mui/material";
+import { toast } from "react-toastify";
+import { createCouponApi } from "../../api/couponApi";
+import dayjs from "dayjs";
+import { getPublishedCategoriesApi } from "../../api/categoryApi";
 
 const AddCoupon = () => {
+  const [categories, setCategories] = useState([]);
+
   const [coupon, setCoupon] = useState({
-    name: '',
-    code: '',
-    discount: '',
+    name: "",
+    code: "",
+    discount: "",
     expirationDate: null,
-    limit: '',
-    minPurchase: '',
-    status: 'active',
+    limit: "",
+    minPurchasePrice: "",
+    status: "active",
     categories: [],
-    description: '',
+    description: "",
   });
 
   const handleInputChange = (e) => {
@@ -36,6 +40,8 @@ const AddCoupon = () => {
   };
 
   const handleCategoryChange = (categoryId) => {
+    if (!categoryId) return;
+
     setCoupon((prev) => ({
       ...prev,
       categories: prev.categories.includes(categoryId)
@@ -44,16 +50,61 @@ const AddCoupon = () => {
     }));
   };
 
-  const handleShowCouponDetails = () => {
-    alert(JSON.stringify(coupon, null, 2));
-    console.log("coupon details",coupon)
-    return
+  const handleShowCouponDetails = async () => {
+    try {
+      // validation
+      if (
+        !coupon.name ||
+        !coupon.code ||
+        !coupon.discount ||
+        !coupon.limit ||
+        !coupon.minPurchasePrice
+      ) {
+        toast.error("All fields are required");
+        return;
+      }
+      const newCategories = coupon.categories.slice(1)
+      const couponWithDate = {
+        ...coupon,
+        expirationDate: dayjs(coupon.expirationDate).toDate(),
+        categories: newCategories
+      };
+      const result = await createCouponApi(couponWithDate);
+      console.log("result coupon ", result);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      toast.success(result.data.message);
+    } catch (err) {
+      toast.error(err);
+      console.error("Error fetching coupon details:", err);
+    }
+    return;
   };
+
+  const fetchCategories = async () => {
+    try {
+      const result = await getPublishedCategoriesApi();
+      console.log("categor result", result);
+      setCategories(result);
+    } catch (err) {
+      toast.error(err);
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <div className="p-6 bg-gray-800 text-white rounded-md max-w-lg mx-auto mt-10 shadow-lg">
       <h2 className="text-2xl font-semibold mb-4">Add Coupon</h2>
-      
+
       {/* Line 1: Coupon Name & Code */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <TextField
@@ -64,7 +115,7 @@ const AddCoupon = () => {
           value={coupon.name}
           onChange={handleInputChange}
           className="bg-gray-900 text-white"
-          InputLabelProps={{ style: { color: 'white' } }}
+          InputLabelProps={{ style: { color: "white" } }}
         />
         <TextField
           label="Coupon Code"
@@ -74,7 +125,7 @@ const AddCoupon = () => {
           value={coupon.code}
           onChange={handleInputChange}
           className="bg-gray-900 text-white"
-          InputLabelProps={{ style: { color: 'white' } }}
+          InputLabelProps={{ style: { color: "white" } }}
         />
       </div>
 
@@ -88,7 +139,7 @@ const AddCoupon = () => {
           value={coupon.discount}
           onChange={handleInputChange}
           className="bg-gray-900 text-white"
-          InputLabelProps={{ style: { color: 'white' } }}
+          InputLabelProps={{ style: { color: "white" } }}
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
@@ -101,7 +152,7 @@ const AddCoupon = () => {
                 variant="outlined"
                 fullWidth
                 className="bg-gray-900 text-white"
-                InputLabelProps={{ style: { color: 'white' } }}
+                InputLabelProps={{ style: { color: "white" } }}
               />
             )}
           />
@@ -118,29 +169,29 @@ const AddCoupon = () => {
           value={coupon.limit}
           onChange={handleInputChange}
           className="bg-gray-900 text-white"
-          InputLabelProps={{ style: { color: 'white' } }}
+          InputLabelProps={{ style: { color: "white" } }}
         />
         <TextField
           label="Minimum Purchase Value"
           variant="outlined"
-          name="minPurchase"
+          name="minPurchasePrice"
           fullWidth
-          value={coupon.minPurchase}
+          value={coupon.minPurchasePrice}
           onChange={handleInputChange}
           className="bg-gray-900 text-white"
-          InputLabelProps={{ style: { color: 'white' } }}
+          InputLabelProps={{ style: { color: "white" } }}
         />
       </div>
 
       {/* Line 4: Status & Category */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <FormControl fullWidth className="bg-gray-900">
-          <InputLabel style={{ color: 'white' }}>Status</InputLabel>
+          <InputLabel style={{ color: "white" }}>Status</InputLabel>
           <Select
             name="status"
             value={coupon.status}
             onChange={handleInputChange}
-            style={{ color: 'white', backgroundColor: '#1f2937' }}
+            style={{ color: "white", backgroundColor: "#1f2937" }}
           >
             <MenuItem value="active">Active</MenuItem>
             <MenuItem value="deactive">Deactive</MenuItem>
@@ -151,12 +202,12 @@ const AddCoupon = () => {
           <span className="text-white mb-2">Categories:</span>
           {categories.map((category) => (
             <FormControlLabel
-              key={category.id}
+              key={category._id}
               control={
                 <Checkbox
-                  checked={coupon.categories.includes(category.id)}
-                  onChange={() => handleCategoryChange(category.id)}
-                  style={{ color: 'white' }}
+                  checked={coupon.categories.includes(category._id)}
+                  onChange={() => handleCategoryChange(category._id)}
+                  style={{ color: "white" }}
                 />
               }
               label={category.name}
@@ -178,7 +229,7 @@ const AddCoupon = () => {
           value={coupon.description}
           onChange={handleInputChange}
           className="bg-gray-900 text-white"
-          InputLabelProps={{ style: { color: 'white' } }}
+          InputLabelProps={{ style: { color: "white" } }}
         />
       </div>
 
