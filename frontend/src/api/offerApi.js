@@ -30,3 +30,17 @@ export const getAllOffersAdminApi = async () => {
     return err;
   }
 };
+
+export const deleteOfferApi = async (id) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    };
+    const data = await axios.delete(`${API_URL}delete_offer/${id}`, config);
+    return data;
+  } catch (err) {
+    return err;
+  }
+};

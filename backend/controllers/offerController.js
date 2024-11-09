@@ -73,3 +73,12 @@ export const getAllOffersAdmin = asyncHandler(async (req, res) => {
   }
   res.status(200).json(existingOffer);
 });
+
+// @desc    get all offers
+// @route   Delete /api/offer/delete_offer/:id
+// @access  private admin
+export const deleteOffer = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  await Offer.findByIdAndDelete(id);
+  res.status(200).json({ message: "Offer deleted" });
+});

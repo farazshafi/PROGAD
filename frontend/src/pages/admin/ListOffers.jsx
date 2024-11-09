@@ -27,7 +27,7 @@ import { toast } from "react-toastify";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { getAllOffersAdminApi } from "../../api/offerApi"; // Assuming you have an API for offers
+import { deleteOfferApi, getAllOffersAdminApi } from "../../api/offerApi"; // Assuming you have an API for offers
 
 const ListOffers = () => {
   const [offers, setOffers] = useState([]);
@@ -48,7 +48,7 @@ const ListOffers = () => {
   const fetchOffers = async () => {
     try {
       const offers = await getAllOffersAdminApi();
-      console.log("offers :", offers.data)
+      console.log("offers :", offers.data);
       if (offers.response) {
         const { status } = offers.response;
         if (status === 400 || status === 500) {
@@ -117,8 +117,23 @@ const ListOffers = () => {
   };
 
   const handleDelete = async () => {
-    console.log("slected one ", selectedOffer)
-    handleClose();
+    try {
+        const result = await deleteOfferApi(selectedOffer._id)
+        console.log("result delete ", result);
+      if(result.response){
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      toast.success(result.data.message)
+      fetchOffers()
+      handleClose();
+    } catch (err) {
+      console.error("Error deleting offer:", err);
+      toast.error("Error deleting offer.");
+    }
   };
 
   useEffect(() => {
@@ -176,7 +191,7 @@ const ListOffers = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredOffers.map((offer) => (
+            {filteredOffers?.map((offer) => (
               <TableRow key={offer._id}>
                 <TableCell sx={{ color: "white" }}>{offer.offerCode}</TableCell>
                 <TableCell sx={{ color: "white" }}>{offer.discount}%</TableCell>
