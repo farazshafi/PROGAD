@@ -158,18 +158,19 @@ const ListCategories = () => {
         name: editCategory.name,
         description: editCategory.description,
         isPublished: editCategory.isPublished,
-      }
-      await updateCategoryApi(selectedCategory._id,updatedCategory)
+      };
+      await updateCategoryApi(selectedCategory._id, updatedCategory);
       fetchCategories();
     } catch (err) {
       console.error("Error updating category:", err);
     }
     handleModalClose();
   };
-  
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
+      <p className="text-4xl text-center text-white py-4">Category Management</p>
+
       {/* Highlight Section */}
       <Box display="flex" mb={3}>
         <Typography
@@ -407,13 +408,13 @@ const ListCategories = () => {
             label="Description"
             type="text"
             fullWidth
-            value={editCategory.description} 
-            onChange={handleEditChange} 
+            value={editCategory.description}
+            onChange={handleEditChange}
           />
           <FormControlLabel
             control={
               <Switch
-                checked={editCategory.isPublished} 
+                checked={editCategory.isPublished}
                 onChange={(e) =>
                   setEditCategory({
                     ...editCategory,

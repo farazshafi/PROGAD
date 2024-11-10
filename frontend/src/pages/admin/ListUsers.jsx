@@ -104,6 +104,8 @@ const ListUsers = () => {
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
+      <p className="text-4xl text-center text-white py-4">User Management</p>
+
       {/* Highlight Section */}
       <Box display="flex" mb={3}>
         <div>

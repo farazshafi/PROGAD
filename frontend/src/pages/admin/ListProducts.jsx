@@ -131,6 +131,8 @@ const ListProducts = () => {
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
+        <p className="text-4xl text-center text-white py-4">Product Management</p>
+
       {/* Filters */}
       <Box display="flex" justifyContent="space-between" mb={2}>
         {/* Stock Filter */}

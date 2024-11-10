@@ -164,6 +164,7 @@ const ListOffers = () => {
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
+        <p className="text-4xl text-center text-white py-4">Offer Management</p>
       <TextField
         variant="outlined"
         placeholder="Search by code"
@@ -200,7 +201,7 @@ const ListOffers = () => {
             />
           </LocalizationProvider>
         </div>
-        <div>
+        <div className="mt-[3px]">
           <Box
             onClick={handleExpiredClick}
             sx={{

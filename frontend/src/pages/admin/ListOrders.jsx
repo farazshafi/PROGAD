@@ -24,7 +24,14 @@ import {
   listOrdersApi,
   updateOrderStatusApi,
 } from "../../api/orderApi";
-import { FaEye, FaTruck, FaBan, FaUndo, FaShippingFast, FaClock } from "react-icons/fa";
+import {
+  FaEye,
+  FaTruck,
+  FaBan,
+  FaUndo,
+  FaShippingFast,
+  FaClock,
+} from "react-icons/fa";
 
 const ListOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -32,9 +39,8 @@ const ListOrders = () => {
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [page,setPage] = useState(1)
+  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
 
   const navigate = useNavigate();
 
@@ -92,7 +98,7 @@ const ListOrders = () => {
       const { data } = await listOrdersApi(page);
       console.log("fetched orders", data);
       setOrders(data.allOrders);
-      setTotalPages(data.totalPages)
+      setTotalPages(data.totalPages);
     } catch (err) {
       toast.error("Failed to fetch orders. Please try again.");
       console.error("Fetch Orders Error:", err);
@@ -121,6 +127,8 @@ const ListOrders = () => {
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
+      <p className="text-4xl text-center text-white py-4">Order Management</p>
+
       {/* Filters */}
       <Box display="flex" justifyContent="space-between" mb={2}>
         {/* Status Filter */}
@@ -222,7 +230,11 @@ const ListOrders = () => {
                     onClose={handleMenuClose}
                   >
                     <MenuItem
-                      onClick={() => navigate(`/admin_dashboard/order_details/${selectedOrder._id}`)}
+                      onClick={() =>
+                        navigate(
+                          `/admin_dashboard/order_details/${selectedOrder._id}`
+                        )
+                      }
                     >
                       <FaEye style={{ marginRight: 8 }} /> View
                     </MenuItem>
@@ -234,8 +246,7 @@ const ListOrders = () => {
                       Shipped
                     </MenuItem>
                     <MenuItem onClick={() => handleChangeStatus("pending")}>
-                      <FaClock style={{ marginRight: 8 }} /> Mark as
-                      Pending
+                      <FaClock style={{ marginRight: 8 }} /> Mark as Pending
                     </MenuItem>
                     <MenuItem onClick={handleCancelOrder}>
                       <FaBan style={{ marginRight: 8 }} /> Mark as Cancelled
@@ -255,7 +266,7 @@ const ListOrders = () => {
           shape="rounded"
           sx={{
             "& .MuiPaginationItem-root": {
-              color: "white", 
+              color: "white",
             },
           }}
           count={totalPages}
