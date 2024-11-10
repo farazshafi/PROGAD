@@ -62,3 +62,12 @@ export const editOfferApi = async (id, offerData) => {
     return err;
   }
 };
+
+export const activeOfferApi = async () => {
+  try {
+    const data = await axios.get(`${API_URL}active_offer`);
+    return data;
+  } catch (err) {
+    return err;
+  }
+};

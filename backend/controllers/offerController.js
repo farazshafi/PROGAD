@@ -88,17 +88,40 @@ export const deleteOffer = asyncHandler(async (req, res) => {
 // @access  private admin
 export const editOffer = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const {status, name, discount, discountType} = req.body
-  if(discountType === "percentage" && discount > 70){
-    return res.status(400).json({message: "Discount can't be more than 70%"})
+  const { status, name, discount, discountType } = req.body;
+  if (discountType === "percentage" && discount > 70) {
+    return res.status(400).json({ message: "Discount can't be more than 70%" });
   }
-  const offer = await Offer.findById(id)
-  if(!offer){
-    return res.status(400).json({message: "offer not found"})
+  const offer = await Offer.findById(id);
+  if (!offer) {
+    return res.status(400).json({ message: "offer not found" });
   }
-  offer.status = status || offer.status
-  offer.name = name || offer.name
-  offer.discount = discount || offer.discount
-  await offer.save()
-  res.status(200).json({message: "Offer Updated"})
+
+  if (status === "active") {
+    await Offer.updateMany(
+      { _id: { $ne: id } },
+      { $set: { status: "inactive" } }
+    );
+  }
+
+  let currentDate = new Date();
+  if (offer.expirationDate && offer.expirationDate < currentDate) {
+    return res.status(400).json({ message: "Offer has expired" });
+  }
+
+  offer.status = status || offer.status;
+  offer.name = name || offer.name;
+  offer.discount = discount || offer.discount;
+  await offer.save();
+  res.status(200).json({ message: "Offer Updated" });
+});
+
+// @desc    get active order
+// @route   get /api/offer/active_offer
+// @access  public
+export const getActiveOffer = asyncHandler(async (req, res) => {
+  const activeOffer = await Offer.findOne({ status: "active" }).select(
+    "name discountType discount expirationDate applyToProducts applyToCategories categoryIds"
+  ).populate("categoryIds", "name _id")
+  res.status(200).json(activeOffer);
 });
