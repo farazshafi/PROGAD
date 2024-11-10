@@ -1,44 +1,45 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import { createTheme } from "@mui/material/styles";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import { AppProvider } from "@toolpad/core/AppProvider";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import GroupIcon from "@mui/icons-material/Group";
-import { RiCoupon2Fill } from "react-icons/ri";
-import { MdDashboard } from "react-icons/md";
-import { FaShoppingCart } from "react-icons/fa";
-import { ImHeadphones } from "react-icons/im";
-import { MdBrandingWatermark } from "react-icons/md";
-import { IoMdAdd } from "react-icons/io";
-import { FaListUl } from "react-icons/fa";
-import { BiSolidOffer } from "react-icons/bi";
-import { FaDownload } from "react-icons/fa6";
-import { GoGraph } from "react-icons/go";
-import { MdCategory } from "react-icons/md";
-import { IoIosExit } from "react-icons/io";
+import * as React                 from "react"                        ;
+import      Box                   from "@mui/material/Box"            ;
+import {    createTheme         } from "@mui/material/styles"         ;
+import      BarChartIcon          from "@mui/icons-material/BarChart" ;
+import {    AppProvider         } from "@toolpad/core/AppProvider"    ;
+import {    DashboardLayout     } from "@toolpad/core/DashboardLayout";
+import      GroupIcon             from "@mui/icons-material/Group"    ;
+import {    RiCoupon2Fill       } from "react-icons/ri"               ;
+import {    MdDashboard         } from "react-icons/md"               ;
+import {    FaShoppingCart      } from "react-icons/fa"               ;
+import {    ImHeadphones        } from "react-icons/im"               ;
+import {    MdBrandingWatermark } from "react-icons/md"               ;
+import {    IoMdAdd             } from "react-icons/io"               ;
+import {    FaListUl            } from "react-icons/fa"               ;
+import {    BiSolidOffer        } from "react-icons/bi"               ;
+import {    FaDownload          } from "react-icons/fa6"              ;
+import {    GoGraph             } from "react-icons/go"               ;
+import {    MdCategory          } from "react-icons/md"               ;
+import {    IoIosExit           } from "react-icons/io"               ;
 
 // Components
-import ListUsers from "./ListUsers";
-import ListProduct from "./ListProducts";
-import ListCategories from "./ListCategories";
-import AddCategory from "./AddCategory";
-import AddProduct from "./AddProduct";
-import AdminLogout from "./AdminLogout";
-import { useSelector } from "react-redux";
-import { selectedAdmin } from "../../features/admin/adminSlice";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import ListOrders from "./ListOrders";
-import AddCoupon from "./AddCoupon";
-import ListCoupons from "./listCoupons";
-import ListOffers from "./ListOffers";
-import AddOffer from "./AddOffer";
+import   ListUsers        from "./ListUsers"                    ;
+import   ListProduct      from "./ListProducts"                 ;
+import   ListCategories   from "./ListCategories"               ;
+import   AddCategory      from "./AddCategory"                  ;
+import   AddProduct       from "./AddProduct"                   ;
+import   AdminLogout      from "./AdminLogout"                  ;
+import { useSelector    } from "react-redux"                    ;
+import { selectedAdmin  } from "../../features/admin/adminSlice";
+import { useEffect      } from "react"                          ;
+import { useNavigate    } from "react-router-dom"               ;
+import   ListOrders       from "./ListOrders"                   ;
+import   AddCoupon        from "./AddCoupon"                    ;
+import   ListCoupons      from "./listCoupons"                  ;
+import   ListOffers       from "./ListOffers"                   ;
+import   AddOffer         from "./AddOffer"                     ;
+import   SalesReport      from "./SalesReport"                  ;
 
 // Navigation menu items
 const NAVIGATION = [
   {
-    kind: "header", 
+    kind: "header",
     title: "Main items",
   },
   // dashboard
@@ -108,23 +109,23 @@ const NAVIGATION = [
     ],
   },
   // brands
-  {
-    segment: "brands",
-    title: "Brands",
-    icon: <MdBrandingWatermark fontSize={"20px"} />,
-    children: [
-      {
-        segment: "add brand",
-        title: "Add Brand",
-        icon: <IoMdAdd />,
-      },
-      {
-        segment: "list_brand",
-        title: "List Brand",
-        icon: <FaListUl />,
-      },
-    ],
-  },
+  // {
+  //   segment: "brands",
+  //   title: "Brands",
+  //   icon: <MdBrandingWatermark fontSize={"20px"} />,
+  //   children: [
+  //     {
+  //       segment: "add brand",
+  //       title: "Add Brand",
+  //       icon: <IoMdAdd />,
+  //     },
+  //     {
+  //       segment: "list_brand",
+  //       title: "List Brand",
+  //       icon: <FaListUl />,
+  //     },
+  //   ],
+  // },
   // coupons
   {
     segment: "coupons",
@@ -169,7 +170,7 @@ const NAVIGATION = [
     title: "Analytics",
   },
   {
-    segment: "sales report",
+    segment: "sales_report",
     title: "Sales Report",
     icon: <BarChartIcon />,
     children: [
@@ -239,7 +240,7 @@ function DemoPageContent({ pathname }) {
       break;
     case "/coupons":
       content = <ListCoupons />;
-      break;
+      break; 
     case "/offers":
       content = <ListOffers />;
       break;
@@ -248,6 +249,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/orders":
       content = <ListOrders />;
+      break;
+    case "/sales_report":
+      content = <SalesReport />; 
       break;
     default:
       content = <div>Default Content</div>;
