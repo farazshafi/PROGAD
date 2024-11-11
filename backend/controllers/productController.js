@@ -343,16 +343,17 @@ export const getProductDetails = asyncHandler(async (req, res) => {
       discountType = relevantOffer.discountType;
 
       if (discountType === "percentage") {
-        discountValue = (product.discountPrice * relevantOffer.discount) / 100;
+        discountValue = relevantOffer.discount;
+        discountPrice = product.discountPrice * (1 - discountValue / 100);
       } else if (discountType === "fixed") {
         discountValue = relevantOffer.discount;
+        discountPrice = product.discountPrice - discountValue;
       }
-      discountPrice -= discountValue;
     }
 
     res.status(200).json({
       ...product.toObject(),
-      discount: discountValue,
+      discount: discountType === "percentage" ? `${discountValue}%` : discountValue,
       discountType,
       discountPrice: discountPrice.toFixed(2),
     });
@@ -363,6 +364,8 @@ export const getProductDetails = asyncHandler(async (req, res) => {
       .json({ message: "Server error while getting product details" });
   }
 });
+
+
 
 // @desc    update product by id
 // @route   PUT /api/product/update_product/:id
