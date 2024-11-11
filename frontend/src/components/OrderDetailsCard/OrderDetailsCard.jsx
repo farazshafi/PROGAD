@@ -19,6 +19,11 @@ const OrderDetailsCard = ({ isAdmin }) => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const breadcrumbPath = [
+    { label: "Admin Dashboard", url: "/admin_dashboard" },
+    { label: order.name, url: "/admin_dashboard" },
+  ];
+
   const fetchOrderDetails = async () => {
     try {
       const result = await getOrderDetailsApi(id);
@@ -77,7 +82,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
         <Typography variant="h4" sx={{ mb: 3, textAlign: "center" }}>
           Order Details
         </Typography>
-        <BreadCrums isAdmin={true} text={"Order Details"} />
+        <BreadCrums isAdmin={true} path={breadcrumbPath} />
         <Card
           sx={{
             padding: "20px",

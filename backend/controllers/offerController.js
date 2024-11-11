@@ -1,5 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Offer from "../models/offerModel.js";
+import Category from "../models/categoryModel.js";
+import Product from "../models/productModel.js";
 
 // @desc    create new offer
 // @route   POST /api/offer/create_offer
@@ -120,8 +122,74 @@ export const editOffer = asyncHandler(async (req, res) => {
 // @route   get /api/offer/active_offer
 // @access  public
 export const getActiveOffer = asyncHandler(async (req, res) => {
-  const activeOffer = await Offer.findOne({ status: "active" }).select(
-    "name discountType discount expirationDate applyToProducts applyToCategories categoryIds"
-  ).populate("categoryIds", "name _id")
+  const activeOffer = await Offer.findOne({ status: "active" })
+    .select(
+      "name discountType discount expirationDate applyToProducts applyToCategories categoryIds"
+    )
+    .populate("categoryIds", "name _id");
   res.status(200).json(activeOffer);
+});
+
+// @desc    Get products with active offers
+// @route   GET /api/offer/offer_products
+// @access  Public
+export const offerProducts = asyncHandler(async (req, res) => {
+  try {
+    const offers = await Offer.find({
+      status: "active",
+      $or: [{ applyToProducts: true }, { applyToCategories: true }],
+    });
+
+    let productIds = new Set();
+    let categoryIds = new Set();
+
+    offers.forEach((offer) => {
+      if (offer.applyToProducts) {
+        offer.productIds.forEach((id) => productIds.add(id.toString()));
+      }
+      if (offer.applyToCategories) {
+        offer.categoryIds.forEach((id) => categoryIds.add(id.toString()));
+      }
+    });
+
+    const products = await Product.find({
+      $or: [
+        { _id: { $in: Array.from(productIds) } },
+        { category: { $in: Array.from(categoryIds) } },
+      ],
+    });
+
+    const filteredProducts = products.map((product) => {
+      const relevantOffer = offers.find(
+        (offer) =>
+          (offer.applyToProducts && offer.productIds.includes(product._id)) ||
+          (offer.applyToCategories &&
+            offer.categoryIds.includes(product.category))
+      );
+
+      const discountPrice =
+        relevantOffer && relevantOffer.discountType === "percentage"
+          ? product.discountPrice * (1 - relevantOffer.discount / 100)
+          : product.discountPrice;
+
+      return {
+        _id: product._id,
+        name: product.name,
+        image: product.images[0] || null,
+        discountType: relevantOffer.discountType,
+        discountOffer: relevantOffer ? relevantOffer.discount : null,
+        discountPrice: Math.round(discountPrice),
+        originalPrice: product.originalPrice,
+      };
+    });
+
+    res.status(200).json(filteredProducts);
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching products with offers",
+      error: error.message,
+    });
+  }
 });

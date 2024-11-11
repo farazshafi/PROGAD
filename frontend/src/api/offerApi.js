@@ -71,3 +71,12 @@ export const activeOfferApi = async () => {
     return err;
   }
 };
+
+export const offerProductsApi = async () => {
+  try {
+    const data = await axios.get(`${API_URL}offer_products`);
+    return data;
+  } catch (err) {
+    return err;
+  }
+};
