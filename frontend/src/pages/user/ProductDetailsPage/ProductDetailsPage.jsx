@@ -24,13 +24,20 @@ import {
 import ProductCard from "../../../components/ProductCard/ProductCard";
 import OurButton from "../../../components/OurButton/OurButton";
 import { Col, Container, Row } from "react-bootstrap";
+import BreadCrums from "../../../components/BreadCrums";
 
 const ProductDetailsPage = () => {
   const [product, setProduct] = useState({});
   const [relatedProduct, setRelatedProduct] = useState([]);
 
+  const breadcrumbPath = [
+    { label: "Home", url: "/" },
+    { label: "Products", url: "/products" },
+    { label: product?.name, url: "" },
+  ];
+
   const params = useParams();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { id } = params;
 
   const fetchProductDetails = async () => {
@@ -72,9 +79,9 @@ const ProductDetailsPage = () => {
     }
   };
 
-  const handleNavigate = (id) => {
-    navigate(`/product_details/${id}`)
-  }
+  // const handleNavigate = (id) => {
+  //   navigate(`/product_details/${id}`); 
+  // };
 
   useEffect(() => {
     fetchProductDetails();
@@ -85,46 +92,16 @@ const ProductDetailsPage = () => {
       <Header />
 
       {/* Breadcrumbs Section */}
-      <div role="presentation">
-        <Breadcrumbs
-          aria-label="breadcrumb"
-          sx={{ color: "white", padding: "0 5%" }}
-        >
-          {/* Home Breadcrumb */}
-          <Link underline="hover" color="white" component={RouterLink} to="/">
-            Home
-          </Link>
-
-          <Link
-            underline="hover"
-            color="white"
-            component={RouterLink}
-            to="/products"
-          >
-            Products
-          </Link>
-
-          {/* Product Details Breadcrumb */}
-          <Typography color="white">{product.name}</Typography>
-        </Breadcrumbs>
-      </div>
+      <BreadCrums path={breadcrumbPath}/>
 
       <ProductDetail product={product} />
       <Divider sx={{ backgroundColor: "#ffff", height: "1px" }} />
       <ProductInformation product={product} />
-      {/* related product */}
       <Container>
-        <Row>
+        {/* <Row>
           {relatedProduct.length > 0 ? (
             relatedProduct.map((product, i) => (
-              <Col
-                key={i}
-                className="mb-5"
-                xs={6}
-                sm={6}
-                md={4}
-                lg={3}
-              >
+              <Col key={i} className="mb-5" xs={6} sm={6} md={4} lg={3}>
                 <Card sx={{ maxWidth: 345, backgroundColor: "transparent" }}>
                   <CardActionArea>
                     <CardMedia
@@ -161,6 +138,7 @@ const ProductDetailsPage = () => {
                       </Typography>
                     </CardContent>
                   </CardActionArea>
+
                   <CardActions sx={{ justifyContent: "center", gap: "10px" }}>
                     <OurButton
                       type={"rupees"}
@@ -192,7 +170,7 @@ const ProductDetailsPage = () => {
               <h2 style={{ color: "white" }}>No Related Product Found</h2>
             </div>
           )}
-        </Row>
+        </Row> */}
       </Container>
       <Footer />
     </>

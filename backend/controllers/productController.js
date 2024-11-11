@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { promisify } from "util";
 import asyncHandler from "express-async-handler";
 import { Product } from "../models/productModel.js";
+import Offer from "../models/offerModel.js";
 
 // Initialize S3 client
 const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -227,13 +228,58 @@ export const getAllProduct = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    const totalProducts = await Product.countDocuments({});
+
+    const activeOffers = await Offer.find({
+      status: "active",
+      expirationDate: { $gte: new Date() },
+    });
+
+    const totalProducts = await Product.countDocuments({ isPublished: true });
     const products = await Product.find({ isPublished: true })
       .limit(limit)
       .skip(skip)
       .populate("category", "_id name");
+
+    const transformedProducts = products.map((product) => {
+      const relevantOffer = activeOffers.find(
+        (offer) =>
+          (offer.applyToProducts && offer.productIds.includes(product._id)) ||
+          (offer.applyToCategories &&
+            offer.categoryIds.includes(product.category._id))
+      );
+
+      let discountPrice = product.discountPrice;
+      let discountValue = null;
+      let discountType = null;
+
+      if (relevantOffer) {
+        discountType = relevantOffer.discountType;
+        if (discountType === "percentage") {
+          discountValue = `${relevantOffer.discount}%`;
+          // discountPrice =
+          //   product.discountPrice * (1 - relevantOffer.discount / 100);
+        } else if (discountType === "fixed") {
+          discountValue = `₹${relevantOffer.discount}`;
+          // discountPrice = Math.max(
+          //   0,
+          //   product.discountPrice - relevantOffer.discount
+          // );
+        }
+      }
+
+      return {
+        _id: product._id,
+        name: product.name,
+        image: product.images[0] || null,
+        discountPrice: discountPrice.toFixed(2),
+        originalPrice: product.originalPrice,
+        discount: discountValue,
+        discountType: discountType,
+      };
+    });
+
     res.json({
-      products,
+      products: transformedProducts,
       currentPage: page,
       totalPages: Math.ceil(totalProducts / limit),
       totalProducts,
@@ -276,14 +322,45 @@ export const getProductDetails = asyncHandler(async (req, res) => {
     const product = await Product.findById(id)
       .select("-sold")
       .populate("category", "_id name");
-    if (product) {
-      res.status(200).json(product);
-    } else {
-      res.status(404).json({ message: "product not found" });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
     }
+
+    const relevantOffer = await Offer.findOne({
+      status: "active",
+      expirationDate: { $gte: new Date() },
+      $or: [{ productIds: product._id }, { categoryIds: product.category._id }],
+    });
+
+    console.log("Relevant Offer: ", relevantOffer);
+
+    let discountValue = 0;
+    let discountPrice = product.discountPrice;
+    let discountType = null;
+
+    if (relevantOffer) {
+      discountType = relevantOffer.discountType;
+
+      if (discountType === "percentage") {
+        discountValue = (product.discountPrice * relevantOffer.discount) / 100;
+      } else if (discountType === "fixed") {
+        discountValue = relevantOffer.discount;
+      }
+      discountPrice -= discountValue;
+    }
+
+    res.status(200).json({
+      ...product.toObject(),
+      discount: discountValue,
+      discountType,
+      discountPrice: discountPrice.toFixed(2),
+    });
   } catch (err) {
-    console.error("Error getting products:", err.message);
-    res.status(500).json({ message: "Server error while getting products" });
+    console.error("Error getting product details:", err.message);
+    res
+      .status(500)
+      .json({ message: "Server error while getting product details" });
   }
 });
 
@@ -395,15 +472,14 @@ export const getSortedProduct = asyncHandler(async (req, res) => {
   }
 });
 
-
 // @desc    get sorted product
 // @route   GET /api/product/relatedProduct/category_id/:id
 // @access  Public
 export const getRelatedProduct = asyncHandler(async (req, res) => {
   try {
-    const {id} = req.params
-    const product = await Product.find({category:id})
-    if(!product){
+    const { id } = req.params;
+    const product = await Product.find({ category: id });
+    if (!product) {
       return res.status(404).json({ message: "No related product found" });
     }
     res.status(200).json(product);
@@ -413,15 +489,13 @@ export const getRelatedProduct = asyncHandler(async (req, res) => {
   }
 });
 
-
 // @desc    get all public products
 // @route   GET /api/product/public_products
 // @access  private admin
 export const getAllPublicProducts = asyncHandler(async (req, res) => {
   try {
-    
-    const product = await Product.find({isPublished:true}).select("name id")
-    if(!product){
+    const product = await Product.find({ isPublished: true }).select("name id");
+    if (!product) {
       return res.status(404).json({ message: "No related product found" });
     }
     res.status(200).json(product);

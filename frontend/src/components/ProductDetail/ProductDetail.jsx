@@ -30,12 +30,12 @@ const ProductDetail = ({ product }) => {
       quantity: quantity,
       image: product.images[0],
       stock: product.totalStock,
-      subTotal: product.discountPrice * quantity
+      subTotal: product.discountPrice * quantity,
     };
     dispatch(addToCart(cartItem));
     setShowAddToCartAnimation(true);
     setTimeout(() => setShowAddToCartAnimation(false), 2300);
-    setQuantity(1)
+    setQuantity(1);
   };
 
   return (
@@ -44,7 +44,13 @@ const ProductDetail = ({ product }) => {
         <div className="animation-overlay">
           <Lottie
             animationData={addedTOcartAnimation}
-            style={{ width: 150, height: 150, backgroundColor:"white", borderRadius:"15%", padding:"20px" }}
+            style={{
+              width: 150,
+              height: 150,
+              backgroundColor: "white",
+              borderRadius: "15%",
+              padding: "20px",
+            }}
             autoPlay={true}
           />
         </div>
@@ -98,6 +104,18 @@ const ProductDetail = ({ product }) => {
                 >
                   {product.name}
                 </Typography>
+                <div>
+                  {product.discount && (
+                    <div className="bg-white w-fit px-2 py-1 rounded mb-2">
+                      <p className=" text-black text-xl">
+                        Offer -
+                        {product.discountType === "percentage"
+                          ? product.discount + "%"
+                          : "₹" + product.discount}
+                      </p>
+                    </div>
+                  )}
+                </div>
                 <div className="product-details-price-div">
                   <Typography
                     sx={{
@@ -225,7 +243,11 @@ const ProductDetail = ({ product }) => {
                     onClick={() => handleAddToCart(product)}
                     style={{ width: "100%" }}
                   >
-                    <OurButton disabled={product.totalStock < 1 ? true : false} page={"product_details"} text={"Add To Cart"} />
+                    <OurButton
+                      disabled={product.totalStock < 1 ? true : false}
+                      page={"product_details"}
+                      text={"Add To Cart"}
+                    />
                   </div>
                 </div>
               </div>

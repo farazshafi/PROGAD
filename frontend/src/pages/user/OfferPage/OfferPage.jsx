@@ -16,22 +16,23 @@ import {
 } from "@mui/material";
 import { FaHeart } from "react-icons/fa";
 import OurButton from "../../../components/OurButton/OurButton";
+import { useNavigate } from "react-router-dom";
 
 const OfferPage = () => {
   const [offerProducts, setOfferProducts] = useState([]);
   const [hoveredProductId, setHoveredProductId] = useState(null);
+
+  const navigate = useNavigate();
 
   const breadcrumbPath = [
     { label: "Home", url: "/" },
     { label: "Offer", url: "/offer" },
   ];
 
-  const handleAddToWishlist = (id) => {
-    //
-  };
+  const handleAddToWishlist = (id) => {};
 
-  const handleNavigate = () => {
-    //
+  const handleNavigate = (id) => {
+    navigate(`/product_details/${id}`);
   };
 
   const fetchOfferProducts = async () => {
@@ -85,7 +86,7 @@ const OfferPage = () => {
 
               <CardActionArea>
                 <CardMedia
-                  onClick={handleNavigate(product._id)}
+                  onClick={()=>handleNavigate(product._id)}
                   component="img"
                   height="140"
                   image={product.image}

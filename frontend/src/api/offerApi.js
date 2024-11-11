@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/offer/";
-const adminToken = JSON.parse(localStorage.getItem("admin")).token;
+
 
 export const createOfferApi = async (offerData) => {
+  const adminToken = JSON.parse(localStorage.getItem("admin")).token || "";
   try {
     const config = {
       headers: {
@@ -18,6 +19,7 @@ export const createOfferApi = async (offerData) => {
 };
 
 export const getAllOffersAdminApi = async () => {
+  const adminToken = JSON.parse(localStorage.getItem("admin")).token || "";
   try {
     const config = {
       headers: {
@@ -32,6 +34,7 @@ export const getAllOffersAdminApi = async () => {
 };
 
 export const deleteOfferApi = async (id) => {
+  const adminToken = JSON.parse(localStorage.getItem("admin")).token || "";
   try {
     const config = {
       headers: {
@@ -46,6 +49,7 @@ export const deleteOfferApi = async (id) => {
 };
 
 export const editOfferApi = async (id, offerData) => {
+  const adminToken = JSON.parse(localStorage.getItem("admin")).token || "";
   try {
     const config = {
       headers: {

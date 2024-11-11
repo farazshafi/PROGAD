@@ -7,7 +7,7 @@ const BreadCrums = ({ path, isAdmin }) => {
     <div role="presentation">
       <Breadcrumbs
         aria-label="breadcrumb"
-        sx={{ color: "white", padding: "5px 0px 5px 20px" }}
+        sx={{ color: "white", padding: "5px 0px 5px 20px" }} 
       >
         {path.map((crumb, index) => (
           index < path.length - 1 ? (

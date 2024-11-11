@@ -184,8 +184,6 @@ export const offerProducts = asyncHandler(async (req, res) => {
     });
 
     res.status(200).json(filteredProducts);
-
-    res.status(200).json(products);
   } catch (error) {
     res.status(500).json({
       message: "Error fetching products with offers",
@@ -193,3 +191,4 @@ export const offerProducts = asyncHandler(async (req, res) => {
     });
   }
 });
+

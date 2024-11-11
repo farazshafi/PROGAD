@@ -18,12 +18,19 @@ const OrderDetailsCard = ({ isAdmin }) => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const breadcrumbPath = [
-    { label: "Admin Dashboard", url: "/admin_dashboard" },
-    { label: order.name, url: "/admin_dashboard" },
-  ];
-
+  let breadcrumbPath;
+  if (isAdmin) {
+    breadcrumbPath = [
+      { label: "Admin Dashboard", url: "/admin_dashboard" },
+      { label: order?.name, url: "/admin_dashboard" },
+    ];
+  }else{
+    breadcrumbPath = [
+      { label: "Home", url: "/" },
+      { label: "Profile", url: "/profile" },
+      { label: order?._id, url: "" },
+    ];
+  }
   const fetchOrderDetails = async () => {
     try {
       const result = await getOrderDetailsApi(id);

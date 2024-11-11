@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { createWishlistApi } from "../../api/wishlistApi";
 
 const ProductCard = ({ page }) => {
-  const user = useSelector(selectedUser)
+  const user = useSelector(selectedUser);
   const products = useSelector(selectedProduct);
   const navigate = useNavigate();
 
@@ -30,25 +30,28 @@ const ProductCard = ({ page }) => {
     navigate(`/product_details/${productId}`);
   };
 
-  const handleAddToWishlist = async(id) => {
-    if(!user){
-      toast.warning("Please Login to add to wishlist")
+  const handleAddToWishlist = async (id) => {
+    if (!user) {
+      toast.warning("Please Login to add to wishlist");
       return;
     }
-    try{
-      const result = await createWishlistApi({userId:user._id, productId:id})
-      console.log("wishlist result : ", result)
-      if(result.response){
-        const {status} = result.response
-        if(status === 400 || status === 500){
-          toast.error(result.response.data.message)
-          return
+    try {
+      const result = await createWishlistApi({
+        userId: user._id,
+        productId: id,
+      });
+      console.log("wishlist result : ", result);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
         }
       }
-      toast.success(result.data.message)
-    }catch(err){
-      toast.error("Failed when adding to whishlist")
-      console.log(err)
+      toast.success(result.data.message);
+    } catch (err) {
+      toast.error("Failed when adding to whishlist");
+      console.log(err);
     }
   };
 
@@ -91,9 +94,16 @@ const ProductCard = ({ page }) => {
                       onClick={handleNavigate(product._id)}
                       component="img"
                       height="140"
-                      image={product.images[0]}
+                      image={product.image}
                       alt="Product Image"
                     />
+                    {product.discount && (
+                      <div className="text-white absolute top-3 left-3 z-1 bg-black p-1 px-2 text-sm font-semibold skew-x-[-17deg] skew-y-0 rounded-md">
+                        {product.discountType === "percentage"
+                          ? product.discount
+                          : "Rs.-" + product.discount}
+                      </div>
+                    )}
                     <CardContent sx={{ textAlign: "center" }}>
                       <Rating
                         sx={{ color: "#FF7F11" }}
