@@ -26,11 +26,11 @@ const ProductDetail = ({ product }) => {
     const cartItem = {
       id: product._id,
       name: product.name,
-      price: product.discountPrice,
+      price: Number(product.discountPrice),
       quantity: quantity,
       image: product.images[0],
       stock: product.totalStock,
-      subTotal: product.discountPrice * quantity,
+      subTotal: Number(product.discountPrice * quantity,)
     };
     dispatch(addToCart(cartItem));
     setShowAddToCartAnimation(true);

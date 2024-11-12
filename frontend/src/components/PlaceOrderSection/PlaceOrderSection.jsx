@@ -21,108 +21,84 @@ const PlaceOrderSection = () => {
 
   const [showOrderedAnimation, setShowOrderedAnimation] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [summary, setSummary] = useState({
-    summary: 0,
-    tax: 0,
-    subTotal: 0,
-    total: 0,
-    delivery: 0,
-    offer: 0,
-    taxPercent: "",
-    offerPercentage: "",
-  });
 
   const [orderData, setOrderData] = useState({
     user: user._id,
     items: cartItems,
     status: "pending",
     tax: orderDetails.tax,
-    deliveryCost: 0,
+    deliveryCost: orderDetails.deliveryFee || 0,
     shippingAddress: orderDetails.shippingAddress.id,
     paymentMethod: orderDetails.paymentMethod,
   });
 
-  const calculateSummary = () => {
-    const subTotal = cartItems.reduce(
-      (total, item) => total + item.quantity * item.price,
-      0
-    );
-    const taxRate = 0.011; //1.1%
-    // const offerDiscount = 0.2; // 20%
-    const tax = subTotal * taxRate;
-    // const discount = subTotal * offerDiscount;
-    const deliveryFee = subTotal > 500 ? 0 : 40;
-    const total = (subTotal + tax + deliveryFee).toFixed(2);
-    const taxPercentage = (taxRate * 100).toFixed(1) + "%";
-    // const offerPercentage = (offerDiscount * 100).toFixed(0) + "%";
-
-    setSummary({
-      subTotal,
-      tax,
-      delivery: deliveryFee,
-      // discount,
-      total,
-      taxPercent: taxPercentage,
-      // offerPercentage,
-    });
-  };
-
   const handlePayment = async () => {
     try {
       setLoading(true);
-  
-      const filteredItems = cartItems.map(({ id, quantity, price, subTotal }) => ({
-        id,
-        quantity,
-        price,
-        subTotal,
-      }));
-  
+      const filteredItems = cartItems.map(
+        ({ id, quantity, price, subTotal }) => ({
+          id,
+          quantity,
+          price,
+          subTotal,
+        })
+      );
+
       const formattedOrderData = {
         ...orderData,
         items: filteredItems,
-        deliveryCost: summary.delivery,
-        tax: summary.tax,
-        totalPrice: summary.total,
+        deliveryCost: orderDetails.deliveryFee,
+        tax: parseFloat(orderDetails.tax.replace('%', '')), 
+        totalPrice: Number(orderDetails.totalAmount),
         paymentMethod:
           orderDetails.paymentMethod === "cashOnDelivery"
             ? "cash on delivery"
             : orderDetails.paymentMethod,
       };
-  
+
       if (orderDetails.paymentMethod === "razorpay") {
         try {
           const paymentResult = await handleRazorpayApi(
-            summary.total,
+            orderDetails.totalAmount,
             user,
             orderDetails.shippingAddress
           );
-  
+
+          console.log("formateed order data", formattedOrderData)
+
           const result = await makeOrderApi(formattedOrderData);
-          if (result.response && (result.response.status === 400 || result.response.status === 500)) {
+          if (
+            result.response &&
+            (result.response.status === 400 || result.response.status === 500)
+          ) {
             toast.error(result.response.data.message);
             setLoading(false);
             return;
           }
-  
+
           setShowOrderedAnimation(true);
           setTimeout(() => {
             setShowOrderedAnimation(false);
             dispatch(clearCart());
             navigate("/order_success");
           }, 4000);
+          setLoading(false);
         } catch (error) {
           toast.error("Payment failed, please try again");
           console.error(error);
+          setLoading(false);
         }
       } else {
         const result = await makeOrderApi(formattedOrderData);
-        if (result.response && (result.response.status === 400 || result.response.status === 500)) {
+        if (
+          result.response &&
+          (result.response.status === 400 || result.response.status === 500)
+        ) {
           toast.error(result.response.data.message);
           setLoading(false);
           return;
         }
-  
+
         setShowOrderedAnimation(true);
         setTimeout(() => {
           setShowOrderedAnimation(false);
@@ -136,9 +112,7 @@ const PlaceOrderSection = () => {
     }
   };
 
-  useEffect(() => {
-    calculateSummary();
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
@@ -278,7 +252,7 @@ const PlaceOrderSection = () => {
                   variant="body1"
                   sx={{ fontFamily: '"Istok Web", sans-serif' }}
                 >
-                  Rs. {summary.subTotal}
+                  Rs. {orderDetails?.subTotal}
                 </Typography>
               </Grid>
               <Grid container justifyContent="space-between">
@@ -292,7 +266,7 @@ const PlaceOrderSection = () => {
                   variant="body1"
                   sx={{ fontFamily: '"Istok Web", sans-serif' }}
                 >
-                  {summary.taxPercent}
+                  {orderDetails?.tax}
                 </Typography>
               </Grid>
               <Grid container justifyContent="space-between">
@@ -306,9 +280,27 @@ const PlaceOrderSection = () => {
                   variant="body1"
                   sx={{ fontFamily: '"Istok Web", sans-serif' }}
                 >
-                  {summary.delivery === 0 ? "free" : "Rs. " + summary.delivery}
+                  {orderDetails?.deliveryFee}
                 </Typography>
               </Grid>
+              {orderDetails.couponDiscount !== undefined &&
+                orderDetails.couponDiscount !== 0 && (
+                  <Grid container justifyContent="space-between">
+                    <Typography
+                      variant="body1"
+                      sx={{ fontFamily: '"Istok Web", sans-serif' }}
+                    >
+                      Coupon Discount
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontFamily: '"Istok Web", sans-serif' }}
+                    >
+                      {orderDetails?.couponDiscount}%
+                    </Typography>
+                  </Grid>
+                )}
+
               <Divider
                 sx={{ height: "1px", background: "white", mt: "20px" }}
               />
@@ -330,7 +322,7 @@ const PlaceOrderSection = () => {
                     color: "#FF7F11",
                   }}
                 >
-                  Rs. {summary.total}/-
+                  Rs. {orderDetails?.totalAmount}/-
                 </Typography>
               </Grid>
             </Card>

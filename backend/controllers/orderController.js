@@ -8,6 +8,7 @@ import razorpayInstance from "../config/razorpay.js"
 // @access  private
 export const makeOrder = asyncHandler(async (req, res) => {
   try {
+    console.log("make order is coming");
     const {
       user,
       items,
@@ -16,7 +17,10 @@ export const makeOrder = asyncHandler(async (req, res) => {
       deliveryCost,
       shippingAddress,
       paymentMethod,
+      totalPrice
     } = req.body;
+
+    console.log("my req body", req.body);
 
     // Validation
     if (
@@ -36,8 +40,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
       orderSubTotal += itemSubTotal;
       return { ...item, subTotal: itemSubTotal };
     });
-
-    const totalPrice = orderSubTotal + (tax || 0) + (deliveryCost || 0);
 
     // Check product stock and update stock
     for (const item of items) {
@@ -59,24 +61,25 @@ export const makeOrder = asyncHandler(async (req, res) => {
 
     let razorpayOrderId = null;
 
-    // create Razorpay order
+    // Create Razorpay order if payment method is Razorpay
     if (paymentMethod === "razorpay") {
-      const totalAmount = Math.round(totalPrice * 100);
-      
+      const numericTotalPrice = parseFloat(totalPrice) || 0; // Ensures numeric value
+      const totalAmount = Math.round(numericTotalPrice * 100);  // Convert to paise (integer)
+
+      console.log("Total amount:", totalAmount);
+
       const razorpayOrder = await razorpayInstance.orders.create({
-        amount: totalAmount,
+        amount: totalAmount,  // Correct amount in paise
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         payment_capture: 1,
       });
 
       if (!razorpayOrder || !razorpayOrder.id) {
-        return res
-          .status(500)
-          .json({ message: "Failed to create Razorpay order" });
+        return res.status(500).json({ message: "Failed to create Razorpay order" });
       }
 
-      razorpayOrderId = razorpayOrder.id; 
+      razorpayOrderId = razorpayOrder.id;
     }
 
     // Create the order in the database
@@ -85,12 +88,12 @@ export const makeOrder = asyncHandler(async (req, res) => {
       items: itemWithSubTotal,
       status,
       tax: tax || 0,
-      totalPrice: totalPrice,
+      totalPrice,
       deliveryCost: deliveryCost || 0,
       subTotal: orderSubTotal,
       shippingAddress,
       paymentMethod,
-      razorpayOrderId, 
+      razorpayOrderId,
       paymentStatus: paymentMethod === "razorpay" ? "paid" : "unpaid",
     });
 

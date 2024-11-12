@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header/Header";
-import headphoneImg from "../../../assets/images/products/headphone.jpeg";
 import { Box, Divider, Typography } from "@mui/material";
 import "./CartPage.css";
 import { Col, Row } from "react-bootstrap";
@@ -15,8 +14,8 @@ import {
 } from "../../../features/user/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { setSummaryData } from "../../../features/user/orderSlice";
-import {toast} from "react-toastify"
-import { findCouponsApi } from "../../../api/couponApi"
+import { toast } from "react-toastify";
+import { findCouponsApi } from "../../../api/couponApi";
 import { FaCheck } from "react-icons/fa";
 
 const CartPage = () => {
@@ -25,9 +24,9 @@ const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [availableCoupon,setAvailableCoupon] = useState(null)
-  const [couponCode,setCouponCode] = useState("")
-  const [isApplied, setIsApplied] = useState(false)
+  const [availableCoupon, setAvailableCoupon] = useState(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [isApplied, setIsApplied] = useState(false);
   const [summary, setSummary] = useState({
     summary: 0,
     tax: 0,
@@ -36,7 +35,7 @@ const CartPage = () => {
     delivery: 0,
     offer: 0,
     taxPercent: "",
-    offerPercentage: "",
+    couuponOffer: "",
   });
 
   const calculateSummary = () => {
@@ -44,28 +43,29 @@ const CartPage = () => {
       (total, item) => total + item.quantity * item.price,
       0
     );
-    const taxRate = 0.011; //1.1%
-    // const offerDiscount = 0.2; // 20%
-
+    const taxRate = 0.011; // 1.1%
     const tax = subTotal * taxRate;
-    // const discount = subTotal * offerDiscount;
     const deliveryFee = subTotal > 500 ? 0 : 40;
-    const total = (subTotal + tax + deliveryFee).toFixed(2);
+    const couponPercentage = availableCoupon?.discount || 0;
+  
+    // Calculate the discount if a coupon is available and applied
+    const discount = isApplied ? (subTotal * couponPercentage) / 100 : 0;
+    const total = (subTotal + tax + deliveryFee - discount).toFixed(2);
     const taxPercentage = (taxRate * 100).toFixed(1) + "%";
-    // const offerPercentage = (offerDiscount * 100).toFixed(0) + "%";
   
     setSummary({
       subTotal,
       tax,
       delivery: deliveryFee,
-      // discount,
       total,
       taxPercent: taxPercentage,
-      taxRate,
-      // offerPercentage,
+      discount,
+      couponOffer: couponPercentage,
     });
   };
   
+  
+
   const handleQuantityChange = (e, item) => {
     if (e.target.value === "+") {
       dispatch(incrementQuantity(item.id));
@@ -75,9 +75,13 @@ const CartPage = () => {
   };
 
   const handleCheckout = () => {
+    const couponDiscount = availableCoupon ? availableCoupon.discount : 0;
     const sendSummary = {
       totalAmount: summary.total,
-      tax: summary.taxRate,
+      tax: summary.taxPercent,
+      couponDiscount: couponDiscount,
+      deliveryFee: summary.delivery,
+      subTotal: summary.subTotal,
     };
     dispatch(setSummaryData(sendSummary));
     navigate("/cart_process");
@@ -95,8 +99,9 @@ const CartPage = () => {
     }
   };
 
-  const applyCoupon = async () => {
+  const findCoupon = async () => {
     try {
+      setIsApplied(false);
       console.log("coupon code:", couponCode);
       const result = await findCouponsApi(couponCode);
       console.log("result codupon ", result);
@@ -116,7 +121,7 @@ const CartPage = () => {
 
   useEffect(() => {
     calculateSummary();
-  }, [cartItems]);
+  }, [cartItems, isApplied]);
 
   return (
     <>
@@ -278,7 +283,7 @@ const CartPage = () => {
                     fontSize: "16px",
                   }}
                 />
-                <span onClick={applyCoupon}>
+                <span onClick={findCoupon}>
                   <OurButton text="Find" />
                 </span>
               </div>
