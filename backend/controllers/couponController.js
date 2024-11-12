@@ -113,16 +113,32 @@ export const getActiveCoupons = asyncHandler(async (req, res) => {
 // @desc    find Coupon
 // @route   GET /api/coupon/find_coupon/:id
 // @access  public
-export const findCoupon = asyncHandler(async(req,res)=>{
-  const {code} = req.params
-  const coupon = await Coupon.findOne({code}).select("_id name discount minPurchasePrice expirationDate").populate("categories", "name")
-  if(!coupon){
-    res.status(400).json({message: "Coupon not found"})
-  }
-  const currentDate = new Date()
-  if(new Date(coupon.expirationDate) < currentDate){
-    return res.status(400).json({message: "Coupon has expired"})
-  }
-  res.status(200).json(coupon)
+export const findCoupon = asyncHandler(async (req, res) => {
+  const { code, userId } = req.query;
+  console.log("req.query:", req.query);
 
-})
+  // Include `appliedUsers` explicitly or remove `select` to include all fields
+  const coupon = await Coupon.findOne({ code })
+    .select("_id name discount minPurchasePrice expirationDate appliedUsers")
+    .populate("categories", "name");
+
+  if (!coupon) {
+    return res.status(400).json({ message: "Coupon not found" });
+  }
+
+  // Check if `appliedUsers` is an array
+  if (!Array.isArray(coupon.appliedUsers)) {
+    coupon.appliedUsers = [];  // Initialize as an empty array if it's undefined
+  }
+
+  if (coupon.appliedUsers.includes(userId)) {
+    return res.status(400).json({ message: "Coupon has already been applied" });
+  }
+
+  const currentDate = new Date();
+  if (new Date(coupon.expirationDate) < currentDate) {
+    return res.status(400).json({ message: "Coupon has expired" });
+  }
+
+  res.status(200).json(coupon);
+});

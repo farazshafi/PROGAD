@@ -48,12 +48,13 @@ const PlaceOrderSection = () => {
         ...orderData,
         items: filteredItems,
         deliveryCost: orderDetails.deliveryFee,
-        tax: parseFloat(orderDetails.tax.replace('%', '')), 
+        tax: parseFloat(orderDetails.tax.replace("%", "")),
         totalPrice: Number(orderDetails.totalAmount),
         paymentMethod:
           orderDetails.paymentMethod === "cashOnDelivery"
             ? "cash on delivery"
             : orderDetails.paymentMethod,
+        couponCode: orderDetails.couponCode ? orderDetails.couponCode : null,
       };
 
       if (orderDetails.paymentMethod === "razorpay") {
@@ -64,7 +65,7 @@ const PlaceOrderSection = () => {
             orderDetails.shippingAddress
           );
 
-          console.log("formateed order data", formattedOrderData)
+          console.log("formateed order data", formattedOrderData);
 
           const result = await makeOrderApi(formattedOrderData);
           if (

@@ -17,9 +17,11 @@ import { setSummaryData } from "../../../features/user/orderSlice";
 import { toast } from "react-toastify";
 import { findCouponsApi } from "../../../api/couponApi";
 import { FaCheck } from "react-icons/fa";
+import { selectedUser } from "../../../features/user/userSlice";
 
 const CartPage = () => {
   const cartItems = useSelector(selectedCart);
+  const user = useSelector(selectedUser)
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -47,12 +49,12 @@ const CartPage = () => {
     const tax = subTotal * taxRate;
     const deliveryFee = subTotal > 500 ? 0 : 40;
     const couponPercentage = availableCoupon?.discount || 0;
-  
+
     // Calculate the discount if a coupon is available and applied
     const discount = isApplied ? (subTotal * couponPercentage) / 100 : 0;
     const total = (subTotal + tax + deliveryFee - discount).toFixed(2);
     const taxPercentage = (taxRate * 100).toFixed(1) + "%";
-  
+
     setSummary({
       subTotal,
       tax,
@@ -63,8 +65,6 @@ const CartPage = () => {
       couponOffer: couponPercentage,
     });
   };
-  
-  
 
   const handleQuantityChange = (e, item) => {
     if (e.target.value === "+") {
@@ -82,6 +82,7 @@ const CartPage = () => {
       couponDiscount: couponDiscount,
       deliveryFee: summary.delivery,
       subTotal: summary.subTotal,
+      couponCode: isApplied ? couponCode : null,
     };
     dispatch(setSummaryData(sendSummary));
     navigate("/cart_process");
@@ -100,6 +101,10 @@ const CartPage = () => {
   };
 
   const findCoupon = async () => {
+    if(!user){
+      toast.warning("Please Login to apply coupon")
+      navigate("/login")
+    }
     try {
       setIsApplied(false);
       console.log("coupon code:", couponCode);

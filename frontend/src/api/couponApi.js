@@ -86,7 +86,8 @@ export const getAvailableCouponApi = async () => {
 
 export const findCouponsApi = async (code) => {
   try {
-    const data = await axios.get(`${API_URL}/find_coupon/${code}`);
+    const userId = JSON.parse(localStorage.getItem("user"))._id
+    const data = await axios.get(`${API_URL}/find_coupon?code=${code}&userId=${userId}`);
     return data;
   } catch (e) {
     console.log(e);

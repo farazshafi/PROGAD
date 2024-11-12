@@ -5,6 +5,11 @@ const couponSchema = mongoose.Schema({
         type : String,
         required : true,
     },
+    appliedUsers:{
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User',
+        default:[]
+    },
     code:{
         type: String,
         required: true,

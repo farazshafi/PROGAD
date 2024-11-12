@@ -16,6 +16,7 @@ const initialState = {
     couponDiscount: savedOrderSummary.couponDiscount || null,
     deliveryFee: savedOrderSummary.deliveryFee || null,
     subTotal: savedOrderSummary.subTotal || null,
+    couponCode: savedOrderSummary.coupon || null,
   },
 };
 
@@ -29,6 +30,7 @@ const orderSlice = createSlice({
       state.orderDetails.couponDiscount = action.payload.couponDiscount;
       state.orderDetails.deliveryFee = action.payload.deliveryFee;
       state.orderDetails.subTotal = action.payload.subTotal;
+      state.orderDetails.couponCode = action.payload.couponCode;
 
       localStorage.setItem(
         "orderSummary",
@@ -38,6 +40,7 @@ const orderSlice = createSlice({
           couponDiscount: state.orderDetails.couponDiscount,
           deliveryFee: state.orderDetails.deliveryFee,
           subTotal: state.orderDetails.subTotal,
+          couponCode: state.orderDetails.couponCode,
         })
       );
     },

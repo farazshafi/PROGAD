@@ -1,7 +1,8 @@
 import asyncHandler from "express-async-handler";
 import Order from "../models/orderModel.js";
+import Coupon from "../models/couponModel.js";
 import Product from "../models/productModel.js";
-import razorpayInstance from "../config/razorpay.js"
+import razorpayInstance from "../config/razorpay.js";
 
 // @desc    make a order
 // @route   POST /api/order/make_order
@@ -17,7 +18,8 @@ export const makeOrder = asyncHandler(async (req, res) => {
       deliveryCost,
       shippingAddress,
       paymentMethod,
-      totalPrice
+      couponCode,
+      totalPrice,
     } = req.body;
 
     console.log("my req body", req.body);
@@ -64,19 +66,21 @@ export const makeOrder = asyncHandler(async (req, res) => {
     // Create Razorpay order if payment method is Razorpay
     if (paymentMethod === "razorpay") {
       const numericTotalPrice = parseFloat(totalPrice) || 0; // Ensures numeric value
-      const totalAmount = Math.round(numericTotalPrice * 100);  // Convert to paise (integer)
+      const totalAmount = Math.round(numericTotalPrice * 100); // Convert to paise (integer)
 
       console.log("Total amount:", totalAmount);
 
       const razorpayOrder = await razorpayInstance.orders.create({
-        amount: totalAmount,  // Correct amount in paise
+        amount: totalAmount, // Correct amount in paise
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         payment_capture: 1,
       });
 
       if (!razorpayOrder || !razorpayOrder.id) {
-        return res.status(500).json({ message: "Failed to create Razorpay order" });
+        return res
+          .status(500)
+          .json({ message: "Failed to create Razorpay order" });
       }
 
       razorpayOrderId = razorpayOrder.id;
@@ -96,6 +100,18 @@ export const makeOrder = asyncHandler(async (req, res) => {
       razorpayOrderId,
       paymentStatus: paymentMethod === "razorpay" ? "paid" : "unpaid",
     });
+
+    const addUserToCoupon = await Coupon.findOne({ code: couponCode });
+    if (!addUserToCoupon) {
+      return res.status(400).json({ message: "Coupon code not found" });
+    }
+
+    if (!Array.isArray(addUserToCoupon.users)) {
+      addUserToCoupon.appliedUsers = [];
+    }
+
+    addUserToCoupon.appliedUsers.push(user);
+    await addUserToCoupon.save();
 
     res.status(201).json({
       message: "Order created successfully",

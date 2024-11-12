@@ -9,6 +9,6 @@ router.get("/get_coupon",protect,admin,getAllCoupons)
 router.delete("/delete_coupon/:id",protect,admin,deleteCoupon)
 router.patch("/edit_coupon/:id",protect,admin,editCoupon)
 router.get("/active_coupon",getActiveCoupons)
-router.get("/find_coupon/:code",findCoupon)
+router.get("/find_coupon",findCoupon)
 
 export default router
