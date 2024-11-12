@@ -20,7 +20,7 @@ const CartPage = () => {
   const cartItems = useSelector(selectedCart);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [summary, setSummary] = useState({
     summary: 0,
@@ -55,7 +55,7 @@ const CartPage = () => {
       // discount,
       total,
       taxPercent: taxPercentage,
-      taxRate
+      taxRate,
       // offerPercentage,
     });
   };
@@ -71,11 +71,11 @@ const CartPage = () => {
   const handleCheckout = () => {
     const sendSummary = {
       totalAmount: summary.total,
-      tax: summary.taxRate
-    }
-    dispatch(setSummaryData(sendSummary))
-    navigate("/cart_process")
-  }
+      tax: summary.taxRate,
+    };
+    dispatch(setSummaryData(sendSummary));
+    navigate("/cart_process");
+  };
 
   const handleDelete = (item) => {
     dispatch(removeFromCart(item.id));
@@ -108,14 +108,15 @@ const CartPage = () => {
               cartItems.map((item) => (
                 <Row key={item.id} style={{ marginBottom: "20px" }}>
                   <Col lg={2} md={2} sm={2}>
-                    <div
+                    <img
+                      className="rounded-lg"
+                      src={item.image}
+                      alt="Product"
                       style={{
-                        backgroundImage: `url(${item.image})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
+                        width: "100%",
                         height: "100px",
+                        objectFit: "cover",
                       }}
-                      className="cart-item-img"
                     />
                   </Col>
                   <Col lg={6} md={6} sm={6}>
@@ -223,7 +224,7 @@ const CartPage = () => {
               }}
             >
               {/* Coupon Input Section */}
-              {/* <div
+              <div
                 className="cart-coupoun"
                 style={{
                   display: "flex",
@@ -243,8 +244,10 @@ const CartPage = () => {
                     fontSize: "16px",
                   }}
                 />
-                <OurButton text="Apply" />
-              </div> */}
+                <span>
+                  <OurButton text="Apply" />
+                </span>
+              </div>
 
               {/* Price Summary Section */}
               <div
@@ -259,7 +262,7 @@ const CartPage = () => {
                   }}
                 >
                   <p>Subtotal:</p>
-                  <h6>{summary.subTotal}</h6>
+                  <h6>Rs.{summary.subTotal}</h6>
                 </div>
                 <div
                   className="d-flex"

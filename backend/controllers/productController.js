@@ -353,7 +353,7 @@ export const getProductDetails = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       ...product.toObject(),
-      discount: discountType === "percentage" ? `${discountValue}%` : discountValue,
+      discount: discountType === "percentage" ? `${discountValue}` : discountValue,
       discountType,
       discountPrice: discountPrice.toFixed(2),
     });

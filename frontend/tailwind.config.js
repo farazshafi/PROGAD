@@ -7,7 +7,10 @@ module.exports = {
     extend: {
       colors:{
         ourOrange:"#ff7f11"
-      }
+      },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+      },
     },
   },
   plugins: [],

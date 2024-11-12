@@ -89,34 +89,6 @@ const Header = ({ navbar = true }) => {
                           Products
                         </Text>
                       </Nav.Link>
-                      {/* <Nav.Link
-                        as={Link}
-                        to="/wishlist"
-                        className="nav-link-chakra"
-                      >
-                        <i className="fa-solid fa-heart"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                        >
-                          Wishlist
-                        </Text>
-                      </Nav.Link> */}
-                      {/* <Nav.Link
-                        as={Link}
-                        to="/orders"
-                        className="nav-link-chakra"
-                      >
-                        <i className="fa-solid fa-box"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                        >
-                          Orders
-                        </Text>
-                      </Nav.Link> */}
                       <Nav.Link
                         as={Link}
                         to="/cart"
@@ -133,7 +105,7 @@ const Header = ({ navbar = true }) => {
                       </Nav.Link>
                       <Nav.Link
                         as={Link}
-                        to="/contact"
+                        to="/coupons"
                         className="nav-link-chakra"
                       >
                         <i className="fa-solid fa-message"></i>
@@ -142,7 +114,7 @@ const Header = ({ navbar = true }) => {
                           color={"black"}
                           fontSize={{ base: "15px", md: "20px", lg: "15px" }}
                         >
-                          Contact us
+                          Coupons
                         </Text>
                       </Nav.Link>
                       <Nav.Link
@@ -200,50 +172,6 @@ const Header = ({ navbar = true }) => {
                           }} // Change color on hover
                         >
                           Profile
-                        </MenuItem>
-                        <MenuItem
-                          as={Link}
-                          disabled={user ? false : true}
-                          to="/settings"
-                          _hover={{
-                            backgroundColor: "#262626",
-                            color: "#FF7F11",
-                          }}
-                        >
-                          Settings
-                        </MenuItem>
-                        <MenuItem
-                          as={Link}
-                          disabled={user ? false : true}
-                          to="/address"
-                          _hover={{
-                            backgroundColor: "#262626",
-                            color: "#FF7F11",
-                          }}
-                        >
-                          Address
-                        </MenuItem>
-                        <MenuItem
-                          as={Link}
-                          disabled={user ? false : true}
-                          to="/orders"
-                          _hover={{
-                            backgroundColor: "#262626",
-                            color: "#FF7F11",
-                          }}
-                        >
-                          Orders
-                        </MenuItem>
-                        <MenuItem
-                          as={Link}
-                          disabled={user ? false : true}
-                          to="/wishlist"
-                          _hover={{
-                            backgroundColor: "#262626",
-                            color: "#FF7F11",
-                          }}
-                        >
-                          Wishlist
                         </MenuItem>
                         <MenuItem
                           onClick={handleLogout}

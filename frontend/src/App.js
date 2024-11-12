@@ -20,6 +20,7 @@ import { ToastContainer } from "react-toastify";
 import AdminLogin from "./pages/admin/AdminLogin";
 import EditProduct from "./pages/admin/EditProduct";
 import OrderDetailsCard from "./components/OrderDetailsCard/OrderDetailsCard";
+import CouponsPage from "./pages/user/CouponsPage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             path="/order_details/:id"
             element={<OrderDetailsCard isAdmin={false} />}
           />
+          <Route path="/coupons" element={<CouponsPage />} />
 
           {/* admin route */}
           <Route path="/admin_login" element={<AdminLogin />} />

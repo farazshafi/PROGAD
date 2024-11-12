@@ -40,8 +40,8 @@ const AddCoupon = () => {
   };
 
   const handleCategoryChange = (categoryId) => {
+    console.log("category: ", categoryId)
     if (!categoryId) return;
-
     setCoupon((prev) => ({
       ...prev,
       categories: prev.categories.includes(categoryId)

@@ -73,3 +73,14 @@ export const editCouponApi = async (id, newData) => {
     return e;
   }
 };
+
+
+export const getAvailableCouponApi = async () => {
+  try {
+    const data = await axios.get(`${API_URL}/active_coupon`);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
