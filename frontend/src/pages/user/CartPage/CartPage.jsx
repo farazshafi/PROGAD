@@ -15,6 +15,9 @@ import {
 } from "../../../features/user/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { setSummaryData } from "../../../features/user/orderSlice";
+import {toast} from "react-toastify"
+import { findCouponsApi } from "../../../api/couponApi"
+import { FaCheck } from "react-icons/fa";
 
 const CartPage = () => {
   const cartItems = useSelector(selectedCart);
@@ -22,6 +25,9 @@ const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [availableCoupon,setAvailableCoupon] = useState(null)
+  const [couponCode,setCouponCode] = useState("")
+  const [isApplied, setIsApplied] = useState(false)
   const [summary, setSummary] = useState({
     summary: 0,
     tax: 0,
@@ -47,7 +53,7 @@ const CartPage = () => {
     const total = (subTotal + tax + deliveryFee).toFixed(2);
     const taxPercentage = (taxRate * 100).toFixed(1) + "%";
     // const offerPercentage = (offerDiscount * 100).toFixed(0) + "%";
-
+  
     setSummary({
       subTotal,
       tax,
@@ -59,7 +65,7 @@ const CartPage = () => {
       // offerPercentage,
     });
   };
-
+  
   const handleQuantityChange = (e, item) => {
     if (e.target.value === "+") {
       dispatch(incrementQuantity(item.id));
@@ -79,6 +85,33 @@ const CartPage = () => {
 
   const handleDelete = (item) => {
     dispatch(removeFromCart(item.id));
+  };
+
+  const handleApplyCoupon = () => {
+    if (availableCoupon) {
+      setIsApplied(true);
+    } else {
+      toast.error("Invalid coupon code");
+    }
+  };
+
+  const applyCoupon = async () => {
+    try {
+      console.log("coupon code:", couponCode);
+      const result = await findCouponsApi(couponCode);
+      console.log("result codupon ", result);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      setAvailableCoupon(result.data);
+    } catch (err) {
+      console.error("Error applying coupon:", err);
+      toast.error(err.message || "Error applying coupon");
+    }
   };
 
   useEffect(() => {
@@ -229,12 +262,13 @@ const CartPage = () => {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  marginBottom: "20px",
                 }}
               >
                 <input
                   type="text"
                   placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
                   style={{
                     flex: 1,
                     padding: "10px",
@@ -244,10 +278,29 @@ const CartPage = () => {
                     fontSize: "16px",
                   }}
                 />
-                <span>
-                  <OurButton text="Apply" />
+                <span onClick={applyCoupon}>
+                  <OurButton text="Find" />
                 </span>
               </div>
+
+              {availableCoupon && (
+                <div className="my-4 bg-[#262626] w-full rounded py-4 px-3 flex items-center">
+                  <p className="text-black bg-white py-1 px-2 rounded text-md font-poppins w-fit">
+                    {availableCoupon.name}
+                    <span className="ml-2 font-poppins text-[#ff7f11]">
+                      -{availableCoupon.discount}% Off
+                    </span>
+                  </p>
+                  <div
+                    onClick={handleApplyCoupon}
+                    className="text-white w-fit ml-auto cursor-pointer font-poppins bg-[#ff7f11] px-[10px] py-1 rounded hover:bg-orange-600 transition"
+                  >
+                    {isApplied ? <FaCheck /> : <>Apply</>}
+                  </div>
+                </div>
+              )}
+
+              {!availableCoupon && <div className="h-5"></div>}
 
               {/* Price Summary Section */}
               <div
@@ -288,16 +341,18 @@ const CartPage = () => {
                     <h6>Rs. {summary.delivery}</h6>
                   )}
                 </div>
-                {/* <div
-                className="d-flex"
-                style={{
-                  justifyContent: "space-between",
-                  marginBottom: "10px",
-                }}
-              >
-                <p>Coupon Discount:</p>
-                <h6>20%</h6>
-              </div> */}
+                {isApplied && (
+                  <div
+                    className="d-flex"
+                    style={{
+                      justifyContent: "space-between",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <p>Coupon Discount:</p>
+                    <h6>{availableCoupon?.discount}%</h6>
+                  </div>
+                )}
                 {/* <div
                   className="d-flex"
                   style={{

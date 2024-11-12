@@ -104,5 +104,25 @@ export const getActiveCoupons = asyncHandler(async (req, res) => {
   if(!coupons){
     res.status(400).json({message: "No active Coupons found"})
   }
-  res.status(200).json(coupons);
+  const currentDate = new Date()
+  const activeCoupons = coupons.filter(coupon => new Date(coupon.expirationDate) > currentDate)
+  res.status(200).json(activeCoupons);
 });
+
+
+// @desc    find Coupon
+// @route   GET /api/coupon/find_coupon/:id
+// @access  public
+export const findCoupon = asyncHandler(async(req,res)=>{
+  const {code} = req.params
+  const coupon = await Coupon.findOne({code}).select("_id name discount minPurchasePrice expirationDate").populate("categories", "name")
+  if(!coupon){
+    res.status(400).json({message: "Coupon not found"})
+  }
+  const currentDate = new Date()
+  if(new Date(coupon.expirationDate) < currentDate){
+    return res.status(400).json({message: "Coupon has expired"})
+  }
+  res.status(200).json(coupon)
+
+})
