@@ -101,7 +101,7 @@ const ProductCard = ({ page }) => {
                       <div className="text-white absolute top-3 left-3 z-1 bg-black p-1 px-2 text-sm font-semibold skew-x-[-17deg] skew-y-0 rounded-md">
                         {product.discountType === "percentage"
                           ? product.discount
-                          : "Rs.-" + product.discount}
+                          : "₹-" + product.discount}
                       </div>
                     )}
                     <CardContent sx={{ textAlign: "center" }}>

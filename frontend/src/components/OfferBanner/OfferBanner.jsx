@@ -47,7 +47,7 @@ const OfferBanner = ({ hide }) => {
                 {offer.name}! Get
                 {offer.discountType === "percentage"
                   ? ` Off ${offer.discount}% `
-                  : ` Rs.${offer.discount} Discount`}
+                  : ` ₹${offer.discount} Discount`}
                 {offer.applyToCategories === true ||
                   (offer.applyToCategories === true && "Off on")}
                 {offer.applyToCategories && (

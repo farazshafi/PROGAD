@@ -232,7 +232,7 @@ const CartPage = () => {
                           color: "white",
                         }}
                       >
-                        Rs. {Number(item.quantity * item.price)}
+                        ₹ {Number(item.quantity * item.price)}
                       </Typography>
                       <span onClick={() => handleDelete(item)}>
                         <DeleteIcon
@@ -325,7 +325,7 @@ const CartPage = () => {
                   }}
                 >
                   <p>Subtotal:</p>
-                  <h6>Rs.{summary.subTotal}</h6>
+                  <h6>₹{summary.subTotal}</h6>
                 </div>
                 <div
                   className="d-flex"
@@ -348,7 +348,7 @@ const CartPage = () => {
                   {summary.total > 500 ? (
                     "Free"
                   ) : (
-                    <h6>Rs. {summary.delivery}</h6>
+                    <h6>₹ {summary.delivery}</h6>
                   )}
                 </div>
                 {isApplied && (

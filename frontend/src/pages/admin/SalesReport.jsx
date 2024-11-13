@@ -175,7 +175,7 @@ const SalesReport = () => {
                   <TableCell>{report.totalDiscount}</TableCell>
                   <TableCell>{report.totalCouponDeduction}</TableCell>
                   <TableCell>
-                    Rs.{report.totalSalesAmount - report.totalDiscount}
+                    ₹{report.totalSalesAmount - report.totalDiscount}
                   </TableCell>
                   <TableCell>
                     <IconButton>

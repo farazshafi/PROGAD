@@ -113,7 +113,7 @@ const OrderList = () => {
                     {new Date(order.orderDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell sx={{ color: "#fff" }}>
-                    Rs. {Number(order.totalPrice).toFixed(2)} 
+                    ₹ {Number(order.totalPrice).toFixed(2)} 
                   </TableCell>
                   <TableCell sx={{ color: "#fff" }}>
                     {order.paymentMethod}

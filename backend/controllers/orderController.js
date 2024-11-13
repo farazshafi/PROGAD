@@ -111,7 +111,9 @@ export const makeOrder = asyncHandler(async (req, res) => {
     }
 
     addUserToCoupon.appliedUsers.push(user);
+    addUserToCoupon.limit -= 1;
     await addUserToCoupon.save();
+
 
     res.status(201).json({
       message: "Order created successfully",

@@ -95,7 +95,7 @@ const OfferPage = () => {
                 <div className="text-white absolute top-3 left-3 z-1 bg-black p-1 px-2 text-sm font-semibold skew-x-[-17deg] skew-y-0 rounded-md">
                   {product.discountType === "percentage"
                     ? product.discountOffer + "%"
-                    : "Rs.-" + product.discountOffer}
+                    : "₹-" + product.discountOffer}
                 </div>
                 <CardContent sx={{ textAlign: "center" }}>
                   <Rating

@@ -117,7 +117,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
                   sx={{ color: "black", "&.Mui-checked": { color: "black" } }}
                 />
               }
-              label="Up to Rs.10K"
+              label="Up to ₹10K"
             />
             <FormControlLabel
               value="10kto20k"
@@ -126,7 +126,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
                   sx={{ color: "black", "&.Mui-checked": { color: "black" } }}
                 />
               }
-              label="Rs.10K to Rs.20K"
+              label="₹10K to ₹20K"
             />
             <FormControlLabel
               value="morethan20k"
@@ -135,7 +135,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar }) => {
                   sx={{ color: "black", "&.Mui-checked": { color: "black" } }}
                 />
               }
-              label="More than Rs.20K"
+              label="More than ₹20K"
             />
             <FormControlLabel
               value="custom"

@@ -221,11 +221,11 @@ const PlaceOrderSection = () => {
                   </Grid>
                   <Grid item xs={3} textAlign="center">
                     <Typography variant="body1">X{item.quantity}</Typography>
-                    <Typography variant="body1">Rs. {item.price}</Typography>
+                    <Typography variant="body1">₹ {item.price}</Typography>
                   </Grid>
                   <Grid item xs={3} textAlign="right">
                     <Typography variant="body1">
-                      Rs. {Number(item.quantity * item.price)}
+                      ₹ {Number(item.quantity * item.price)}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -253,7 +253,7 @@ const PlaceOrderSection = () => {
                   variant="body1"
                   sx={{ fontFamily: '"Istok Web", sans-serif' }}
                 >
-                  Rs. {orderDetails?.subTotal}
+                  ₹ {orderDetails?.subTotal}
                 </Typography>
               </Grid>
               <Grid container justifyContent="space-between">
@@ -323,7 +323,7 @@ const PlaceOrderSection = () => {
                     color: "#FF7F11",
                   }}
                 >
-                  Rs. {orderDetails?.totalAmount}/-
+                  ₹ {orderDetails?.totalAmount}/-
                 </Typography>
               </Grid>
             </Card>

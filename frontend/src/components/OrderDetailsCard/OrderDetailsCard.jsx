@@ -138,7 +138,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
             {new Date(order.orderDate).toLocaleDateString()}
           </Typography>
           <Typography variant="body1">
-            <strong>Total:</strong> Rs. {order.totalPrice}
+            <strong>Total:</strong> ₹ {order.totalPrice}
           </Typography>
           <Typography variant="body1">
             <strong>Payment Method:</strong> {order.paymentMethod}
@@ -177,7 +177,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
 
                 <Grid item xs={4} textAlign="right">
                   <Typography variant="body1">
-                    Subtotal: Rs. {item.subTotal}
+                    Subtotal: ₹ {item.subTotal}
                   </Typography>
                 </Grid>
               </Grid>

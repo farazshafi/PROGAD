@@ -259,7 +259,7 @@ export const getAllProduct = asyncHandler(async (req, res) => {
           // discountPrice =
           //   product.discountPrice * (1 - relevantOffer.discount / 100);
         } else if (discountType === "fixed") {
-          discountValue = `₹${relevantOffer.discount}`;
+          discountValue = `${relevantOffer.discount}`;
           // discountPrice = Math.max(
           //   0,
           //   product.discountPrice - relevantOffer.discount
