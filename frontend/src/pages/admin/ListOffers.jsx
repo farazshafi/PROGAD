@@ -250,7 +250,7 @@ const ListOffers = () => {
                   </TableCell>
                 ) : (
                   <TableCell sx={{ color: "white" }}>
-                    ₹ {offer.discount}
+                    Rs. {offer.discount}
                   </TableCell>
                 )}
                 <TableCell sx={{ color: "white" }}>
