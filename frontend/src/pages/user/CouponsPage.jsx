@@ -14,7 +14,7 @@ const CouponsPage = () => {
   const fetchAvailableCoupons = async () => {
     try {
       const result = await getAvailableCouponApi();
-      if (result.response) {
+      if (result?.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
           toast.error(result.response.data.message);
@@ -32,7 +32,7 @@ const CouponsPage = () => {
     fetchAvailableCoupons();
   }, []);
 
-  if (coupons.length < 1) {
+  if (coupons?.length < 1) {
     return (
       <>
         <Header />
@@ -52,7 +52,7 @@ const CouponsPage = () => {
 
       <div className="p-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {coupons.map((coupon) => (
+          {coupons?.map((coupon) => (
             <div
               key={coupon._id}
               className="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center text-center"

@@ -3,6 +3,7 @@ import Order from "../models/orderModel.js";
 import Coupon from "../models/couponModel.js";
 import Product from "../models/productModel.js";
 import razorpayInstance from "../config/razorpay.js";
+import Wallet from "../models/walletModel.js";
 
 // @desc    make a order
 // @route   POST /api/order/make_order
@@ -208,8 +209,23 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "No orders found" });
     }
     orderDetails.status = "cancelled";
-
     await orderDetails.save();
+    if(orderDetails.paymentMethod === "razorpay"){
+      let wallet = await Wallet.findOne({userId:orderDetails.user})
+      if(!wallet){
+        wallet = new Wallet({userId:orderDetails.user})
+      }
+      const refundAmount = orderDetails.totalPrice
+      wallet.balance += refundAmount
+      console.log("order id", orderDetails._id)
+      wallet.transactions.push({
+        type: "credit",
+        amount: refundAmount,
+        description: "Refund for canceled order",
+        orderId: orderDetails._id,
+      })
+      await wallet.save()
+    }
     res.status(200).json({ message: "Order cancelled successfully" });
   } catch (err) {
     console.error("Error getting orders:", err.message);

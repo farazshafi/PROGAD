@@ -62,7 +62,7 @@ const OrderList = () => {
       <Typography variant="h4" sx={{ mb: 3 }}>
         Your Orders
       </Typography>
-      {orders.length === 0 ? (
+      {orders?.length === 0 ? (
         <Typography variant="h6">No orders found.</Typography>
       ) : (
         <TableContainer component={Paper} sx={{ backgroundColor: "#424242" }}>
@@ -77,7 +77,7 @@ const OrderList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders.map((order) => (
+              {orders?.map((order) => (
                 <TableRow key={order._id}>
                   <TableCell sx={{ color: "#fff" }}>
                     <span
