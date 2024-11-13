@@ -10,6 +10,9 @@ import AddressCard from "../AddressCard/AddressCard";
 import OrderList from "../../pages/user/OrderList/OrderList";
 import ResetPassword from "../../pages/user/ResetPasswordPage/ResetPasswordPage";
 import WishlistPage from "../../pages/user/WishlistPage"
+import WalletPage from "../../pages/user/WalletPage"
+import { FaWallet } from "react-icons/fa";
+
 
 const Input = styled("input")({
   display: "none",
@@ -124,6 +127,7 @@ const ProfileHeader = () => {
         <Tab icon={<FaShoppingCart />} label="Orders" />
         <Tab icon={<FaAddressCard />} label="Address" />
         <Tab icon={<FaHeart />} label="Wishlist" />
+        <Tab icon={<FaWallet />} label="Wallet" />
         <Tab icon={<FaLock />} label="Reset Password" />
       </Tabs>
 
@@ -135,7 +139,8 @@ const ProfileHeader = () => {
             {tabIndex === 1 && <OrderList />}
             {tabIndex === 2 && <AddressCard onAddressClick={handleClick} />}
             {tabIndex === 3 && <WishlistPage />}
-            {tabIndex === 4 && <ResetPassword />}
+            {tabIndex === 4 && <WalletPage />}
+            {tabIndex === 5 && <ResetPassword />}
           </>
         )}
       </Box>
