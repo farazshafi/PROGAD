@@ -41,7 +41,7 @@ const WalletPage = () => {
       console.log("Wallet Details", result);
       if (result.response) {
         const { status } = result.response;
-        if (status === 400 || status === 500) {
+        if (status === 400 || status === 500 || status === 404) {
           toast.error(result.response.data.message);
           return;
         }
@@ -57,7 +57,6 @@ const WalletPage = () => {
     // if (!user) {
     //   navigate("/login");
     // }
-    console.log("this is useEffect ");
     fetchWalletDetails();
   }, []);
 
@@ -96,7 +95,7 @@ const WalletPage = () => {
             >
               Recent Transactions
             </Typography>
-            {walletDetails?.transactions.map((transaction, index) => (
+            {walletDetails?.transactions?.map((transaction, index) => (
               <Card key={index} className="mb-4">
                 <CardContent className="flex justify-between items-center">
                   <div>

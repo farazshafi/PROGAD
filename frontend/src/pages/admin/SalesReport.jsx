@@ -18,7 +18,7 @@ import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { getSalesReportApi } from "../../api/salesApi";
+import { downloadSalesReportApi, getSalesReportApi } from "../../api/salesApi";
 
 const SalesReport = () => {
   const [reportRange, setReportRange] = useState("daily");
@@ -64,17 +64,47 @@ const SalesReport = () => {
     setEndDate(newValue);
   };
 
-  const downloadReport = (format) => {
-    const blob = new Blob([JSON.stringify(report, null, 2)], {
-      type: "application/json",
-    });
-    saveAs(blob, `sales_report.${format}`);
+  const downloadReport = async (format) => {
+    try {
+      const downloadParams = {
+        path: reportRange,
+        format: format,
+        startDate:
+          reportRange === "custom" && startDate
+            ? dayjs(startDate).format("YYYY-MM-DD")
+            : null,
+        endDate:
+          reportRange === "custom" && endDate
+            ? dayjs(endDate).format("YYYY-MM-DD")
+            : null,
+      };
+
+      if (reportRange === "custom") {
+        if(startDate === null || endDate === null){
+          return toast.error(" select date")
+        }
+      }
+
+      const result = await downloadSalesReportApi(downloadParams);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          console.log(" Could not download");
+          return;
+        }
+      }
+      console.table("download result: ", result);
+      toast.success(`Sales report downloaded as ${format.toUpperCase()}`);
+    } catch (err) {
+      toast.error("Error downloading report");
+      console.error("Error downloading report:", err);
+    }
   };
 
   useEffect(() => {
     if (reportRange === "custom") {
       if (startDate && endDate) {
-        // Update params only when custom dates are selected and set
         setParams({
           path: "custom",
           startDate: dayjs(startDate).format("YYYY-MM-DD"),
@@ -117,13 +147,17 @@ const SalesReport = () => {
                 label="Start Date"
                 value={startDate}
                 onChange={handleStartDateChange}
-                renderInput={(params) => <TextField {...params} className="mx-2" />}
+                renderInput={(params) => (
+                  <TextField {...params} className="mx-2" />
+                )}
               />
               <DatePicker
                 label="End Date"
                 value={endDate}
                 onChange={handleEndDateChange}
-                renderInput={(params) => <TextField {...params} className="mx-2" />}
+                renderInput={(params) => (
+                  <TextField {...params} className="mx-2" />
+                )}
               />
             </Box>
           </LocalizationProvider>
@@ -178,11 +212,14 @@ const SalesReport = () => {
             {report.reduce((acc, cur) => acc + cur.totalSales, 0).toFixed(2)}
           </Typography>
           <Typography variant="subtitle1">
-            Overall Orders: {report.reduce((acc, cur) => acc + cur.ordersCount, 0)}
+            Overall Orders:{" "}
+            {report.reduce((acc, cur) => acc + cur.ordersCount, 0)}
           </Typography>
           <Typography variant="subtitle1">
             Overall Discounts: $
-            {report.reduce((acc, cur) => acc + cur.totalDiscounts, 0).toFixed(2)}
+            {report
+              .reduce((acc, cur) => acc + cur.totalDiscounts, 0)
+              .toFixed(2)}
           </Typography>
         </Box>
       )}
