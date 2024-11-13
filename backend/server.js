@@ -8,6 +8,7 @@ import productRoute from "./routes/productRouter.js";
 import addressRoute from "./routes/addressRouter.js";
 import brandRoute from "./routes/brandRouter.js";
 import orderRoute from "./routes/orderRouter.js";
+import salesRoute from "./routes/salesRouter.js";
 import offerRoute from "./routes/offerRouter.js";
 import wishlistRoute from "./routes/wishlistRouter.js";
 import couponRoute from "./routes/couponRouter.js";
@@ -41,6 +42,7 @@ app.use("/api/brand/", brandRoute);
 app.use("/api/wishlist/", wishlistRoute);
 app.use("/api/coupon/", couponRoute);
 app.use("/api/offer/", offerRoute);
+app.use("/api/sales/", salesRoute);
 
 app.get("/", (req, res) => {
   res.send("Api is running...");

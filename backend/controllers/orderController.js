@@ -15,6 +15,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
       user,
       items,
       status,
+      couponDiscount,
       tax,
       deliveryCost,
       shippingAddress,
@@ -92,6 +93,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
       user,
       items: itemWithSubTotal,
       status,
+      couponDiscount,
       tax: tax || 0,
       totalPrice,
       deliveryCost: deliveryCost || 0,
@@ -104,7 +106,11 @@ export const makeOrder = asyncHandler(async (req, res) => {
 
     const addUserToCoupon = await Coupon.findOne({ code: couponCode });
     if (!addUserToCoupon) {
-      return res.status(400).json({ message: "Coupon code not found" });
+      res.status(201).json({
+        message: "Order created successfully",
+        orderId: razorpayOrderId || order._id,
+        order,
+      });
     }
 
     if (!Array.isArray(addUserToCoupon.users)) {
@@ -114,7 +120,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
     addUserToCoupon.appliedUsers.push(user);
     addUserToCoupon.limit -= 1;
     await addUserToCoupon.save();
-
 
     res.status(201).json({
       message: "Order created successfully",
@@ -210,21 +215,21 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     }
     orderDetails.status = "cancelled";
     await orderDetails.save();
-    if(orderDetails.paymentMethod === "razorpay"){
-      let wallet = await Wallet.findOne({userId:orderDetails.user})
-      if(!wallet){
-        wallet = new Wallet({userId:orderDetails.user})
+    if (orderDetails.paymentMethod === "razorpay") {
+      let wallet = await Wallet.findOne({ userId: orderDetails.user });
+      if (!wallet) {
+        wallet = new Wallet({ userId: orderDetails.user });
       }
-      const refundAmount = orderDetails.totalPrice
-      wallet.balance += refundAmount
-      console.log("order id", orderDetails._id)
+      const refundAmount = orderDetails.totalPrice;
+      wallet.balance += refundAmount;
+      console.log("order id", orderDetails._id);
       wallet.transactions.push({
         type: "credit",
         amount: refundAmount,
         description: "Refund for canceled order",
         orderId: orderDetails._id,
-      })
-      await wallet.save()
+      });
+      await wallet.save();
     }
     res.status(200).json({ message: "Order cancelled successfully" });
   } catch (err) {

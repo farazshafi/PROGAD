@@ -55,6 +55,7 @@ const PlaceOrderSection = () => {
             ? "cash on delivery"
             : orderDetails.paymentMethod,
         couponCode: orderDetails.couponCode ? orderDetails.couponCode : null,
+        couponDiscount: orderDetails.couponDiscount || 0
       };
 
       if (orderDetails.paymentMethod === "razorpay") {

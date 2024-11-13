@@ -7,6 +7,10 @@ const orderSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    couponDiscount: {
+      type: Number,
+      default:0
+    },
     items: [
       {
         id: {
