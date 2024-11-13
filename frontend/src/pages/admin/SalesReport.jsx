@@ -208,7 +208,7 @@ const SalesReport = () => {
       {report && report.length > 0 && (
         <Box className="text-right mt-4">
           <Typography variant="subtitle1">
-            Overall Sales: $
+            Overall Sales: ₹
             {report.reduce((acc, cur) => acc + cur.totalSales, 0).toFixed(2)}
           </Typography>
           <Typography variant="subtitle1">
@@ -216,7 +216,7 @@ const SalesReport = () => {
             {report.reduce((acc, cur) => acc + cur.ordersCount, 0)}
           </Typography>
           <Typography variant="subtitle1">
-            Overall Discounts: $
+            Overall Discounts: ₹
             {report
               .reduce((acc, cur) => acc + cur.totalDiscounts, 0)
               .toFixed(2)}

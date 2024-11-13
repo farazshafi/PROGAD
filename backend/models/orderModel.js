@@ -71,6 +71,11 @@ const orderSchema = mongoose.Schema(
       enum: ["unpaid", "paid", "refunded"],
       default: "unpaid",
     },
+    cancelReason:{
+      type:String,
+      default: null,
+      required:true,
+    },
     orderDate: { type: Date, default: Date.now },
     razorpayOrderId: {
       type: String,

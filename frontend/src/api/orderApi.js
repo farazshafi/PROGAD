@@ -105,7 +105,7 @@ export const getOrderDetailsApi = async (orderId) => {
   }
 };
 
-export const cancelOrderApi = async (orderId) => {
+export const cancelOrderApi = async (orderId,reason) => {
   try {
     const token = JSON.parse(localStorage.getItem("user")).token;
     const config = {
@@ -115,7 +115,7 @@ export const cancelOrderApi = async (orderId) => {
     };
     const data = await axios.patch(
       `${API_URL}cancel_order/${orderId}`,
-      null,
+      {reason},
       config
     );
     return data;

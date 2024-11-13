@@ -12,7 +12,7 @@ import PlaceOrderSection from "../../../components/PlaceOrderSection/PlaceOrderS
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedOrder, setShippingAddress } from "../../../features/user/orderSlice";
-import { selectedUser } from "../../../features/user/userSlice";
+import { logoutUser, selectedUser } from "../../../features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 
 const CartProcess = () => {
@@ -37,6 +37,11 @@ const CartProcess = () => {
   useEffect(()=>{
     if(!user){
       toast.error("Please login to proceed")
+      navigate("/login")
+    }
+    if(!user.isVerified){
+      toast.error("Please verify your email to proceed")
+      dispatch(logoutUser())
       navigate("/login")
     }
   },[])

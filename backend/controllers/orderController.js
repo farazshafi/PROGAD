@@ -208,12 +208,18 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
 export const cancelOrder = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    const {reason} = req.body;
+    console.log("reason :",reason)
 
     const orderDetails = await Order.findById(id);
     if (!orderDetails) {
       return res.status(404).json({ message: "No orders found" });
     }
+    if(!reason){
+      return res.status(400).json({ message: "Please provide a cancellation reason" });
+    }
     orderDetails.status = "cancelled";
+    orderDetails.cancelReason = reason;
     await orderDetails.save();
     if (orderDetails.paymentMethod === "razorpay") {
       let wallet = await Wallet.findOne({ userId: orderDetails.user });

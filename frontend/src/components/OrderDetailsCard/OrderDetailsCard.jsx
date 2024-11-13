@@ -6,6 +6,11 @@ import {
   Grid,
   Divider,
   CircularProgress,
+  Dialog,
+  DialogContent,
+  TextField,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -18,13 +23,18 @@ const OrderDetailsCard = ({ isAdmin }) => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const handleOpenDialog = () => setOpenDialog(true);
+  const handleCloseDialog = () => setOpenDialog(false);
+
   let breadcrumbPath;
   if (isAdmin) {
     breadcrumbPath = [
       { label: "Admin Dashboard", url: "/admin_dashboard" },
       { label: order?.name, url: "/admin_dashboard" },
     ];
-  }else{
+  } else {
     breadcrumbPath = [
       { label: "Home", url: "/" },
       { label: "Profile", url: "/profile" },
@@ -52,7 +62,11 @@ const OrderDetailsCard = ({ isAdmin }) => {
 
   const handleCancelOrder = async () => {
     try {
-      const result = await cancelOrderApi(order._id);
+      if (!cancelReason.trim()) {
+        toast.error("Please provide a reason for cancellation.");
+        return;
+      }
+      const result = await cancelOrderApi(order._id, cancelReason);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -65,6 +79,8 @@ const OrderDetailsCard = ({ isAdmin }) => {
     } catch (err) {
       toast.error("Failed to cancel order");
       console.log(err);
+    } finally {
+      setOpenDialog(false);
     }
   };
 
@@ -198,12 +214,30 @@ const OrderDetailsCard = ({ isAdmin }) => {
             </Typography>
           </Box>
           {order.status === "pending" && (
-            <div onClick={handleCancelOrder} style={{ marginTop: "20px" }}>
+            <div onClick={handleOpenDialog} style={{ marginTop: "20px" }}>
               <OurButton w={"100"} text={"Cancel Order"} />
             </div>
           )}
         </Card>
       </Box>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogContent>
+          <Typography variant="h6">
+            Are you sure you want to cancel this order?
+          </Typography>
+          <TextField
+            label="Reason for cancellation"
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+        </DialogContent>
+        <DialogActions>
+          <button className="text-white py-2 px-3 rounded bg-black opacity-80" onClick={handleCloseDialog}>No</button>
+          <button className="text-white py-2 px-3 rounded bg-[#ff7f11]" onClick={handleCancelOrder}>Yes, Cancel</button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
