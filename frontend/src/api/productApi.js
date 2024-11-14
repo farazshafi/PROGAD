@@ -98,4 +98,26 @@ export const getAllPublicProductsForAdminApi = async (id) => {
 }
 
 
+export const getFilteredProductsApi = async (filters) => {
+  try {
+    const { categories, priceRange } = filters;
+    const params = new URLSearchParams();
+
+    if (categories.length > 0) {
+      params.append('categories', categories.join(','));
+    }
+    if (priceRange) {
+      params.append('minPrice', priceRange.min);
+      params.append('maxPrice', priceRange.max);
+    }
+
+    const response = await axios.get(`${API_URL}/filter_products?${params.toString()}`);
+
+    return response.data; 
+  } catch (err) {
+    console.error('Error fetching filtered products:', err);
+    return err;
+  }
+};
+
 

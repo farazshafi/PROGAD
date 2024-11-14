@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import {
   getAllProductsApi,
+  getFilteredProductsApi,
   getSortedProductApi,
 } from "../../../api/productApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,11 +35,20 @@ const ProductsPage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [sortOption, setSortOption] = useState("default");
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
+
 
   const dispatch = useDispatch();
 
   const handleSortChange = (event) => {
     setSortOption(event.target.value);
+  };
+
+
+  const handleFilterChange = (filters) => {
+    setSelectedCategories(filters.categories);
+    setPriceRange(filters.priceRange);
   };
 
   const handleChange = (event, value) => {
@@ -51,7 +61,13 @@ const ProductsPage = () => {
 
   const fetchProducts = async (page) => {
     try {
-      const { data } = await getAllProductsApi(page);
+      const data  = await getFilteredProductsApi({
+        categories: selectedCategories,
+        minPrice: priceRange.min,
+        maxPrice: priceRange.max,
+        page,
+      });
+  
       if (data.response) {
         const { status } = data.response;
         if (status === 400 || status === 500) {
@@ -66,12 +82,14 @@ const ProductsPage = () => {
       console.error("Fetch Products Error:", error);
     }
   };
+  
 
   const fetchSortedProducts = async () => {
     try {
       const { data } = await getSortedProductApi(sortOption);
+      console.log("sorted data:",data)
       if (data) {
-        dispatch(setProducts(data));
+        dispatch(setProducts(data.products));
       }
     } catch (err) {
       toast.error("Failed to sort products. Please try again.");
@@ -81,7 +99,7 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts(page);
-  }, [page]);
+  }, [selectedCategories, priceRange, page]);
 
   useEffect(() => {
     if (sortOption !== "default") {
@@ -114,7 +132,7 @@ const ProductsPage = () => {
         </Breadcrumbs>
       </div>
 
-      <FilterSideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <FilterSideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} onFilterChange={handleFilterChange} />
 
       <div
         style={{

@@ -3,6 +3,7 @@ import {
   createProduct,
   getAllProduct,
   getAllPublicProducts,
+  getFilteredProducts,
   getProductDetails,
   getRelatedProduct,
   getSortedProduct,
@@ -33,5 +34,7 @@ router.put("/update_product/:id",updateProduct);
 router.get("/sort_product",getSortedProduct)
 router.get("/related_product/:id",getRelatedProduct)
 router.get("/public_products",protect, admin,getAllPublicProducts)
+router.get("/filter_products", getFilteredProducts);
+
 
 export default router;

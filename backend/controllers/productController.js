@@ -4,6 +4,7 @@ import { promisify } from "util";
 import asyncHandler from "express-async-handler";
 import { Product } from "../models/productModel.js";
 import Offer from "../models/offerModel.js";
+import mongoose from "mongoose"
 
 // Initialize S3 client
 const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -353,7 +354,8 @@ export const getProductDetails = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       ...product.toObject(),
-      discount: discountType === "percentage" ? `${discountValue}` : discountValue,
+      discount:
+        discountType === "percentage" ? `${discountValue}` : discountValue,
       discountType,
       discountPrice: discountPrice.toFixed(2),
     });
@@ -364,8 +366,6 @@ export const getProductDetails = asyncHandler(async (req, res) => {
       .json({ message: "Server error while getting product details" });
   }
 });
-
-
 
 // @desc    update product by id
 // @route   PUT /api/product/update_product/:id
@@ -432,19 +432,18 @@ export const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    get sorted product
-// @route   GET /api/product/sort_product?sortBy=""
-// @access  Public
+// @desc    Get sorted and paginated products
+// @route   GET /api/product/sorted_products
+// @access  public
 export const getSortedProduct = asyncHandler(async (req, res) => {
   try {
-    const { sortBy } = req.query;
-    if (sortBy === undefined) {
-      return res
-        .status(400)
-        .json({ message: "Sort by query parameter is required" });
-    }
-    let sortCriteria = {};
+    const { sortBy, page = 1, limit = 10 } = req.query;
+    const pageInt = parseInt(page);
+    const limitInt = parseInt(limit);
+    const skip = (pageInt - 1) * limitInt;
 
+    // Define sorting criteria based on the sortBy parameter
+    let sortCriteria = {};
     switch (sortBy) {
       case "lowToHigh":
         sortCriteria = { discountPrice: 1 };
@@ -456,22 +455,80 @@ export const getSortedProduct = asyncHandler(async (req, res) => {
         sortCriteria = { createdAt: -1 };
         break;
       case "Aa-Zz":
-        sortCriteria = { name: -1 };
-        break;
-      case "zZ-aA":
         sortCriteria = { name: 1 };
         break;
+      case "zZ-aA":
+        sortCriteria = { name: -1 };
+        break;
       case "featured":
-        sortCriteria = { isFeatured: 1 };
+        sortCriteria = { isFeatured: -1 };
         break;
       default:
+        return res.status(400).json({ message: "Invalid sort parameter" });
     }
 
-    const sortedProduct = await Product.find().sort(sortCriteria);
-    res.status(200).json(sortedProduct);
+    // Retrieve active offers for discount calculations
+    const activeOffers = await Offer.find({
+      status: "active",
+      expirationDate: { $gte: new Date() },
+    });
+
+    // Get total count for pagination and fetch sorted, paginated products
+    const totalProducts = await Product.countDocuments({ isPublished: true });
+    const products = await Product.find({ isPublished: true })
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limitInt)
+      .populate("category", "_id name");
+
+    // Transform products to include discount information
+    const transformedProducts = products.map((product) => {
+      const relevantOffer = activeOffers.find(
+        (offer) =>
+          (offer.applyToProducts && offer.productIds.includes(product._id)) ||
+          (offer.applyToCategories &&
+            offer.categoryIds.includes(product.category._id))
+      );
+
+      let discountPrice = product.discountPrice;
+      let discountValue = null;
+      let discountType = null;
+
+      if (relevantOffer) {
+        discountType = relevantOffer.discountType;
+        if (discountType === "percentage") {
+          discountValue = `${relevantOffer.discount}%`;
+          discountPrice =
+            product.discountPrice * (1 - relevantOffer.discount / 100);
+        } else if (discountType === "fixed") {
+          discountValue = `${relevantOffer.discount}`;
+          discountPrice = Math.max(
+            0,
+            product.discountPrice - relevantOffer.discount
+          );
+        }
+      }
+
+      return {
+        _id: product._id,
+        name: product.name,
+        image: product.images[0] || null,
+        discountPrice: discountPrice.toFixed(2),
+        originalPrice: product.originalPrice,
+        discount: discountValue,
+        discountType: discountType,
+      };
+    });
+
+    res.json({
+      products: transformedProducts,
+      currentPage: pageInt,
+      totalPages: Math.ceil(totalProducts / limitInt),
+      totalProducts,
+    });
   } catch (err) {
-    console.error("Error sorting product:", err.message);
-    res.status(500).json({ message: "Server error while sorting product" });
+    console.error("Error sorting and paginating products:", err.message);
+    res.status(500).json({ message: "Server error while sorting products" });
   }
 });
 
@@ -505,5 +562,95 @@ export const getAllPublicProducts = asyncHandler(async (req, res) => {
   } catch (err) {
     console.error("Error related product:", err.message);
     res.status(500).json({ message: "Server error while related product" });
+  }
+});
+
+// @desc    Get filtered products by categories and price range
+// @route   GET /api/product/filter_products?
+// @access  public
+export const getFilteredProducts = asyncHandler(async (req, res) => {
+  try {
+    const { categories, minPrice, maxPrice, page = 1, limit = 10 } = req.query;
+    const pageInt = parseInt(page);
+    const limitInt = parseInt(limit);
+    const skip = (pageInt - 1) * limitInt;
+
+    // Build the filter criteria
+    const filterCriteria = { isPublished: true };
+
+    // Add category filter if specified
+    if (categories) {
+      // Split the categories string into an array, then convert each value to an ObjectId
+      const categoryArray = categories
+        .split(",")
+        .map((category) => new mongoose.Types.ObjectId(category));
+      filterCriteria.category = { $in: categoryArray };
+    }
+
+    // Add price range filter if specified
+    if (minPrice || maxPrice) {
+      filterCriteria.discountPrice = {};
+      if (minPrice) filterCriteria.discountPrice.$gte = Number(minPrice);
+      if (maxPrice) filterCriteria.discountPrice.$lte = Number(maxPrice);
+    }
+
+    const activeOffers = await Offer.find({
+      status: "active",
+      expirationDate: { $gte: new Date() },
+    });
+
+    const totalProducts = await Product.countDocuments(filterCriteria);
+    const products = await Product.find(filterCriteria)
+      .skip(skip)
+      .limit(limitInt)
+      .populate("category", "_id name");
+
+    const transformedProducts = products.map((product) => {
+      const relevantOffer = activeOffers.find(
+        (offer) =>
+          (offer.applyToProducts && offer.productIds.includes(product._id)) ||
+          (offer.applyToCategories &&
+            offer.categoryIds.includes(product.category._id))
+      );
+
+      let discountPrice = product.discountPrice;
+      let discountValue = null;
+      let discountType = null;
+
+      if (relevantOffer) {
+        discountType = relevantOffer.discountType;
+        if (discountType === "percentage") {
+          discountValue = `${relevantOffer.discount}%`;
+          discountPrice =
+            product.discountPrice * (1 - relevantOffer.discount / 100);
+        } else if (discountType === "fixed") {
+          discountValue = `${relevantOffer.discount}`;
+          discountPrice = Math.max(
+            0,
+            product.discountPrice - relevantOffer.discount
+          );
+        }
+      }
+
+      return {
+        _id: product._id,
+        name: product.name,
+        image: product.images[0] || null,
+        discountPrice: discountPrice.toFixed(2),
+        originalPrice: product.originalPrice,
+        discount: discountValue,
+        discountType: discountType,
+      };
+    });
+
+    res.json({
+      products: transformedProducts,
+      currentPage: pageInt,
+      totalPages: Math.ceil(totalProducts / limitInt),
+      totalProducts,
+    });
+  } catch (err) {
+    console.error("Error filtering products:", err.message);
+    res.status(500).json({ message: "Server error while filtering products" });
   }
 });
