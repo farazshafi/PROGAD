@@ -39,20 +39,24 @@ const AddCoupon = () => {
     setCoupon((prev) => ({ ...prev, expirationDate: date }));
   };
 
-  const handleCategoryChange = (categoryId) => {
-    console.log("category: ", categoryId)
-    if (!categoryId) return;
-    setCoupon((prev) => ({
-      ...prev,
-      categories: prev.categories.includes(categoryId)
-        ? prev.categories.filter((id) => id !== categoryId)
-        : [...prev.categories, categoryId],
-    }));
+  const handleCategoryChange = (e, categoryId) => {
+    if (e.target.checked) {
+      setCoupon((prev) => ({
+        ...prev,
+        categories: [...prev.categories, categoryId],
+      }));
+    } else {
+      setCoupon((prev) => ({
+        ...prev,
+        categories: prev.categories.filter((id) => id !== categoryId),
+      }));
+    }
   };
 
   const handleShowCouponDetails = async () => {
+    console.log("coupons category", coupon.categories)
     try {
-      // validation
+      console.log("coupon", coupon);
       if (
         !coupon.name ||
         !coupon.code ||
@@ -63,12 +67,10 @@ const AddCoupon = () => {
         toast.error("All fields are required");
         return;
       }
-      console.log("test aan ok", Number(coupon.discount))
       if (Number(coupon.discount > 70)) {
-
         return toast.error(" discount must be less than 70%");
       }
-      const newCategories = coupon.categories.slice(1);
+      const newCategories = coupon.categories;
       const couponWithDate = {
         ...coupon,
         expirationDate: dayjs(coupon.expirationDate).toDate(),
@@ -213,7 +215,7 @@ const AddCoupon = () => {
               control={
                 <Checkbox
                   checked={coupon.categories.includes(category._id)}
-                  onChange={() => handleCategoryChange(category._id)}
+                  onChange={(e) => handleCategoryChange(e, category._id)}
                   style={{ color: "white" }}
                 />
               }

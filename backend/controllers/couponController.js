@@ -24,8 +24,7 @@ export const createCoupon = asyncHandler(async (req, res) => {
     !expirationDate ||
     !limit ||
     !minPurchasePrice ||
-    !status ||
-    categories.length < 1
+    !status
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -100,15 +99,18 @@ export const editCoupon = asyncHandler(async (req, res) => {
 // @route   GET /api/coupon/active_coupons
 // @access  public
 export const getActiveCoupons = asyncHandler(async (req, res) => {
-  const coupons = await Coupon.find({status: "active"}).select("name code discount expirationDate")
-  if(!coupons){
-    res.status(400).json({message: "No active Coupons found"})
+  const coupons = await Coupon.find({ status: "active" }).select(
+    "name code discount expirationDate"
+  );
+  if (!coupons) {
+    res.status(400).json({ message: "No active Coupons found" });
   }
-  const currentDate = new Date()
-  const activeCoupons = coupons.filter(coupon => new Date(coupon.expirationDate) > currentDate)
+  const currentDate = new Date();
+  const activeCoupons = coupons.filter(
+    (coupon) => new Date(coupon.expirationDate) > currentDate
+  );
   res.status(200).json(activeCoupons);
 });
-
 
 // @desc    find Coupon
 // @route   GET /api/coupon/find_coupon/:id
@@ -117,7 +119,6 @@ export const findCoupon = asyncHandler(async (req, res) => {
   const { code, userId } = req.query;
   console.log("req.query:", req.query);
 
-  // Include `appliedUsers` explicitly or remove `select` to include all fields
   const coupon = await Coupon.findOne({ code })
     .select("_id name discount minPurchasePrice expirationDate appliedUsers")
     .populate("categories", "name");
@@ -128,7 +129,7 @@ export const findCoupon = asyncHandler(async (req, res) => {
 
   // Check if `appliedUsers` is an array
   if (!Array.isArray(coupon.appliedUsers)) {
-    coupon.appliedUsers = [];  // Initialize as an empty array if it's undefined
+    coupon.appliedUsers = []; // Initialize as an empty array if it's undefined
   }
 
   if (coupon.appliedUsers.includes(userId)) {

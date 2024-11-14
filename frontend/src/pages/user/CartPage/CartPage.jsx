@@ -21,7 +21,7 @@ import { selectedUser } from "../../../features/user/userSlice";
 
 const CartPage = () => {
   const cartItems = useSelector(selectedCart);
-  const user = useSelector(selectedUser)
+  const user = useSelector(selectedUser);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ const CartPage = () => {
   const [availableCoupon, setAvailableCoupon] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [isApplied, setIsApplied] = useState(false);
+  const [couponCategory, setCouponCategory] = useState([]);
   const [summary, setSummary] = useState({
     summary: 0,
     tax: 0,
@@ -93,17 +94,34 @@ const CartPage = () => {
   };
 
   const handleApplyCoupon = () => {
-    if (availableCoupon) {
-      setIsApplied(true);
-    } else {
+    if (!availableCoupon) {
       toast.error("Invalid coupon code");
+      return;
     }
+  
+    // Check if the coupon has specific categories
+    if (availableCoupon.categories && availableCoupon.categories.length > 0) {
+      // Verify if any cart item category matches the coupon categories
+      const isCategoryEligible = cartItems.some((item) =>
+        availableCoupon.categories.includes(item.category._id)
+      );
+  
+      if (!isCategoryEligible) {
+        toast.error("Coupon not applicable for items in your cart");
+        return;
+      }
+    }
+  
+    // Set the coupon as applied if all checks pass
+    setIsApplied(true);
+    toast.success("Coupon applied successfully");
   };
+  
 
   const findCoupon = async () => {
-    if(!user){
-      toast.warning("Please Login to apply coupon")
-      navigate("/login")
+    if (!user) {
+      toast.warning("Please Login to apply coupon");
+      navigate("/login");
     }
     try {
       setIsApplied(false);
@@ -118,6 +136,7 @@ const CartPage = () => {
         }
       }
       setAvailableCoupon(result.data);
+      setCouponCategory(result.data?.categories);
     } catch (err) {
       console.error("Error applying coupon:", err);
       toast.error(err.message || "Error applying coupon");
@@ -345,11 +364,7 @@ const CartPage = () => {
                   }}
                 >
                   <p>Delivery fee:</p>
-                  {summary.total > 500 ? (
-                    "Free"
-                  ) : (
-                    <h6>₹ {summary.delivery}</h6>
-                  )}
+                  {summary.total > 500 ? "Free" : <h6>₹ {summary.delivery}</h6>}
                 </div>
                 {isApplied && (
                   <div

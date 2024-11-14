@@ -30,7 +30,8 @@ const ProductDetail = ({ product }) => {
       quantity: quantity,
       image: product.images[0],
       stock: product.totalStock,
-      subTotal: Number(product.discountPrice * quantity,)
+      subTotal: Number(product.discountPrice * quantity,),
+      category:product.category
     };
     dispatch(addToCart(cartItem));
     setShowAddToCartAnimation(true);
