@@ -30,14 +30,13 @@ import { Stack } from "@chakra-ui/react";
 
 const ProductsPage = () => {
   const products = useSelector(selectedProduct);
-  const page = useSelector(selectedProductPage)
+  const page = useSelector(selectedProductPage);
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [sortOption, setSortOption] = useState("default");
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState([]);
-const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
-
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
 
   const dispatch = useDispatch();
 
@@ -45,14 +44,13 @@ const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
     setSortOption(event.target.value);
   };
 
-
   const handleFilterChange = (filters) => {
     setSelectedCategories(filters.categories);
     setPriceRange(filters.priceRange);
   };
 
   const handleChange = (event, value) => {
-    dispatch(setPage(value))
+    dispatch(setPage(value));
   };
 
   const toggleSidebar = () => {
@@ -61,13 +59,12 @@ const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
 
   const fetchProducts = async (page) => {
     try {
-      const data  = await getFilteredProductsApi({
+      const data = await getFilteredProductsApi({
         categories: selectedCategories,
-        minPrice: priceRange.min,
-        maxPrice: priceRange.max,
+        priceRange: priceRange,
         page,
       });
-  
+
       if (data.response) {
         const { status } = data.response;
         if (status === 400 || status === 500) {
@@ -82,12 +79,11 @@ const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
       console.error("Fetch Products Error:", error);
     }
   };
-  
 
   const fetchSortedProducts = async () => {
     try {
       const { data } = await getSortedProductApi(sortOption);
-      console.log("sorted data:",data)
+      console.log("sorted data:", data);
       if (data) {
         dispatch(setProducts(data.products));
       }
@@ -132,7 +128,11 @@ const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
         </Breadcrumbs>
       </div>
 
-      <FilterSideBar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} onFilterChange={handleFilterChange} />
+      <FilterSideBar
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        onFilterChange={handleFilterChange}
+      />
 
       <div
         style={{

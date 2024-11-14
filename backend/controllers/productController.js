@@ -4,7 +4,7 @@ import { promisify } from "util";
 import asyncHandler from "express-async-handler";
 import { Product } from "../models/productModel.js";
 import Offer from "../models/offerModel.js";
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 // Initialize S3 client
 const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -575,19 +575,15 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
     const limitInt = parseInt(limit);
     const skip = (pageInt - 1) * limitInt;
 
-    // Build the filter criteria
     const filterCriteria = { isPublished: true };
 
-    // Add category filter if specified
     if (categories) {
-      // Split the categories string into an array, then convert each value to an ObjectId
       const categoryArray = categories
         .split(",")
         .map((category) => new mongoose.Types.ObjectId(category));
       filterCriteria.category = { $in: categoryArray };
     }
 
-    // Add price range filter if specified
     if (minPrice || maxPrice) {
       filterCriteria.discountPrice = {};
       if (minPrice) filterCriteria.discountPrice.$gte = Number(minPrice);

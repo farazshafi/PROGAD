@@ -24,7 +24,9 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
   const handleCategoryChange = (event) => {
     const { checked, value } = event.target;
     setCategories((prevCategories) =>
-      checked ? [...prevCategories, value] : prevCategories.filter((categoryId) => categoryId !== value)
+      checked
+        ? [...prevCategories, value]
+        : prevCategories.filter((categoryId) => categoryId !== value)
     );
   };
 
@@ -34,6 +36,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
     if (value === "upto10k") setPriceRange({ min: 0, max: 10000 });
     if (value === "10kto20k") setPriceRange({ min: 10000, max: 20000 });
     if (value === "morethan20k") setPriceRange({ min: 20000, max: 50000 });
+    if (value === "custom") setPriceRange({ ...priceRange });
   };
 
   const fetchCategories = async () => {
@@ -103,7 +106,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
         <FormGroup>
           {allCategories?.map((category) => (
             <FormControlLabel
-              key={category.id} 
+              key={category.id}
               control={
                 <Checkbox
                   value={category._id}
