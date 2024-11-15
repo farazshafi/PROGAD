@@ -288,7 +288,9 @@ export const updateStatus = asyncHandler(async (req, res) => {
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
-
+    if(status === "delivered" && orderDetails.paymentMethod === "cash on delivery"){
+      orderDetails.paymentStatus = "paid"
+    }
     orderDetails.status = status;
     await orderDetails.save();
     res.status(200).json({ message: "Order status updated successfully" });

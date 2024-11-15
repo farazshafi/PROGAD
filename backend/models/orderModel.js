@@ -74,7 +74,6 @@ const orderSchema = mongoose.Schema(
     cancelReason:{
       type:String,
       default: null,
-      required:true,
     },
     orderDate: { type: Date, default: Date.now },
     razorpayOrderId: {
