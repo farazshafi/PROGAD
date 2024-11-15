@@ -7,23 +7,28 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { setPaymentMethod } from "../../features/user/orderSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectedOrder,
+  setPaymentMethod,
+} from "../../features/user/orderSlice";
 import { toast } from "react-toastify";
 
 const PaymentSection = () => {
+  const orderDetails = useSelector(selectedOrder);
+
   const [payment, setPayment] = useState("razorpay");
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handlePaymentChange = (event) => {
     setPayment(event.target.value);
   };
 
   const handlePaymentMethod = () => {
-    dispatch(setPaymentMethod(payment))
-    toast.success("Saved Payment method")
-  }
+    dispatch(setPaymentMethod(payment));
+    toast.success("Saved Payment method");
+  };
 
   return (
     <Box
@@ -58,8 +63,13 @@ const PaymentSection = () => {
           value="cashOnDelivery"
           control={<Radio sx={{ color: "#fff" }} />}
           label="Cash on Delivery"
+          disabled={Number(orderDetails.totalAmount) > 10000}
+          sx={{
+            color: Number(orderDetails.totalAmount) > 10000 ? "grey" : "white",
+            "& .MuiFormControlLabel-label.Mui-disabled": { color: "grey" },
+          }}
         />
-      </RadioGroup>      
+      </RadioGroup>
 
       {/* Place Order Button */}
       <Button
