@@ -36,6 +36,7 @@ import ListOffers from "./ListOffers";
 import AddOffer from "./AddOffer";
 import SalesReport from "./SalesReport";
 import AddBrand from "./AddBrand";
+import ListBrands from "./ListBrands";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -228,6 +229,9 @@ function DemoPageContent({ pathname }) {
       break;
     case "/brands/add_brand":
       content = <AddBrand />;
+      break;
+    case "/brands":
+      content = <ListBrands />;
       break;
     case "/coupons/add_coupon":
       content = <AddCoupon />;

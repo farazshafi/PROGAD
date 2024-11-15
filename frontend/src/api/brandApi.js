@@ -21,3 +21,19 @@ export const createBrandApi = async (brandDetails) => {
     return e;
   }
 };
+
+export const getAllBrandsApi = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.get(`${API_URL}/list_brands`, config);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
