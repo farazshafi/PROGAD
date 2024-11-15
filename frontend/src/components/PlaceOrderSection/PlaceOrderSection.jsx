@@ -20,7 +20,6 @@ const PlaceOrderSection = () => {
   const dispatch = useDispatch();
 
   const [showOrderedAnimation, setShowOrderedAnimation] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const [orderData, setOrderData] = useState({
     user: user._id,
@@ -34,7 +33,6 @@ const PlaceOrderSection = () => {
 
   const handlePayment = async () => {
     try {
-      setLoading(true);
       const filteredItems = cartItems.map(
         ({ id, quantity, price, subTotal }) => ({
           id,
@@ -55,7 +53,7 @@ const PlaceOrderSection = () => {
             ? "cash on delivery"
             : orderDetails.paymentMethod,
         couponCode: orderDetails.couponCode ? orderDetails.couponCode : null,
-        couponDiscount: orderDetails.couponDiscount || 0
+        couponDiscount: orderDetails.couponDiscount || 0,
       };
 
       if (orderDetails.paymentMethod === "razorpay") {
@@ -66,15 +64,12 @@ const PlaceOrderSection = () => {
             orderDetails.shippingAddress
           );
 
-          console.log("formateed order data", formattedOrderData);
-
           const result = await makeOrderApi(formattedOrderData);
           if (
             result.response &&
             (result.response.status === 400 || result.response.status === 500)
           ) {
             toast.error(result.response.data.message);
-            setLoading(false);
             return;
           }
 
@@ -84,11 +79,9 @@ const PlaceOrderSection = () => {
             dispatch(clearCart());
             navigate("/order_success");
           }, 4000);
-          setLoading(false);
         } catch (error) {
           toast.error("Payment failed, please try again");
           console.error(error);
-          setLoading(false);
         }
       } else {
         const result = await makeOrderApi(formattedOrderData);
@@ -97,7 +90,6 @@ const PlaceOrderSection = () => {
           (result.response.status === 400 || result.response.status === 500)
         ) {
           toast.error(result.response.data.message);
-          setLoading(false);
           return;
         }
 
@@ -110,7 +102,6 @@ const PlaceOrderSection = () => {
       }
     } catch (err) {
       console.error("Error processing order", err);
-      setLoading(false);
     }
   };
 
@@ -348,7 +339,6 @@ const PlaceOrderSection = () => {
                     paddingTop: "30px",
                     paddingBottom: "30px",
                   }}
-                  isLoading={loading}
                 >
                   Place Order
                 </Button>

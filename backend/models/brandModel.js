@@ -15,7 +15,6 @@ const brandSchema = mongoose.Schema(
       isPublished:{
         type: Boolean,
         default: true,
-        required: true,
       }
     },
     { timestapms: true }

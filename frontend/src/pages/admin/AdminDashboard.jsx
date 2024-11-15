@@ -35,6 +35,7 @@ import ListCoupons from "./listCoupons";
 import ListOffers from "./ListOffers";
 import AddOffer from "./AddOffer";
 import SalesReport from "./SalesReport";
+import AddBrand from "./AddBrand";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -109,23 +110,23 @@ const NAVIGATION = [
     ],
   },
   // brands
-  // {
-  //   segment: "brands",
-  //   title: "Brands",
-  //   icon: <MdBrandingWatermark fontSize={"20px"} />,
-  //   children: [
-  //     {
-  //       segment: "add brand",
-  //       title: "Add Brand",
-  //       icon: <IoMdAdd />,
-  //     },
-  //     {
-  //       segment: "list_brand",
-  //       title: "List Brand",
-  //       icon: <FaListUl />,
-  //     },
-  //   ],
-  // },
+  {
+    segment: "brands",
+    title: "Brands",
+    icon: <MdBrandingWatermark fontSize={"20px"} />,
+    children: [
+      {
+        segment: "add_brand",
+        title: "Add Brand",
+        icon: <IoMdAdd />,
+      },
+      {
+        segment: "",
+        title: "List Brands",
+        icon: <FaListUl />,
+      },
+    ],
+  },
   // coupons
   {
     segment: "coupons",
@@ -169,23 +170,13 @@ const NAVIGATION = [
     kind: "header",
     title: "Analytics",
   },
+  // sales report
   {
     segment: "sales_report",
     title: "Sales Report",
     icon: <BarChartIcon />,
-    // children: [
-    //   {
-    //     segment: "download",
-    //     title: "Download",
-    //     icon: <FaDownload fontSize={"20px"} />,
-    //   },
-    //   {
-    //     segment: "traffic",
-    //     title: "Traffic",
-    //     icon: <GoGraph fontSize={"20px"} />,
-    //   },
-    // ],
   },
+  // logout
   {
     segment: "logout",
     title: "Logout",
@@ -214,11 +205,11 @@ function DemoPageContent({ pathname }) {
   let content;
 
   switch (pathname) {
-    case "/users":
-      content = <ListUsers />;
-      break;
     case "/dashboard":
       content = <div>Dashboard Content Here</div>;
+      break;
+    case "/users":
+      content = <ListUsers />;
       break;
     case "/products":
       content = <ListProduct />;
@@ -226,11 +217,17 @@ function DemoPageContent({ pathname }) {
     case "/products/add_product":
       content = <AddProduct />;
       break;
+    case "/orders":
+      content = <ListOrders />;
+      break;
     case "/categories":
       content = <ListCategories />;
       break;
     case "/categories/add_category":
       content = <AddCategory />;
+      break;
+    case "/brands/add_brand":
+      content = <AddBrand />;
       break;
     case "/coupons/add_coupon":
       content = <AddCoupon />;
@@ -246,9 +243,6 @@ function DemoPageContent({ pathname }) {
       break;
     case "/logout":
       content = <AdminLogout />;
-      break;
-    case "/orders":
-      content = <ListOrders />;
       break;
     case "/sales_report":
       content = <SalesReport />;
