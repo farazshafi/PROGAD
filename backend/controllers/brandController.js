@@ -29,7 +29,7 @@ export const createBrand = asyncHandler(async (req, res) => {
 // @access  private admin
 export const getAllBrands = asyncHandler(async (req, res) => {
   try {
-    const brands = await Brand.find({}).select("name description _id")
+    const brands = await Brand.find({}).select("name isPublished description _id")
     if(!brands){
       return res.status(404).json({ message: "Brands not found" });
     }
@@ -37,5 +37,59 @@ export const getAllBrands = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error while listing brand" });
+  }
+});
+
+
+// @desc    Edit Brand 
+// @route   GET /api/brand/edit_brand/:id
+// @access  private admin
+export const editBrand = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {name, description, isPublished} = req.body
+
+    const brand = await Brand.findById(id).select("name description isPublished _id")
+    if(!brand){
+      return res.status(404).json({ message: "Brands not found" });
+    }
+
+    brand.name = name || brand.name
+    brand.description = description || brand.description
+    brand.isPublished = isPublished || brand.isPublished
+    await brand.save()
+
+    res.status(200).json({message: "Updated Brand"})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while listing brand" });
+  }
+});
+
+
+
+// @desc    update status of isPublished 
+// @route   Patch /api/brand/update_status/:id
+// @access  private admin
+export const updateBrandStatus = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isPublished } = req.body;
+
+    if (typeof isPublished !== 'boolean') {
+      return res.status(400).json({ message: "Invalid value for isPublished. It must be a boolean." });
+    }
+
+    const brand = await Brand.findByIdAndUpdate(id, { isPublished }, { new: true });
+    
+    if (!brand) {
+      return res.status(404).json({ message: "Brand not found" });
+    }
+
+    res.status(200).json({ message: "Brand updated successfully", brand });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while updating brand status" });
   }
 });

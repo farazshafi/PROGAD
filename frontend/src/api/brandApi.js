@@ -37,3 +37,35 @@ export const getAllBrandsApi = async () => {
     return e;
   }
 };
+
+export const editBrandApi = async (id, updates) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.patch(`${API_URL}/edit_brand/${id}`, updates, config);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+export const updateBrandStatusApi = async (id, updates) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.patch(`${API_URL}/update_status/${id}`, updates, config);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
