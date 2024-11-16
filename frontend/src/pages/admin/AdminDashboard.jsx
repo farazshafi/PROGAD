@@ -37,6 +37,7 @@ import AddOffer from "./AddOffer";
 import SalesReport from "./SalesReport";
 import AddBrand from "./AddBrand";
 import ListBrands from "./ListBrands";
+import DashboardPage from "./DashboardPage";
 
 // Navigation menu items
 const NAVIGATION = [
@@ -207,7 +208,7 @@ function DemoPageContent({ pathname }) {
 
   switch (pathname) {
     case "/dashboard":
-      content = <div>Dashboard Content Here</div>;
+      content = <DashboardPage />; 
       break;
     case "/users":
       content = <ListUsers />;

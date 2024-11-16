@@ -5,6 +5,7 @@ import asyncHandler from "express-async-handler";
 import { Product } from "../models/productModel.js";
 import Offer from "../models/offerModel.js";
 import mongoose from "mongoose";
+import Order from "../models/orderModel.js";
 
 // Initialize S3 client
 const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -649,4 +650,40 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
     console.error("Error filtering products:", err.message);
     res.status(500).json({ message: "Server error while filtering products" });
   }
+});
+
+// @desc    Get top 10 best selling product
+// @route   GET /api/product/best_selling
+// @access  private admin
+export const getTopSellingProduct = asyncHandler(async (req, res) => {
+  const topProductsAggregation = await Order.aggregate([
+    { $unwind: "$items" },
+    {
+      $group: {
+        _id: "$items.id",
+        totalSold: { $sum: "$items.quantity" },
+      },
+    },
+    { $sort: { totalSold: -1 } },
+    { $limit: 10 },
+  ]);
+
+  const topProducts = await Promise.all(
+    topProductsAggregation.map(async (product) => {
+      const productDetails = await Product.findById(product._id);
+      return {
+        productId: product._id,
+        totalSold: product.totalSold,
+        productDetails: {
+          name: productDetails?.name || null,
+          firstImage: productDetails?.images?.[0] || null,
+        },
+      };
+    })
+  );
+  if (topProducts.length === 0) {
+    res.status(404).json({ message: "No best selling products found" });
+    return;
+  }
+  res.status(200).json(topProducts);
 });

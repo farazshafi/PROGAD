@@ -7,11 +7,12 @@ import {
   getProductDetails,
   getRelatedProduct,
   getSortedProduct,
+  getTopSellingProduct,
   handlePublicChange,
-  updateProduct
+  updateProduct,
 } from "../controllers/productController.js";
 import multer from "multer";
-import { admin, protect } from "../middleware/authMiddleware.js"
+import { admin, protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -30,11 +31,11 @@ router.post(
 router.get("/get_products", getAllProduct);
 router.patch("/handle_public_change/:id", handlePublicChange);
 router.get("/product_details/:id", getProductDetails);
-router.put("/update_product/:id",updateProduct);
-router.get("/sort_product",getSortedProduct)
-router.get("/related_product/:id",getRelatedProduct)
-router.get("/public_products",protect, admin,getAllPublicProducts)
+router.put("/update_product/:id", updateProduct);
+router.get("/sort_product", getSortedProduct);
+router.get("/related_product/:id", getRelatedProduct);
+router.get("/public_products", protect, admin, getAllPublicProducts);
 router.get("/filter_products", getFilteredProducts);
-
+router.get("/best_selling", protect, admin, getTopSellingProduct);
 
 export default router;

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify"
 
 const API_URL = "http://localhost:5000/api/product";
 
@@ -60,7 +61,6 @@ export const updateProductApi = async (id,data) => {
   }
 }
 
-
 export const getSortedProductApi = async (sort) => {
   try{
     const response = await axios.get(`${API_URL}/sort_product?sortBy=${sort}`)
@@ -97,7 +97,6 @@ export const getAllPublicProductsForAdminApi = async (id) => {
   }
 }
 
-
 export const getFilteredProductsApi = async (filters) => {
   try {
     const { categories, priceRange } = filters;
@@ -117,6 +116,25 @@ export const getFilteredProductsApi = async (filters) => {
   } catch (err) {
     console.error('Error fetching filtered products:', err);
     return err;
+  }
+};
+
+
+export const getTopSellingProductApi = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+    const response = await axios.get(`${API_URL}/best_selling`,config);
+    return response.data;
+  } catch (err) {
+    console.error('Error fetching filtered products:', err);
+    if(err.response){
+      toast.error(err.response.data.message)
+    }
   }
 };
 
