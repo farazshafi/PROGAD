@@ -1,5 +1,6 @@
 import Category from "../models/categoryModel.js";
 import asyncHandler from "express-async-handler";
+import Order from "../models/orderModel.js"
 
 // @desc    creates a new category
 // @route   POST /api/category/create_category
@@ -30,7 +31,6 @@ export const getAllCategories = asyncHandler(async (req, res) => {
 });
 
 
-
 // @desc    get all categories
 // @route   GET /api/category/get_published_categories
 // @access  private admin
@@ -42,7 +42,6 @@ export const getPublishedCategories = asyncHandler(async (req, res) => {
     res.status(404).json({ message: "No categories found" });
   }
 });
-
 
 
 // @desc    delete category by id
@@ -90,4 +89,44 @@ export const editCategory = asyncHandler(async (req, res) => {
     }else{
         res.status(404).json({message: "Category not found"})
     }
+});
+
+
+// @desc    Get top 5 selling categories
+// @route   GET /api/categories/top_selling
+// @access  Private Admin
+export const getTopSellingCategories = asyncHandler(async (req, res) => {
+  const topCategories = await Order.aggregate([
+    { $unwind: "$items" },
+    {
+      $lookup: {
+        from: "products",
+        localField: "items.id",
+        foreignField: "_id",
+        as: "productDetails",
+      },
+    },
+    { $unwind: "$productDetails" },
+    {
+      $group: {
+        _id: "$productDetails.category",
+        totalSold: { $sum: "$items.quantity" },
+      },
+    },
+    { $sort: { totalSold: -1 } },
+    { $limit: 5 }, 
+  ]);
+
+  const enrichedCategories = await Promise.all(
+    topCategories.map(async (category) => {
+      const categoryDetails = await Category.findById(category._id).select("name");
+      return {
+        categoryId: category._id,
+        categoryName: categoryDetails?.name || "Unknown Category",
+        totalSold: category.totalSold,
+      };
+    })
+  );
+
+  res.status(200).json(enrichedCategories);
 });

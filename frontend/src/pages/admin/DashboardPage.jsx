@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Card, CardContent } from "@mui/material";
 import { getTopSellingProductApi } from "../../api/productApi";
+import { getTopSellingCategoriesApi } from "../../api/categoryApi";
 
 const DashboardPage = () => {
-  const [topProducts, setTopProducts] = useState([]);
-
-  const topCategories = [
-    { name: "Electronics", totalSold: 500 },
-    { name: "Fashion", totalSold: 450 },
-    { name: "Home Appliances", totalSold: 400 },
-    { name: "Books", totalSold: 350 },
-    { name: "Sports", totalSold: 300 },
-  ];
+  const [topProducts, setTopProducts] = useState(null);
+  const [topCategories, setTopCategories] = useState(null);
 
   const topBrands = [
     { name: "Brand X", totalSold: 600 },
@@ -26,8 +20,15 @@ const DashboardPage = () => {
     setTopProducts(result);
   };
 
+  const fetchTopCategories = async () => {
+    const result = await getTopSellingCategoriesApi();
+    console.log("top categories:", result)
+    setTopCategories(result);
+  };
+
   useEffect(() => {
     fetchTopProducts();
+    fetchTopCategories();
   }, []);
 
   return (
@@ -36,8 +37,8 @@ const DashboardPage = () => {
         Admin Dashboard
       </Typography>
 
-      {/* Top Brands */}
       <div className="grid grid-cols-1 mt-5 md:grid-cols-2 gap-6 px-4">
+        {/* Top Brands */}
         <Card className="shadow-lg border border-gray-200">
           <CardContent>
             <Typography
@@ -70,15 +71,15 @@ const DashboardPage = () => {
               Top 5 Categories
             </Typography>
             <ul className="space-y-2">
-              {topProducts && topProducts.length > 0 && (
+              {topCategories && topCategories.length > 0 && (
                 <>
                   {topCategories.map((category, index) => (
                     <li
                       key={index}
                       className="flex justify-between text-sm bg-slate-100 px-3 py-3 rounded text-black"
                     >
-                      <span>{category.name}</span>
-                      <span>{category.totalSold} sold</span>
+                      <span>{category.categoryName}</span>
+                      <span className="bg-slate-900 py-2 px-2 text-white rounded">{category.totalSold} sold</span>
                     </li>
                   ))}
                 </>
@@ -99,20 +100,28 @@ const DashboardPage = () => {
               Top 10 Products
             </Typography>
             <ul className="space-y-2">
-              {topProducts.map((product, index) => (
-                <li
-                  key={index}
-                  className="flex justify-between text-sm bg-gray-800 px-3 py-3 rounded text-white"
-                >
-                  <div className="flex gap-3">
-                    <span className="rounded w-[40px] h-[40px] flex items-center justify-center text-xs">
-                      <img className="rounded" src={product.productDetails?.firstImage} alt={product.productDetails?.name} />
-                    </span>
-                    <span>{product.productDetails?.name}</span>
-                  </div>
-                  <span>{product.totalSold} sold</span>
-                </li>
-              ))}
+              {topProducts && topProducts.length > 0 && (
+                <>
+                  {topProducts.map((product, index) => (
+                    <li
+                      key={index}
+                      className="flex justify-between text-sm bg-gray-800 px-3 py-3 rounded text-white"
+                    >
+                      <div className="flex gap-3">
+                        <span className="rounded w-[40px] h-[40px] flex items-center justify-center text-xs">
+                          <img
+                            className="rounded"
+                            src={product.productDetails?.firstImage}
+                            alt={product.productDetails?.name}
+                          />
+                        </span>
+                        <span>{product.productDetails?.name}</span>
+                      </div>
+                      <span>{product.totalSold} sold</span>
+                    </li>
+                  ))}
+                </>
+              )}
             </ul>
           </CardContent>
         </Card>
