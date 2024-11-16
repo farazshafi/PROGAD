@@ -78,6 +78,7 @@ const OtpPage = () => {
         setVerifyDisabled(false);
       }
     } catch (error) {
+      console.log("error", error)
       toast.error("Failed to resend OTP");
     }
   };

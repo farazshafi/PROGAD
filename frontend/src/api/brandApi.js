@@ -69,3 +69,13 @@ export const updateBrandStatusApi = async (id, updates) => {
     return e;
   }
 };
+
+export const getAllPublicBrandsApi = async () => {
+  try {
+    const result = await axios.get(`${API_URL}/list_public_brands`);
+    return result.data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};

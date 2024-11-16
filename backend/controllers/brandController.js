@@ -93,3 +93,20 @@ export const updateBrandStatus = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while updating brand status" });
   }
 });
+
+
+// @desc    List all public brans 
+// @route   GET /api/brand/list_public_brands
+// @access  public
+export const getAllPublicBrands = asyncHandler(async (req, res) => {
+  try {
+    const brands = await Brand.find({isPublished: true}).select("name isPublished description _id")
+    if(!brands){
+      return res.status(404).json({ message: "Brands not found" });
+    }
+    res.status(200).json(brands)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while listing brand" });
+  }
+});

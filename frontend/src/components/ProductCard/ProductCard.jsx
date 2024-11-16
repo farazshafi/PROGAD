@@ -134,7 +134,7 @@ const ProductCard = ({ page }) => {
                   <CardActions sx={{ justifyContent: "center", gap: "10px" }}>
                     <OurButton
                       type={"rupees"}
-                      text={String(
+                      text={Number(
                         product.hasVariants
                           ? product.variants[0].discountPrice
                           : product.discountPrice

@@ -56,6 +56,11 @@ const RegisterPage = () => {
       return;
     }
 
+    if(phoneNumber.length < 10 || phoneNumber.length > 10){
+      toast.error("Invalid Phone Number");
+      return;
+    }
+
     setLoading(true);
 
     const userDetails = { name, phoneNumber, email, password };
@@ -63,8 +68,9 @@ const RegisterPage = () => {
     try {
       const data = await userRegisterApi(userDetails);
 
-      if (data && data.response && data.response.status === 400) {
-        toast.error(data.response.data.message);
+      if (data && data.response) {
+        const {status} = data.response
+        toast.error(data.response.data.message || "server error! register error");
         setLoading(false);
         return;
       }

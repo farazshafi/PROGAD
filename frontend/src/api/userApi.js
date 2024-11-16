@@ -23,7 +23,7 @@ export const verifyOtpApi = async (otp) => {
 };
 
 export const resendOtpApi = async (email) => {
-  const token = JSON.parse(localStorage.getItem("admin")).token;
+  const token = JSON.parse(localStorage.getItem("user")).token;
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,

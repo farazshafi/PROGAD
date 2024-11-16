@@ -36,7 +36,7 @@ const ProductsPage = () => {
   const [sortOption, setSortOption] = useState("default");
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 50000 });
 
   const dispatch = useDispatch();
 

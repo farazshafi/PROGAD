@@ -21,6 +21,7 @@ import { MdCloudUpload, MdDelete } from "react-icons/md";
 import { createProductApi } from "../../api/productApi";
 import { toast } from "react-toastify";
 import { getPublishedCategoriesApi } from "../../api/categoryApi";
+import { getAllPublicBrandsApi } from "../../api/brandApi";
 
 const AddProduct = () => {
   const initialProductData = {
@@ -93,6 +94,7 @@ const AddProduct = () => {
 
   const resetProductData = () => {
     setProductData(initialProductData);
+    setProductMainImg([])
   };
 
   const resetVariantData = () => {
@@ -104,6 +106,7 @@ const AddProduct = () => {
   const [productMainImg, setProductMainImg] = useState([]);
   const [variantProductTempImg, setVariantProductTempImg] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
+  const [allBrands, setAllBrands] = useState([]);
   const [wantToPublish, setWantToPublish] = useState(true);
   const [variantFeatures, setVariantFeatures] = useState({
     variantNoiseCancellation: false,
@@ -222,13 +225,11 @@ const AddProduct = () => {
   const handleVariantImageUpload = (event) => {
     const tempFiles = event.target.files;
 
-    // Temporarily show newly selected images without replacing existing ones
     const tempImageList = Array.from(tempFiles).map((file) =>
       URL.createObjectURL(file)
     );
     setVariantProductTempImg((prev) => [...prev, ...tempImageList]);
 
-    // Original images to send (also append instead of replacing)
     const imageList = Array.from(tempFiles);
     setVariantImages((prev) => [...prev, ...imageList]);
   };
@@ -398,6 +399,7 @@ const AddProduct = () => {
       formData.append("name", productData.name);
       formData.append("description", productData.description);
       formData.append("originalPrice", productData.originalPrice);
+      formData.append("color", productData.color);
       formData.append("discountPrice", discountPrice);
       formData.append("totalStock", totalStock);
       formData.append("isNewArrival", productData.isNewArrival);
@@ -498,8 +500,20 @@ const AddProduct = () => {
     }
   };
 
+  const fetchBrands = async () => {
+    try {
+      const data = await getAllPublicBrandsApi();
+      console.log("brands:", data);
+      setAllBrands(data);
+    } catch (err) {
+      toast.error(err);
+      console.error("Error fetching categories:", err);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
+    fetchBrands();
   }, []);
 
   return (
@@ -742,9 +756,13 @@ const AddProduct = () => {
               variant="outlined"
               style={{ color: "#ffffff" }}
             >
-              <MenuItem value="boat">BOAT</MenuItem>
-              <MenuItem value="jbl">JBL</MenuItem>
-              <MenuItem value="sony">SONY</MenuItem>
+              {allBrands &&
+                allBrands.length > 0 &&
+                allBrands.map((brand) => (
+                  <MenuItem key={brand._id} value={brand._id}>
+                    {brand.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         </Grid>
@@ -763,7 +781,9 @@ const AddProduct = () => {
               >
                 <MenuItem value="black">Black</MenuItem>
                 <MenuItem value="white">White</MenuItem>
-                <MenuItem value="red">Re</MenuItem>
+                <MenuItem value="red">Red</MenuItem>
+                <MenuItem value="blue">Blue</MenuItem>
+                <MenuItem value="green">Green</MenuItem>
               </Select>
             </FormControl>
           </Grid>

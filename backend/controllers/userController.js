@@ -33,11 +33,11 @@ export const userRegistration = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Email already exists" });
   }
   const passwordRegex =
-    /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[^\s])[A-Za-z\d!@#$%^&*]{6,12}$/;
+    /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[^\s])[A-Za-z\d!@#$%^&*]{6,25}$/;
   if (!passwordRegex.test(password)) {
     return res.status(400).json({
       message:
-        "Password must be 6-12 characters, contain at least one number, one special character, and no whitespace.",
+        "Password must be 6-25 characters, contain at least one number, one special character, and no whitespace.",
     });
   }
 
