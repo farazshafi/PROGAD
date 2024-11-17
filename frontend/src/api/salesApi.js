@@ -24,6 +24,24 @@ export const getSalesReportApi = async (params) => {
   }
 };
 
+export const getSalesChartDataApi = async (params) => {
+  const adminToken = JSON.parse(localStorage.getItem("admin")).token;
+  const config = {
+    headers: {
+      Authorization: `Bearer ${adminToken}`,
+    },
+  };
+
+  try {
+    let url = `${API_URL}sales_chart?filter=${params}`;
+    const {data} = await axios.get(url, config);
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};
+
 
 export const downloadSalesReportApi = async (params) => {
   const adminToken = JSON.parse(localStorage.getItem("admin")).token;

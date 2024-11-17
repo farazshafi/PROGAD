@@ -134,7 +134,7 @@ const SalesReport = () => {
           onChange={handleRangeChange}
           className="w-1/4"
         >
-          <MenuItem value="daily">1 Day</MenuItem>
+          <MenuItem value="daily">Today</MenuItem>
           <MenuItem value="weekly">Weekly</MenuItem>
           <MenuItem value="monthly">Monthly</MenuItem>
           <MenuItem value="custom">Custom</MenuItem>

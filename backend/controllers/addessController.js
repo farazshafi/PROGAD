@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Address from "../models/addressModel.js";
 import User from "../models/userModel.js";
+import mongoose from "mongoose";
 
 // @desc    create new address
 // @route   POST /api/address/user/:id/create_address/
@@ -54,12 +55,13 @@ export const createAddress = asyncHandler(async (req, res) => {
   }
 
   try {
-    const address = await Address.findOne({ type });
-    if (address) {
+    const address = await Address.findOne({ user:id });
+    console.log("id",id)
+    if (address && address.type === type) {
       return res.status(400).json({ message: "Address type already exists" });
     }
     const user = await User.findById(id);
-    if (user.addresses.length >= 4) {
+    if (user && user.addresses.length >= 4) {
       return res
         .status(400)
         .json({ message: "User can't have more than 4 addresses" });
