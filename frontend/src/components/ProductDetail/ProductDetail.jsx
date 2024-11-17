@@ -92,7 +92,7 @@ const ProductDetail = ({ product }) => {
                     mb: "5px",
                   }}
                 >
-                  Brand Name
+                  {product.brand.name}
                 </Typography>
                 <Typography
                   sx={{

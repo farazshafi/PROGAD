@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Brand from "../models/brandModel.js"
+import Order from "../models/orderModel.js"
 
 
 // @desc    creates a new brand
@@ -109,4 +110,44 @@ export const getAllPublicBrands = asyncHandler(async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error while listing brand" });
   }
+});
+
+
+// @desc    Get top 5 selling brands
+// @route   GET /api/brands/top_selling
+// @access  Private Admin
+export const getTopSellingBrands = asyncHandler(async (req, res) => {
+  const topBrands = await Order.aggregate([
+    { $unwind: "$items" },
+    {
+      $lookup: {
+        from: "products", 
+        localField: "items.id",
+        foreignField: "_id",
+        as: "productDetails",
+      },
+    },
+    { $unwind: "$productDetails" },
+    {
+      $group: {
+        _id: "$productDetails.brand", 
+        totalSold: { $sum: "$items.quantity" },
+      },
+    },
+    { $sort: { totalSold: -1 } }, 
+    { $limit: 5 },
+  ]);
+
+  const enrichedBrands = await Promise.all(
+    topBrands.map(async (brand) => {
+      const brandDetails = await Brand.findById(brand._id).select("name");
+      return {
+        brandId: brand._id,
+        brandName: brandDetails?.name || "Unknown Brand",
+        totalSold: brand.totalSold,
+      };
+    })
+  );
+
+  res.status(200).json(enrichedBrands);
 });

@@ -2,18 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Typography, Card, CardContent } from "@mui/material";
 import { getTopSellingProductApi } from "../../api/productApi";
 import { getTopSellingCategoriesApi } from "../../api/categoryApi";
+import { getTopSellingBrandsApi } from "../../api/brandApi";
 
 const DashboardPage = () => {
   const [topProducts, setTopProducts] = useState(null);
   const [topCategories, setTopCategories] = useState(null);
-
-  const topBrands = [
-    { name: "Brand X", totalSold: 600 },
-    { name: "Brand Y", totalSold: 550 },
-    { name: "Brand Z", totalSold: 500 },
-    { name: "Brand A", totalSold: 450 },
-    { name: "Brand B", totalSold: 400 },
-  ];
+  const [topBrands, setTopBrands] = useState(null);
 
   const fetchTopProducts = async () => {
     const result = await getTopSellingProductApi();
@@ -22,13 +16,20 @@ const DashboardPage = () => {
 
   const fetchTopCategories = async () => {
     const result = await getTopSellingCategoriesApi();
-    console.log("top categories:", result)
+    console.log("top categories:", result);
     setTopCategories(result);
+  };
+
+  const fetchTopBrands = async () => {
+    const result = await getTopSellingBrandsApi();
+    console.log("top categories:", result);
+    setTopBrands(result);
   };
 
   useEffect(() => {
     fetchTopProducts();
     fetchTopCategories();
+    fetchTopBrands();
   }, []);
 
   return (
@@ -48,15 +49,19 @@ const DashboardPage = () => {
               Top 5 Brands
             </Typography>
             <ul className="space-y-2">
-              {topBrands.map((brand, index) => (
-                <li
-                  key={index}
-                  className="flex justify-between text-sm bg-blue-500 px-3 py-3 rounded text-white"
-                >
-                  <span>{brand.name}</span>
-                  <span>{brand.totalSold} sold</span>
-                </li>
-              ))}
+              {topBrands && topBrands.length > 0 && (
+                <>
+                  {topBrands.map((brand, index) => (
+                    <li
+                      key={index}
+                      className="flex justify-between text-sm bg-blue-500 px-3 py-3 rounded text-white"
+                    >
+                      <span className="font-poppins text-lg font-medium">{brand.brandName}</span>
+                      <span className="bg-slate-900 py-2 px-2 text-white rounded">{brand.totalSold} sold</span>
+                    </li>
+                  ))}
+                </>
+              )}
             </ul>
           </CardContent>
         </Card>
@@ -76,10 +81,12 @@ const DashboardPage = () => {
                   {topCategories.map((category, index) => (
                     <li
                       key={index}
-                      className="flex justify-between text-sm bg-slate-100 px-3 py-3 rounded text-black"
+                      className="flex justify-between text-sm bg-blue-500 px-3 py-3 rounded text-white"
                     >
-                      <span>{category.categoryName}</span>
-                      <span className="bg-slate-900 py-2 px-2 text-white rounded">{category.totalSold} sold</span>
+                      <span className="font-poppins text-lg font-medium">{category.categoryName}</span>
+                      <span className="bg-slate-900 py-2 px-2 text-white rounded">
+                        {category.totalSold} sold
+                      </span>
                     </li>
                   ))}
                 </>
@@ -115,7 +122,7 @@ const DashboardPage = () => {
                             alt={product.productDetails?.name}
                           />
                         </span>
-                        <span>{product.productDetails?.name}</span>
+                        <span className="font-poppins text-lg font-medium">{product.productDetails?.name}</span>
                       </div>
                       <span>{product.totalSold} sold</span>
                     </li>

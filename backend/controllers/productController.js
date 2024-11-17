@@ -323,7 +323,8 @@ export const getProductDetails = asyncHandler(async (req, res) => {
   try {
     const product = await Product.findById(id)
       .select("-sold")
-      .populate("category", "_id name");
+      .populate("category", "_id name")
+      .populate("brand", "_id name");
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });

@@ -36,6 +36,13 @@ const AddCoupon = () => {
   };
 
   const handleDateChange = (date) => {
+    const selectedDate = dayjs(date);
+    const today = dayjs();
+
+    if (selectedDate.isBefore(today, "day")) {
+      toast.error("Expiration date cannot be before today");
+      return;
+    }
     setCoupon((prev) => ({ ...prev, expirationDate: date }));
   };
 
@@ -54,7 +61,7 @@ const AddCoupon = () => {
   };
 
   const handleShowCouponDetails = async () => {
-    console.log("coupons category", coupon.categories)
+    console.log("coupons category", coupon.categories);
     try {
       console.log("coupon", coupon);
       if (
@@ -70,6 +77,14 @@ const AddCoupon = () => {
       if (Number(coupon.discount > 70)) {
         return toast.error(" discount must be less than 70%");
       }
+
+      const today = dayjs();
+      const selectedDate = dayjs(coupon.expirationDate);
+      if (!coupon.expirationDate || selectedDate.isBefore(today, "day")) {
+        toast.error("Expiration date cannot be in the past.");
+        return;
+      }
+
       const newCategories = coupon.categories;
       const couponWithDate = {
         ...coupon,
@@ -88,6 +103,17 @@ const AddCoupon = () => {
         }
       }
       toast.success(result.data.message);
+      setCoupon({
+        name: "",
+        code: "",
+        discount: "",
+        expirationDate: null,
+        limit: "",
+        minPurchasePrice: "",
+        status: "active",
+        categories: [],
+        description: "",
+      });
     } catch (err) {
       toast.error(err);
       console.error("Error fetching coupon details:", err);
@@ -214,7 +240,7 @@ const AddCoupon = () => {
               key={category._id}
               control={
                 <Checkbox
-                  checked={coupon.categories.includes(category._id)}
+                  checked={coupon.categories?.includes(category._id)}
                   onChange={(e) => handleCategoryChange(e, category._id)}
                   style={{ color: "white" }}
                 />

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify"
 
 const API_URL = "http://localhost:5000/api/brand";
 
@@ -76,6 +77,24 @@ export const getAllPublicBrandsApi = async () => {
     return result.data;
   } catch (e) {
     console.log(e);
+    return e;
+  }
+};
+
+
+export const getTopSellingBrandsApi = async () => {
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const result = await axios.get(`${API_URL}/top_selling`,config);
+    return result.data;
+  } catch (e) {
+    console.log(e);
+    toast.error(e.response.data.message || "Server error! Cannot get Top Products");
     return e;
   }
 };

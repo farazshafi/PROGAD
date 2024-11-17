@@ -59,6 +59,45 @@ const AddOffer = () => {
   // Submit handler
   const handleSubmit = async (event) => {
     event.preventDefault();
+    // validation
+    if (offerDetails.name.trim() === "") {
+      toast.error("Offer name is required.");
+      return;
+    }
+    if (offerDetails.offerCode.trim() === "") {
+      toast.error("Offer code is required.");
+      return;
+    }
+    if (offerDetails.expirationDate === null) {
+      toast.error("Expiration date is required.");
+      return;
+    }
+    if (
+      offerDetails.discountType === "percentage" &&
+      offerDetails.discount === ""
+    ) {
+      toast.error("Discount percentage is required.");
+      return;
+    }
+    if (offerDetails.applyToProducts && offerDetails.productIds.length === 0) {
+      toast.error("Please select products for this offer.");
+      return;
+    }
+    if (
+      offerDetails.applyToCategories &&
+      offerDetails.categoryIds.length === 0
+    ) {
+      toast.error("Please select categories for this offer.");
+      return;
+    }
+
+    const selectedDate = dayjs(offerDetails.expirationDate);
+    const todayDate = dayjs();
+    if (selectedDate.isBefore(todayDate, "day")) {
+      toast.error("Expiration date cannot set to past.");
+      return;
+    }
+
     try {
       const result = await createOfferApi(offerDetails);
       if (result.response) {
