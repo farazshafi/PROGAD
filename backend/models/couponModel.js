@@ -48,7 +48,6 @@ const couponSchema = mongoose.Schema({
     },
     description:{
         type: String,
-        required: true,
     }
 })
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const API_URL = `http://localhost:5000/api/order/`;
 
@@ -59,13 +60,16 @@ export const handleRazorpayApi = async (totalPrice, user, shippingAddress) => {
 
       rzp.on("payment.failed", (error) => {
         reject(error);
+        toast.error("Payment failed.");
       });
     });
+
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
-    throw error;
+    throw new Error("Razorpay order creation failed");
   }
 };
+
 
 export const getAllOrdersApi = async (userId) => {
   try {

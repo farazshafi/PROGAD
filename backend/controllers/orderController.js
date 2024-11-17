@@ -10,7 +10,6 @@ import Wallet from "../models/walletModel.js";
 // @access  private
 export const makeOrder = asyncHandler(async (req, res) => {
   try {
-    console.log("make order is coming");
     const {
       user,
       items,
@@ -22,18 +21,19 @@ export const makeOrder = asyncHandler(async (req, res) => {
       paymentMethod,
       couponCode,
       totalPrice,
+      paymentStatus,
     } = req.body;
 
-    console.log("my req body", req.body);
+    console.log("req body: ", req.body)
 
-    // Validation
     if (
       !user ||
       !items ||
       !status ||
       !tax ||
       !shippingAddress ||
-      !paymentMethod
+      !paymentMethod ||
+      !paymentStatus
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -45,85 +45,44 @@ export const makeOrder = asyncHandler(async (req, res) => {
       return { ...item, subTotal: itemSubTotal };
     });
 
-    // Check product stock and update stock
-    for (const item of items) {
-      const product = await Product.findById(item.id);
-      if (!product) {
-        return res.status(400).json({ message: "Product not found" });
-      }
+    // Update product stock only if payment is successful
+    if (paymentStatus === "paid") {
+      for (const item of items) {
+        const product = await Product.findById(item.id);
+        if (!product) {
+          return res.status(400).json({ message: "Product not found" });
+        }
 
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `Product ${product.name} has only ${product.stock} left`,
-        });
-      }
+        if (product.stock < item.quantity) {
+          return res.status(400).json({
+            message: `Product ${product.name} has only ${product.stock} left`,
+          });
+        }
 
-      product.totalStock -= item.quantity;
-      product.sold += item.quantity;
-      await product.save();
+        product.totalStock -= item.quantity;
+        product.sold += item.quantity;
+        await product.save();
+      }
     }
 
-    let razorpayOrderId = null;
-
-    // Create Razorpay order if payment method is Razorpay
-    if (paymentMethod === "razorpay") {
-      const numericTotalPrice = parseFloat(totalPrice) || 0; // Ensures numeric value
-      const totalAmount = Math.round(numericTotalPrice * 100); // Convert to paise (integer)
-
-      console.log("Total amount:", totalAmount);
-
-      const razorpayOrder = await razorpayInstance.orders.create({
-        amount: totalAmount, // Correct amount in paise
-        currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-        payment_capture: 1,
-      });
-
-      if (!razorpayOrder || !razorpayOrder.id) {
-        return res
-          .status(500)
-          .json({ message: "Failed to create Razorpay order" });
-      }
-
-      razorpayOrderId = razorpayOrder.id;
-    }
-
-    // Create the order in the database
+    // Save order
     const order = await Order.create({
       user,
       items: itemWithSubTotal,
       status,
       couponDiscount,
-      tax: tax || 0,
+      tax,
       totalPrice,
-      deliveryCost: deliveryCost || 0,
+      deliveryCost,
       subTotal: orderSubTotal,
       shippingAddress,
       paymentMethod,
-      razorpayOrderId,
-      paymentStatus: paymentMethod === "razorpay" ? "paid" : "unpaid",
+      paymentStatus,
     });
-
-    const addUserToCoupon = await Coupon.findOne({ code: couponCode });
-    if (!addUserToCoupon) {
-      res.status(201).json({
-        message: "Order created successfully",
-        orderId: razorpayOrderId || order._id,
-        order,
-      });
-    }
-
-    if (!Array.isArray(addUserToCoupon.users)) {
-      addUserToCoupon.appliedUsers = [];
-    }
-
-    addUserToCoupon.appliedUsers.push(user);
-    addUserToCoupon.limit -= 1;
-    await addUserToCoupon.save();
 
     res.status(201).json({
       message: "Order created successfully",
-      orderId: razorpayOrderId || order._id,
+      orderId: order._id,
       order,
     });
   } catch (err) {
@@ -131,6 +90,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 // @desc    handling razorpay transaction
 // @route   POST /api/order/create_razorpay_order

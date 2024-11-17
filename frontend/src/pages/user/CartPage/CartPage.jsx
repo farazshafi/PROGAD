@@ -98,18 +98,23 @@ const CartPage = () => {
       toast.error("Invalid coupon code");
       return;
     }
+
+    console.log("available coupon ", availableCoupon)
   
-    // Check if the coupon has specific categories
     if (availableCoupon.categories && availableCoupon.categories.length > 0) {
-      // Verify if any cart item category matches the coupon categories
       const isCategoryEligible = cartItems.some((item) =>
         availableCoupon.categories.includes(item.category._id)
       );
-  
+   
       if (!isCategoryEligible) {
         toast.error("Coupon not applicable for items in your cart");
         return;
       }
+    }
+
+    if(availableCoupon.minPurchasePrice > summary.total){
+      toast.error(`Minimum purchase price ${availableCoupon.minPurchasePrice} not met`);
+      return;
     }
   
     // Set the coupon as applied if all checks pass

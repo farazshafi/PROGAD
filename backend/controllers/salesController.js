@@ -284,7 +284,7 @@ export const getSalesChartData = async (req, res) => {
       }
     });
 
-    const values = salesData.map((entry) => entry.totalSales);
+    const values = salesData.map((entry) => entry.totalSales.toFixed(2));
 
     res.status(200).json({
       labels,

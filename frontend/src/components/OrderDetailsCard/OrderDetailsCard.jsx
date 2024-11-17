@@ -159,6 +159,36 @@ const OrderDetailsCard = ({ isAdmin }) => {
           <Typography variant="body1">
             <strong>Payment Method:</strong> {order.paymentMethod}
           </Typography>
+          <Typography sx={{ marginBottom: "10px" }} variant="body1">
+            <strong>Payment Status:</strong>
+            <span
+              style={{
+                marginLeft: "5px",
+                padding: "3px 5px",
+                borderRadius: "5px",
+                color:
+                  order.paymentStatus === "paid"
+                    ? "white"
+                    : order.paymentStatus === "unpaid"
+                      ? "white"
+                      : order.paymentStatus === "refunded"
+                        ? "black"
+                        : "white",
+                backgroundColor:
+                  order.paymentStatus === "refunded"
+                    ? "yellow"
+                    : order.paymentStatus === "shipped"
+                      ? "blue"
+                      : order.paymentStatus === "paid"
+                        ? "green"
+                        : order.paymentStatus === "unpaid"
+                          ? "red"
+                          : "gray",
+              }}
+            >
+              {order.paymentStatus}
+            </span>
+          </Typography>
 
           <Divider sx={{ marginY: "10px", background: "white" }} />
 
@@ -234,8 +264,18 @@ const OrderDetailsCard = ({ isAdmin }) => {
           />
         </DialogContent>
         <DialogActions>
-          <button className="text-white py-2 px-3 rounded bg-black opacity-80" onClick={handleCloseDialog}>No</button>
-          <button className="text-white py-2 px-3 rounded bg-[#ff7f11]" onClick={handleCancelOrder}>Yes, Cancel</button>
+          <button
+            className="text-white py-2 px-3 rounded bg-black opacity-80"
+            onClick={handleCloseDialog}
+          >
+            No
+          </button>
+          <button
+            className="text-white py-2 px-3 rounded bg-[#ff7f11]"
+            onClick={handleCancelOrder}
+          >
+            Yes, Cancel
+          </button>
         </DialogActions>
       </Dialog>
     </>

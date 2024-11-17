@@ -54,6 +54,8 @@ const PlaceOrderSection = () => {
             : orderDetails.paymentMethod,
         couponCode: orderDetails.couponCode ? orderDetails.couponCode : null,
         couponDiscount: orderDetails.couponDiscount || 0,
+        status: "pending",
+        paymentStatus: "unpaid",
       };
 
       if (orderDetails.paymentMethod === "razorpay") {
@@ -64,11 +66,12 @@ const PlaceOrderSection = () => {
             orderDetails.shippingAddress
           );
 
-          const result = await makeOrderApi(formattedOrderData);
-          if (
-            result.response &&
-            (result.response.status === 400 || result.response.status === 500)
-          ) {
+          const result = await makeOrderApi({
+            ...formattedOrderData,
+            paymentStatus: "paid",
+          });
+
+          if (result.response && result.response.status >= 400) {
             toast.error(result.response.data.message);
             return;
           }
@@ -80,15 +83,40 @@ const PlaceOrderSection = () => {
             navigate("/order_success");
           }, 4000);
         } catch (error) {
-          toast.error("Payment failed, please try again");
-          console.error(error);
+          const result = await makeOrderApi({
+            ...formattedOrderData,
+            paymentStatus: "unpaid",
+          });
+
+          if (result.response) {
+            const { status } = result.response;
+            if (status === 400 || status === 404 || status === 500) {
+              toast.error(
+                result.response.data.message ||
+                  "Payment failed, order saved as pending."
+              );
+              return;
+            }
+            toast.error(result.response.data.message);
+            return;
+          }
+          setTimeout(() => {
+            toast.warning("Payment failed, order saved as pending.");
+          }, 5000);
+          setShowOrderedAnimation(true);
+          setTimeout(() => {
+            setShowOrderedAnimation(false);
+            dispatch(clearCart());
+            navigate("/order_success");
+          }, 4000);
         }
       } else {
-        const result = await makeOrderApi(formattedOrderData);
-        if (
-          result.response &&
-          (result.response.status === 400 || result.response.status === 500)
-        ) {
+        const result = await makeOrderApi({
+          ...formattedOrderData,
+          paymentStatus: "unpaid",
+        });
+
+        if (result.response && result.response.status >= 400) {
           toast.error(result.response.data.message);
           return;
         }
