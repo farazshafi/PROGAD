@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import {
   Box,
   Card,
@@ -24,6 +26,7 @@ import BreadCrums from "../BreadCrums";
 import OurButton from "../OurButton/OurButton";
 import { useSelector } from "react-redux";
 import { selectedUser } from "../../features/user/userSlice";
+import { IoMdDownload } from "react-icons/io";
 
 const OrderDetailsCard = ({ isAdmin }) => {
   const user = useSelector(selectedUser);
@@ -101,17 +104,100 @@ const OrderDetailsCard = ({ isAdmin }) => {
 
       const orderData = {
         razorpayOrderId: result.razorpay_order_id,
-        orderId:order._id
+        orderId: order._id,
       };
 
-      const response = await laterPaymentApi(orderData)
-      toast.success(response.message || "success")
-      fetchOrderDetails()
+      const response = await laterPaymentApi(orderData);
+      toast.success(response.message || "success");
+      fetchOrderDetails();
     } catch (err) {
       toast.error("Failed to make payment");
       console.log(err);
     }
   };
+
+  const handleDownloadInvoice = () => {
+    const doc = new jsPDF();
+
+    // Set text and line color to black
+    doc.setTextColor(0, 0, 0); // Black text
+    doc.setDrawColor(0, 0, 0); // Black lines
+
+    // Add company name and invoice details
+    doc.setFontSize(18);
+    doc.text("PROGAD", 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Invoice ID: ${order._id}`, 20, 30);
+    doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`, 20, 40);
+    doc.text(`Order ID: ${order._id}`, 20, 50);
+    doc.text(
+      `Order Date: ${new Date(order.orderDate).toLocaleDateString()}`,
+      20,
+      60
+    );
+    doc.text(`Payment Method: ${order.paymentMethod}`, 20, 70);
+
+    // Draw a line below the invoice header section
+    doc.line(20, 75, 190, 75);
+
+    // Shipping Address
+    doc.text(`Shipping Address:`, 20, 85);
+    doc.text(
+      `${order.shippingAddress?.street}, ${order.shippingAddress?.city}`,
+      20,
+      95
+    );
+    doc.text(
+      `${order.shippingAddress?.state}, ${order.shippingAddress?.zip}, ${order.shippingAddress?.country}`,
+      20,
+      105
+    );
+
+    // Draw a line after the shipping address section
+    doc.line(20, 110, 190, 110);
+
+    // Add item list (table) with column names and values
+    doc.autoTable({
+      head: [["Product Name", "Quantity", "Price", "Subtotal"]],
+      body: order.items.map((item) => [
+        item.id.name,
+        item.quantity,
+        `Rs.${item.price}`,  // Use ₹ directly
+        `Rs.${item.subTotal}`,  // Use ₹ directly
+      ]),
+      startY: 120,
+      theme: "striped", // You can use the striped theme for a clean look
+      headStyles: {
+        fillColor: [0, 0, 0], // White background for the header
+        textColor: [255, 255, 255], // Black text for the header
+        lineColor: [0, 0, 0], // Black lines for the header
+        fontStyle: "bold",
+      },
+      bodyStyles: {
+        textColor: [0, 0, 0], // Black text for body
+        lineColor: [0, 0, 0], // Black lines for body
+      },
+    });
+
+    // Draw a line after the table
+    const tableBottomY = doc.lastAutoTable.finalY + 10;
+    doc.line(20, tableBottomY, 190, tableBottomY);
+
+    // Add total summary
+    const totalY = tableBottomY + 10;
+    doc.text(`Total Items: ${order.items.length}`, 20, totalY);
+    doc.text(`Total Price: Rs. ${order.totalPrice}`, 20, totalY + 10);  // Use ₹ directly
+
+    // Draw a line after the total summary
+    doc.line(20, totalY + 20, 190, totalY + 20);
+
+    // Add thank you message
+    doc.text("Thank you for shopping with PROGAD!", 20, totalY + 30);
+
+    // Save the PDF as invoice
+    doc.save(`${order._id}_Invoice.pdf`);
+};
+
 
   useEffect(() => {
     fetchOrderDetails();
@@ -143,7 +229,16 @@ const OrderDetailsCard = ({ isAdmin }) => {
             marginTop: "10px",
           }}
         >
-          <Typography variant="h6">Order ID: {order._id}</Typography>
+          <div className="flex justify-between">
+            <p className="font-poppins text-xl mb-2">Order ID: {order._id}</p>
+            <button
+              onClick={handleDownloadInvoice}
+              className="btn flex justify-between gap-1 bg-white text-black py-2 px-3 rounded hover:bg-gray-200"
+            >
+              <IoMdDownload className="mt-1" />
+              Invoice
+            </button>
+          </div>
           <Divider sx={{ marginY: "10px", background: "white" }} />
 
           <Typography sx={{ marginBottom: "10px" }} variant="body1">

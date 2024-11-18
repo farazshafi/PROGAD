@@ -65,7 +65,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
       }
     }
 
-    // Save order
     const order = await Order.create({
       user,
       items: itemWithSubTotal,
