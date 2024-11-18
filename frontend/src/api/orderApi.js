@@ -19,6 +19,22 @@ export const makeOrderApi = async (OrderData) => {
   }
 };
 
+export const laterPaymentApi = async (OrderData) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const result = await axios.post(`${API_URL}later_payment`, OrderData, config);
+    return result.data;
+  } catch (err) {
+    console.log(err);
+    toast.error(err.response.data.message || "Error When Updating Order")
+  }
+};
+
 export const handleRazorpayApi = async (totalPrice, user, shippingAddress) => {
   try {
     const token = JSON.parse(localStorage.getItem("user")).token;

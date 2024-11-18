@@ -13,6 +13,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
     const {
       user,
       items,
+      razorpayOrderId,
       status,
       couponDiscount,
       tax,
@@ -45,7 +46,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
       return { ...item, subTotal: itemSubTotal };
     });
 
-    // Update product stock only if payment is successful
     if (paymentStatus === "paid") {
       for (const item of items) {
         const product = await Product.findById(item.id);
@@ -78,6 +78,8 @@ export const makeOrder = asyncHandler(async (req, res) => {
       shippingAddress,
       paymentMethod,
       paymentStatus,
+      razorpayOrderId: paymentMethod === "Razorpay" ? razorpayOrderId : null,
+
     });
 
     res.status(201).json({
@@ -91,6 +93,23 @@ export const makeOrder = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    later payment , in order details page
+// @route   POST /api/order/later_payment
+// @access  private
+export const laterPayment = asyncHandler(async(req,res)=>{
+  const {razorpayOrderId, orderId} = req.body
+  const existingOrder = await Order.findById(orderId)
+  
+  if(!existingOrder){
+    return res.status(400).json({message: "Order not found"})
+  }
+
+  existingOrder.paymentStatus = "paid" || existingOrder.paymentStatus
+  existingOrder.razorpayOrderId = razorpayOrderId || existingOrder.razorpayOrderId
+  await existingOrder.save()
+  
+  res.status(200).json({message:"Payment Successful"})
+})
 
 // @desc    handling razorpay transaction
 // @route   POST /api/order/create_razorpay_order

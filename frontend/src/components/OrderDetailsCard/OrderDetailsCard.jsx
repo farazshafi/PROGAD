@@ -10,16 +10,23 @@ import {
   DialogContent,
   TextField,
   DialogActions,
-  Button,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { cancelOrderApi, getOrderDetailsApi } from "../../api/orderApi";
+import {
+  cancelOrderApi,
+  getOrderDetailsApi,
+  handleRazorpayApi,
+  laterPaymentApi,
+} from "../../api/orderApi";
 import Header from "../Header/Header";
 import BreadCrums from "../BreadCrums";
 import OurButton from "../OurButton/OurButton";
+import { useSelector } from "react-redux";
+import { selectedUser } from "../../features/user/userSlice";
 
 const OrderDetailsCard = ({ isAdmin }) => {
+  const user = useSelector(selectedUser);
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,6 +88,28 @@ const OrderDetailsCard = ({ isAdmin }) => {
       console.log(err);
     } finally {
       setOpenDialog(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    try {
+      const result = await handleRazorpayApi(
+        order.totalPrice,
+        user,
+        order.shippingAddress
+      );
+
+      const orderData = {
+        razorpayOrderId: result.razorpay_order_id,
+        orderId:order._id
+      };
+
+      const response = await laterPaymentApi(orderData)
+      toast.success(response.message || "success")
+      fetchOrderDetails()
+    } catch (err) {
+      toast.error("Failed to make payment");
+      console.log(err);
     }
   };
 
@@ -159,7 +188,10 @@ const OrderDetailsCard = ({ isAdmin }) => {
           <Typography variant="body1">
             <strong>Payment Method:</strong> {order.paymentMethod}
           </Typography>
-          <Typography sx={{ marginBottom: "10px" }} variant="body1">
+          <Typography
+            sx={{ marginBottom: "10px", marginTop: "5px" }}
+            variant="body1"
+          >
             <strong>Payment Status:</strong>
             <span
               style={{
@@ -189,6 +221,18 @@ const OrderDetailsCard = ({ isAdmin }) => {
               {order.paymentStatus}
             </span>
           </Typography>
+
+          {order.paymentMethod === "razorpay" &&
+            order.paymentStatus === "unpaid" && (
+              <div>
+                <button
+                  onClick={handlePayment}
+                  className="btn text-white font-poppins text-xl w-full my-2 bg-[#262626] hover:bg-slate-900"
+                >
+                  Pay Now
+                </button>
+              </div>
+            )}
 
           <Divider sx={{ marginY: "10px", background: "white" }} />
 

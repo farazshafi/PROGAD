@@ -69,6 +69,7 @@ const PlaceOrderSection = () => {
           const result = await makeOrderApi({
             ...formattedOrderData,
             paymentStatus: "paid",
+            razorpayOrderId: result.razorpay_order_id,
           });
 
           if (result.response && result.response.status >= 400) {

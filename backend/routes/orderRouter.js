@@ -4,6 +4,7 @@ import {
   createRazorpayOrder,
   getAllOrders,
   getOrderDetails,
+  laterPayment,
   listAllOrders,
   makeOrder,
   updateStatus,
@@ -13,6 +14,7 @@ import { protect, admin } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/make_order", protect, makeOrder);
+router.post("/later_payment", protect, laterPayment);
 router.post("/create_razorpay_order", protect, createRazorpayOrder);
 router.get("/get_all_orders/userId/:id", protect, getAllOrders);
 router.get("/get_order_details/:id", protect, getOrderDetails);
