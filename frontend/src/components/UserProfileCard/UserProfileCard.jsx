@@ -176,23 +176,6 @@ const UserProfileCard = ({ user }) => {
                 }}
               />
 
-              <label>Email:</label>
-              <input
-                type="email"
-                name="email"
-                value={profileData.email}
-                onChange={handleInputChange}
-                placeholder="Enter your new email"
-                style={{
-                  backgroundColor: "#333",
-                  color: "#fff",
-                  padding: "8px",
-                  borderRadius: "4px",
-                  marginBottom: "10px",
-                  width: "100%",
-                }}
-              />
-
               <label>City:</label>
               <input
                 type="text"

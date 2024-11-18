@@ -13,12 +13,14 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import * as XLSX from 'xlsx';
+import "jspdf-autotable";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { downloadSalesReportApi, getSalesReportApi } from "../../api/salesApi";
+import { getSalesReportApi } from "../../api/salesApi";
 
 const SalesReport = () => {
   const [reportRange, setReportRange] = useState("daily");
@@ -64,42 +66,87 @@ const SalesReport = () => {
     setEndDate(newValue);
   };
 
-  const downloadReport = async (format) => {
-    try {
-      const downloadParams = {
-        path: reportRange,
-        format: format,
-        startDate:
-          reportRange === "custom" && startDate
-            ? dayjs(startDate).format("YYYY-MM-DD")
-            : null,
-        endDate:
-          reportRange === "custom" && endDate
-            ? dayjs(endDate).format("YYYY-MM-DD")
-            : null,
-      };
+  const generatePDF = () => {
+    const doc = new jsPDF();
 
-      if (reportRange === "custom") {
-        if(startDate === null || endDate === null){
-          return toast.error(" select date")
-        }
-      }
+    // Title
+    doc.setFontSize(18);
+    doc.text("Sales Report", 14, 20);
 
-      const result = await downloadSalesReportApi(downloadParams);
-      if (result.response) {
-        const { status } = result.response;
-        if (status === 400 || status === 500) {
-          toast.error(result.response.data.message);
-          console.log(" Could not download");
-          return;
-        }
-      }
-      console.table("download result: ", result);
-      toast.success(`Sales report downloaded as ${format.toUpperCase()}`);
-    } catch (err) {
-      toast.error("Error downloading report");
-      console.error("Error downloading report:", err);
-    }
+    // Horizontal line after the title
+    doc.line(14, 25, 196, 25);
+
+    // Add Table
+    doc.autoTable({
+      head: [
+        ["Date", "Total Sales", "Orders Count", "Discounts", "Net Revenue"],
+      ],
+      body: report.map((data) => [
+        data._id,
+        `Rs.${data.totalSales.toFixed(2)}`,
+        data.ordersCount,
+        `Rs.${data.totalDiscounts.toFixed(2)}`,
+        `Rs.${data.netRevenue.toFixed(2)}`,
+      ]),
+      startY: 30,
+      headStyles: {
+        fillColor: [0, 0, 0], 
+        textColor: [255, 255, 255]
+      },
+    });
+
+    // Horizontal line after the table
+    doc.line(
+      14,
+      doc.lastAutoTable.finalY + 5,
+      196,
+      doc.lastAutoTable.finalY + 5
+    );
+
+    // Add Overall Statistics
+    const summaryStartY = doc.lastAutoTable.finalY + 15;
+    doc.setFontSize(12);
+    doc.text(
+      `Overall Sales: Rs.${report.reduce((acc, cur) => acc + cur.totalSales, 0).toFixed(2)}`,
+      14,
+      summaryStartY
+    );
+    doc.text(
+      `Overall Orders: ${report.reduce((acc, cur) => acc + cur.ordersCount, 0)}`,
+      14,
+      summaryStartY + 10
+    );
+    doc.text(
+      `Overall Discounts: Rs.${report.reduce((acc, cur) => acc + cur.totalDiscounts, 0).toFixed(2)}`,
+      14,
+      summaryStartY + 20
+    );
+
+    // Save the PDF
+    doc.save("Sales_Report.pdf");
+  };
+
+  const downloadExcel = () => {
+    // Create worksheet
+    const wsData = [
+      ["Date", "Total Sales", "Orders Count", "Discounts", "Net Revenue"], // Header row
+      ...report.map((data) => [
+        data._id,
+        data.totalSales.toFixed(2),
+        data.ordersCount,
+        data.totalDiscounts.toFixed(2),
+        data.netRevenue.toFixed(2),
+      ]),
+    ];
+  
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+  
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
+  
+    // Export the workbook as an Excel file
+    XLSX.writeFile(wb, "Sales_Report.xlsx");
   };
 
   useEffect(() => {
@@ -193,22 +240,22 @@ const SalesReport = () => {
       <div className="flex gap-2 mt-3">
         <button
           className="text-white bg-blue-600 py-2 px-3 rounded-md hover:bg-gray-400"
-          onClick={() => downloadReport("pdf")}
+          onClick={generatePDF}
         >
           Download PDF
         </button>
         <button
-          className="text-black bg-white py-2 px-3 rounded-md hover:bg-gray-400"
-          onClick={() => downloadReport("xlsx")}
+          className="text-white bg-green-600 py-2 px-3 rounded-md hover:bg-gray-400"
+          onClick={downloadExcel}
         >
-          Download Excel
+          Download Execl
         </button>
       </div>
 
       {report && report.length > 0 && (
         <Box className="text-right mt-4">
           <Typography variant="subtitle1">
-            Overall Sales: ₹
+            Overall Sales: RS.
             {report.reduce((acc, cur) => acc + cur.totalSales, 0).toFixed(2)}
           </Typography>
           <Typography variant="subtitle1">

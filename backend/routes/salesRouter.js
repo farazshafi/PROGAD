@@ -5,7 +5,6 @@ import { admin, protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.get("/sales_report", protect, admin, getSalesReport);
-router.get("/download_sales_report", protect, admin, downloadSalesReport);
 router.get("/sales_chart", protect, admin, getSalesChartData);
 
 
