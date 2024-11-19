@@ -78,6 +78,11 @@ const AddCoupon = () => {
         return toast.error(" discount must be less than 70%");
       }
 
+      if(coupon.name.trim() === "" || coupon.name.length < 4){
+        toast.error("Coupon name should be at least 4 characters long.");
+        return;
+      }
+
       const today = dayjs();
       const selectedDate = dayjs(coupon.expirationDate);
       if (!coupon.expirationDate || selectedDate.isBefore(today, "day")) {

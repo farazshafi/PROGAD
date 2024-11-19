@@ -69,7 +69,8 @@ const OrderList = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "#fff" }}>Status</TableCell>
+                <TableCell sx={{ color: "#fff" }}>Delivery Status</TableCell>
+                <TableCell sx={{ color: "#fff" }}>Payment</TableCell>
                 <TableCell sx={{ color: "#fff" }}>Order Date</TableCell>
                 <TableCell sx={{ color: "#fff" }}>Total Price</TableCell>
                 <TableCell sx={{ color: "#fff" }}>Payment Method</TableCell>
@@ -110,10 +111,29 @@ const OrderList = () => {
                     </span>
                   </TableCell>
                   <TableCell sx={{ color: "#fff" }}>
+                    <span
+                      style={{
+                        padding: "10px",
+                        borderRadius: "5px",
+                        color: "white",
+                        backgroundColor:
+                          order.paymentStatus === "unpaid"
+                            ? "red"
+                            : order.paymentStatus === "padi"
+                              ? "green"
+                              : order.paymentStatus === "refunded"
+                                ? "blue"
+                                : "gray",
+                      }}
+                    >
+                      {order.paymentStatus}
+                    </span>
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff" }}>
                     {new Date(order.orderDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell sx={{ color: "#fff" }}>
-                    ₹ {Number(order.totalPrice).toFixed(2)} 
+                    ₹ {Number(order.totalPrice).toFixed(2)}
                   </TableCell>
                   <TableCell sx={{ color: "#fff" }}>
                     {order.paymentMethod}

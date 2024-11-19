@@ -5,17 +5,22 @@ const offerSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  offerCode: {
+   offerCode: {
     type: String,
     required: true,
     unique: true,
     lowercase: true,
-    match: /^[a-z0-9]{4,}$/, // 4 to 12 characters, lowercase alphanumeric
+    validate: {
+      validator: function (value) {
+        return /^[a-z0-9]{4,}$/.test(value);
+      },
+      message: "Offer code must be at least 4 char long and contain only lowercase letters and numbers",
+    },
   },
   expirationDate: {
     type: Date,
     required: true,
-    default: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
+    default: Date.now() + 30 * 24 * 60 * 60 * 1000,
   },
   discountType: {
     type: String,

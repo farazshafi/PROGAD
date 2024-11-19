@@ -60,7 +60,7 @@ const AddOffer = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     // validation
-    if (offerDetails.name.trim() === "") {
+    if (offerDetails.name.trim() === "" || offerDetails.name.length < 2) {
       toast.error("Offer name is required.");
       return;
     }
@@ -70,6 +70,10 @@ const AddOffer = () => {
     }
     if (offerDetails.expirationDate === null) {
       toast.error("Expiration date is required.");
+      return;
+    }
+    if(Number(offerDetails.discount > 70)){
+      toast.error("Discount must be less than 70%");
       return;
     }
     if (

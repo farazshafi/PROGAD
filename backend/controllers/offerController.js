@@ -49,20 +49,30 @@ export const createOffer = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Offer code already exists" });
   }
 
-  const offer = new Offer({
-    name,
-    offerCode,
-    expirationDate,
-    discountType,
-    discount,
-    applyToProducts,
-    productIds: applyToProducts ? productIds : undefined,
-    applyToCategories,
-    categoryIds: applyToCategories ? categoryIds : undefined,
-    status,
-  });
-  await offer.save();
-  res.status(201).json({ message: "Offer Created" });
+  try {
+    const offer = new Offer({
+      name,
+      offerCode,
+      expirationDate,
+      discountType,
+      discount,
+      applyToProducts,
+      productIds: applyToProducts ? productIds : undefined,
+      applyToCategories,
+      categoryIds: applyToCategories ? categoryIds : undefined,
+      status,
+    });
+
+    await offer.save();
+    res.status(201).json({ message: "Offer Created" });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      const errorMessage = Object.values(error.errors)[0].message;
+      return res.status(400).json({ message: errorMessage });
+    }
+
+    throw error; 
+  }
 });
 
 // @desc    get all offers
@@ -191,4 +201,3 @@ export const offerProducts = asyncHandler(async (req, res) => {
     });
   }
 });
-

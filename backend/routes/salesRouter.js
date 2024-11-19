@@ -1,5 +1,5 @@
 import express from "express";
-import { downloadSalesReport, getSalesChartData, getSalesReport } from "../controllers/salesController.js";
+import { getSalesChartData, getSalesReport } from "../controllers/salesController.js";
 import { admin, protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
