@@ -170,6 +170,7 @@ const ListOrders = () => {
               <TableCell sx={{ color: "white" }}>User</TableCell>
               <TableCell sx={{ color: "white" }}>Order Date</TableCell>
               <TableCell sx={{ color: "white" }}>Status</TableCell>
+              <TableCell sx={{ color: "white" }}>Payment Status</TableCell>
               <TableCell sx={{ color: "white" }}>Total Price</TableCell>
               <TableCell sx={{ color: "white" }}>Actions</TableCell>
             </TableRow>
@@ -190,15 +191,11 @@ const ListOrders = () => {
                       padding: "10px",
                       borderRadius: "5px",
                       color:
-                        order.status === "pending"
+                        order.status === "returned"
                           ? "black"
-                          : order.status === "shipped"
-                            ? "white"
-                            : order.status === "delivered"
-                              ? "white"
-                              : order.status === "cancelled"
-                                ? "white"
-                                : "gray",
+                          : order.status === "pending"
+                            ? "black"
+                            : "white",
                       backgroundColor:
                         order.status === "pending"
                           ? "yellow"
@@ -206,16 +203,37 @@ const ListOrders = () => {
                             ? "blue"
                             : order.status === "delivered"
                               ? "green"
-                              : order.status === "cancelled"
-                                ? "red"
-                                : "gray",
+                              : order.status === "returned"
+                                ? "white"
+                                : order.status === "cancelled"
+                                  ? "red"
+                                  : "gray",
                     }}
                   >
                     {order.status}
                   </span>
                 </TableCell>
+                <TableCell>
+                  <span
+                    style={{
+                      padding: "10px",
+                      borderRadius: "5px",
+                      color: "white",
+                      backgroundColor:
+                        order.paymentStatus === "paid"
+                          ? "green"
+                          : order.paymentStatus === "unpaid"
+                            ? "red"
+                            : order.paymentStatus === "refunded"
+                              ? "blue"
+                              : "gray",
+                    }}
+                  >
+                    {order.paymentStatus}
+                  </span>
+                </TableCell>
                 <TableCell sx={{ color: "white" }}>
-                  ${order.totalPrice.toFixed(2)}
+                  ₹{order.totalPrice.toFixed(2)}
                 </TableCell>
                 <TableCell>
                   <IconButton
@@ -250,9 +268,6 @@ const ListOrders = () => {
                     </MenuItem>
                     <MenuItem onClick={handleCancelOrder}>
                       <FaBan style={{ marginRight: 8 }} /> Mark as Cancelled
-                    </MenuItem>
-                    <MenuItem onClick={() => handleChangeStatus("refunded")}>
-                      <FaUndo style={{ marginRight: 8 }} /> Mark as Refunded
                     </MenuItem>
                   </Menu>
                 </TableCell>

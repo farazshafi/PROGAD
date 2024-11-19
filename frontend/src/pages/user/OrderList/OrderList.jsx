@@ -86,15 +86,11 @@ const OrderList = () => {
                         padding: "10px",
                         borderRadius: "5px",
                         color:
-                          order.status === "pending"
+                          order.status === "returned"
                             ? "black"
-                            : order.status === "shipped"
-                              ? "white"
-                              : order.status === "delivered"
-                                ? "black"
-                                : order.status === "cancelled"
-                                  ? "white"
-                                  : "gray",
+                            : order.status === "pending"
+                              ? "black"
+                              : "white",
                         backgroundColor:
                           order.status === "pending"
                             ? "yellow"
@@ -102,9 +98,11 @@ const OrderList = () => {
                               ? "blue"
                               : order.status === "delivered"
                                 ? "green"
-                                : order.status === "cancelled"
-                                  ? "red"
-                                  : "gray",
+                                : order.status === "returned"
+                                  ? "white"
+                                  : order.status === "cancelled"
+                                    ? "red"
+                                    : "gray",
                       }}
                     >
                       {order.status}
@@ -119,7 +117,7 @@ const OrderList = () => {
                         backgroundColor:
                           order.paymentStatus === "unpaid"
                             ? "red"
-                            : order.paymentStatus === "padi"
+                            : order.paymentStatus === "paid"
                               ? "green"
                               : order.paymentStatus === "refunded"
                                 ? "blue"

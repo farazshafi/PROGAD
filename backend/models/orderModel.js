@@ -35,7 +35,7 @@ const orderSchema = mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "shipped", "delivered", "cancelled"],
+      enum: ["pending", "shipped", "delivered", "cancelled", "returned"],
       default: "pending",
     },
     tax: {
@@ -73,6 +73,14 @@ const orderSchema = mongoose.Schema(
     },
     cancelReason:{
       type:String,
+      default: null,
+    },
+    returnReason:{
+      type:String,
+      default: null,
+    },
+    deliveredDate:{
+      type: Date,
       default: null,
     },
     orderDate: { type: Date, default: Date.now },

@@ -25,7 +25,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
       paymentStatus,
     } = req.body;
 
-    console.log("req body: ", req.body)
+    console.log("req body: ", req.body);
 
     if (
       !user ||
@@ -78,7 +78,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
       paymentMethod,
       paymentStatus,
       razorpayOrderId: paymentMethod === "Razorpay" ? razorpayOrderId : null,
-
     });
 
     res.status(201).json({
@@ -95,20 +94,21 @@ export const makeOrder = asyncHandler(async (req, res) => {
 // @desc    later payment , in order details page
 // @route   POST /api/order/later_payment
 // @access  private
-export const laterPayment = asyncHandler(async(req,res)=>{
-  const {razorpayOrderId, orderId} = req.body
-  const existingOrder = await Order.findById(orderId)
-  
-  if(!existingOrder){
-    return res.status(400).json({message: "Order not found"})
+export const laterPayment = asyncHandler(async (req, res) => {
+  const { razorpayOrderId, orderId } = req.body;
+  const existingOrder = await Order.findById(orderId);
+
+  if (!existingOrder) {
+    return res.status(400).json({ message: "Order not found" });
   }
 
-  existingOrder.paymentStatus = "paid" || existingOrder.paymentStatus
-  existingOrder.razorpayOrderId = razorpayOrderId || existingOrder.razorpayOrderId
-  await existingOrder.save()
-  
-  res.status(200).json({message:"Payment Successful"})
-})
+  existingOrder.paymentStatus = "paid" || existingOrder.paymentStatus;
+  existingOrder.razorpayOrderId =
+    razorpayOrderId || existingOrder.razorpayOrderId;
+  await existingOrder.save();
+
+  res.status(200).json({ message: "Payment Successful" });
+});
 
 // @desc    handling razorpay transaction
 // @route   POST /api/order/create_razorpay_order
@@ -186,20 +186,35 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
 export const cancelOrder = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const {reason} = req.body;
-    console.log("reason :",reason)
+    const { reason, status } = req.body;
+    console.log("reason :", reason);
 
     const orderDetails = await Order.findById(id);
     if (!orderDetails) {
       return res.status(404).json({ message: "No orders found" });
     }
-    if(!reason){
-      return res.status(400).json({ message: "Please provide a cancellation reason" });
+    if (!reason) {
+      return res
+        .status(400)
+        .json({ message: "Please provide a cancellation reason" });
     }
-    orderDetails.status = "cancelled";
-    orderDetails.cancelReason = reason;
+    if (status === "Return") {
+      orderDetails.status = "returned";
+      orderDetails.returnReason = reason;
+      orderDetails.paymentStatus = "refunded";
+    } else {
+      orderDetails.status = "cancelled";
+      orderDetails.cancelReason = reason;
+      if (orderDetails.paymentStatus !== "unpaid") {
+        orderDetails.paymentStatus = "refunded";
+      }
+    }
     await orderDetails.save();
-    if (orderDetails.paymentMethod === "razorpay") {
+    if (
+      orderDetails.paymentMethod === "razorpay" &&
+      orderDetails.paymentStatus === "refunded"
+    ) {
+      console.log("eelk bernna test 2");
       let wallet = await Wallet.findOne({ userId: orderDetails.user });
       if (!wallet) {
         wallet = new Wallet({ userId: orderDetails.user });
@@ -210,7 +225,9 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       wallet.transactions.push({
         type: "credit",
         amount: refundAmount,
-        description: "Refund for canceled order",
+        description: `Refund for ${
+          status === "Cancel" ? "canceled" : "Returned "
+        } order`,
         orderId: orderDetails._id,
       });
       await wallet.save();
@@ -266,9 +283,22 @@ export const updateStatus = asyncHandler(async (req, res) => {
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
-    if(status === "delivered" && orderDetails.paymentMethod === "cash on delivery"){
-      orderDetails.paymentStatus = "paid"
+    if (status === "delivered") {
+      if (orderDetails.paymentMethod === "cash on delivery") {
+        orderDetails.paymentStatus = "paid";
+      } else if (
+        orderDetails.paymentMethod === "razorpay" &&
+        orderDetails.paymentStatus === "unpaid"
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Cannot Delivery a product if Unpaid" });
+      }
     }
+    if (status === "delivered") {
+      orderDetails.deliveredDate = new Date();
+    }
+
     orderDetails.status = status;
     await orderDetails.save();
     res.status(200).json({ message: "Order status updated successfully" });

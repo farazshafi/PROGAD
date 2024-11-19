@@ -35,7 +35,13 @@ const OrderDetailsCard = ({ isAdmin }) => {
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
-  const handleOpenDialog = () => setOpenDialog(true);
+  const [isReturnEligible, setIsReturnEligible] = useState(false);
+  const [status, setStatus] = useState("");
+
+  const handleOpenDialog = (status) => {
+    setStatus(status);
+    setOpenDialog(true);
+  };
   const handleCloseDialog = () => setOpenDialog(false);
 
   let breadcrumbPath;
@@ -63,20 +69,30 @@ const OrderDetailsCard = ({ isAdmin }) => {
         }
       }
       setOrder(result.data);
+      setIsReturnEligible(
+        new Date() <=
+          new Date(result?.data?.deliveredDate).setDate(
+            new Date(result?.data?.deliveredDate).getDate() + 7
+          )
+      );
     } catch (error) {
+      console.log(error);
       toast.error("Failed to fetch order details.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCancelOrder = async () => {
+  const handleCancelOrder = async (givenStatus) => {
     try {
       if (!cancelReason.trim()) {
         toast.error("Please provide a reason for cancellation.");
         return;
       }
-      const result = await cancelOrderApi(order._id, cancelReason);
+      const result = await cancelOrderApi(order._id, {
+        reason: cancelReason,
+        status: givenStatus,
+      });
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -162,8 +178,8 @@ const OrderDetailsCard = ({ isAdmin }) => {
       body: order.items.map((item) => [
         item.id.name,
         item.quantity,
-        `Rs.${item.price}`,  // Use ₹ directly
-        `Rs.${item.subTotal}`,  // Use ₹ directly
+        `Rs.${item.price}`, // Use ₹ directly
+        `Rs.${item.subTotal}`, // Use ₹ directly
       ]),
       startY: 120,
       theme: "striped", // You can use the striped theme for a clean look
@@ -186,7 +202,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
     // Add total summary
     const totalY = tableBottomY + 10;
     doc.text(`Total Items: ${order.items.length}`, 20, totalY);
-    doc.text(`Total Price: Rs. ${order.totalPrice}`, 20, totalY + 10);  // Use ₹ directly
+    doc.text(`Total Price: Rs. ${order.totalPrice}`, 20, totalY + 10); // Use ₹ directly
 
     // Draw a line after the total summary
     doc.line(20, totalY + 20, 190, totalY + 20);
@@ -196,8 +212,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
 
     // Save the PDF as invoice
     doc.save(`${order._id}_Invoice.pdf`);
-};
-
+  };
 
   useEffect(() => {
     fetchOrderDetails();
@@ -248,16 +263,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
                 marginLeft: "5px",
                 padding: "3px",
                 borderRadius: "5px",
-                color:
-                  order.status === "pending"
-                    ? "black"
-                    : order.status === "shipped"
-                      ? "white"
-                      : order.status === "delivered"
-                        ? "black"
-                        : order.status === "cancelled"
-                          ? "white"
-                          : "gray",
+                color: order.status === "returned" ? "black" : "white",
                 backgroundColor:
                   order.status === "pending"
                     ? "yellow"
@@ -265,9 +271,11 @@ const OrderDetailsCard = ({ isAdmin }) => {
                       ? "blue"
                       : order.status === "delivered"
                         ? "green"
-                        : order.status === "cancelled"
-                          ? "red"
-                          : "gray",
+                        : order.status === "returned"
+                          ? "white"
+                          : order.status === "cancelled"
+                            ? "red"
+                            : "gray",
               }}
             >
               {order.status}
@@ -293,31 +301,23 @@ const OrderDetailsCard = ({ isAdmin }) => {
                 marginLeft: "5px",
                 padding: "3px 5px",
                 borderRadius: "5px",
-                color:
-                  order.paymentStatus === "paid"
-                    ? "white"
-                    : order.paymentStatus === "unpaid"
-                      ? "white"
-                      : order.paymentStatus === "refunded"
-                        ? "black"
-                        : "white",
+                color: "white",
                 backgroundColor:
                   order.paymentStatus === "refunded"
-                    ? "yellow"
-                    : order.paymentStatus === "shipped"
-                      ? "blue"
-                      : order.paymentStatus === "paid"
-                        ? "green"
-                        : order.paymentStatus === "unpaid"
-                          ? "red"
-                          : "gray",
+                    ? "blue"
+                    : order.paymentStatus === "paid"
+                      ? "green"
+                      : order.paymentStatus === "unpaid"
+                        ? "red"
+                        : "gray",
               }}
             >
               {order.paymentStatus}
             </span>
           </Typography>
 
-          {order.paymentMethod === "razorpay" &&
+          {order.status !== "cancelled" &&
+            order.paymentMethod === "razorpay" &&
             order.paymentStatus === "unpaid" && (
               <div>
                 <button
@@ -383,8 +383,19 @@ const OrderDetailsCard = ({ isAdmin }) => {
             </Typography>
           </Box>
           {order.status === "pending" && (
-            <div onClick={handleOpenDialog} style={{ marginTop: "20px" }}>
+            <div
+              onClick={() => handleOpenDialog("Cancel")}
+              style={{ marginTop: "20px" }}
+            >
               <OurButton w={"100"} text={"Cancel Order"} />
+            </div>
+          )}
+          {order.status === "delivered" && isReturnEligible && (
+            <div
+              onClick={() => handleOpenDialog("Return")}
+              style={{ marginTop: "20px" }}
+            >
+              <OurButton w={"100"} text={"Return Product"} />
             </div>
           )}
         </Card>
@@ -392,10 +403,10 @@ const OrderDetailsCard = ({ isAdmin }) => {
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogContent>
           <Typography variant="h6">
-            Are you sure you want to cancel this order?
+            Are you sure you want to {status} this order?
           </Typography>
           <TextField
-            label="Reason for cancellation"
+            label={`Reason for ${status === "Return" ? "Returning" : "Cancellation"}`}
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
             fullWidth
@@ -411,7 +422,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
           </button>
           <button
             className="text-white py-2 px-3 rounded bg-[#ff7f11]"
-            onClick={handleCancelOrder}
+            onClick={() => handleCancelOrder(status)}
           >
             Yes, Cancel
           </button>

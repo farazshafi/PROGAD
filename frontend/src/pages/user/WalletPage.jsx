@@ -79,7 +79,7 @@ const WalletPage = () => {
               variant="h3"
               className="text-center text-[#ff7f11] font-bold mb-4"
             >
-              ₹{walletDetails?.balance}
+              ₹{walletDetails?.balance.toFixed(2)}
             </Typography>
             <div className="flex justify-center gap-4">
               {/* <Button variant="contained" color="primary" className="capitalize">Add Funds</Button>

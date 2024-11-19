@@ -66,10 +66,12 @@ const PlaceOrderSection = () => {
             orderDetails.shippingAddress
           );
 
+          console.log("payment status frntend", paymentResult)
+
           const result = await makeOrderApi({
             ...formattedOrderData,
             paymentStatus: "paid",
-            razorpayOrderId: result.razorpay_order_id,
+            razorpayOrderId: paymentResult.razorpay_order_id,
           });
 
           if (result.response && result.response.status >= 400) {
@@ -84,6 +86,7 @@ const PlaceOrderSection = () => {
             navigate("/order_success");
           }, 4000);
         } catch (error) {
+          console.log("errror ind" ,error)
           const result = await makeOrderApi({
             ...formattedOrderData,
             paymentStatus: "unpaid",
