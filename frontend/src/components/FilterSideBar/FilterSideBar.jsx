@@ -15,10 +15,13 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 import { getPublishedCategoriesApi } from "../../api/categoryApi";
+import { getAllPublicBrandsApi } from "../../api/brandApi";
 
 const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
   const [allCategories, setAllCategories] = useState([]);
+  const [allBrands, setAllBrands] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 50000 });
 
   const handleCategoryChange = (event) => {
@@ -27,6 +30,15 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
       checked
         ? [...prevCategories, value]
         : prevCategories.filter((categoryId) => categoryId !== value)
+    );
+  };
+
+  const handleBrandChange = (event) => {
+    const { checked, value } = event.target;
+    setBrands((prevBrands) =>
+      checked
+        ? [...prevBrands, value]
+        : prevBrands.filter((brandId) => brandId !== value)
     );
   };
 
@@ -57,6 +69,23 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
     }
   };
 
+  const fetchBrands = async () => {
+    try {
+      const result = await getAllPublicBrandsApi();
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
+      setAllBrands(result);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      toast.error("Error fetching categories");
+    }
+  };
+
   // Handle custom slider range
   const handleSliderChange = (event, newValue) => {
     setPriceRange({ min: newValue[0], max: newValue[1] });
@@ -64,12 +93,14 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
 
   // Apply filters when the sidebar closes or updates
   const applyFilters = () => {
-    onFilterChange({ categories, priceRange });
-    toggleSidebar(); // Close sidebar after applying filters
+    console.log("brands..", brands)
+    onFilterChange({ categories, priceRange , brands});
+    toggleSidebar(); 
   };
 
   useEffect(() => {
     fetchCategories();
+    fetchBrands()
   }, []);
 
   return (
@@ -114,6 +145,27 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
                 />
               }
               label={category.name}
+            />
+          ))}
+        </FormGroup>
+
+        <Divider sx={{ border: "1px solid black", mt: "10px", mb: "20px" }} />
+
+        {/* Brand Section */}
+        <Typography sx={{ mb: "20px", mt: "30px" }} variant="h6" gutterBottom>
+          Brands
+        </Typography>
+        <FormGroup>
+          {allBrands?.map((brand) => (
+            <FormControlLabel
+              key={brand.id}
+              control={
+                <Checkbox
+                  value={brand._id}
+                  onChange={handleBrandChange}
+                />
+              }
+              label={brand.name}
             />
           ))}
         </FormGroup>

@@ -434,106 +434,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get sorted and paginated products
-// @route   GET /api/product/sorted_products
-// @access  public
-export const getSortedProduct = asyncHandler(async (req, res) => {
-  try {
-    const { sortBy, page = 1, limit = 10 } = req.query;
-    const pageInt = parseInt(page);
-    const limitInt = parseInt(limit);
-    const skip = (pageInt - 1) * limitInt;
-
-    // Define sorting criteria based on the sortBy parameter
-    let sortCriteria = {};
-    switch (sortBy) {
-      case "lowToHigh":
-        sortCriteria = { discountPrice: 1 };
-        break;
-      case "highToLow":
-        sortCriteria = { discountPrice: -1 };
-        break;
-      case "newArrival":
-        sortCriteria = { createdAt: -1 };
-        break;
-      case "Aa-Zz":
-        sortCriteria = { name: 1 };
-        break;
-      case "zZ-aA":
-        sortCriteria = { name: -1 };
-        break;
-      case "featured":
-        sortCriteria = { isFeatured: -1 };
-        break;
-      default:
-        return res.status(400).json({ message: "Invalid sort parameter" });
-    }
-
-    // Retrieve active offers for discount calculations
-    const activeOffers = await Offer.find({
-      status: "active",
-      expirationDate: { $gte: new Date() },
-    });
-
-    // Get total count for pagination and fetch sorted, paginated products
-    const totalProducts = await Product.countDocuments({ isPublished: true });
-    const products = await Product.find({ isPublished: true })
-      .sort(sortCriteria)
-      .skip(skip)
-      .limit(limitInt)
-      .populate("category", "_id name");
-
-    // Transform products to include discount information
-    const transformedProducts = products.map((product) => {
-      const relevantOffer = activeOffers.find(
-        (offer) =>
-          (offer.applyToProducts && offer.productIds.includes(product._id)) ||
-          (offer.applyToCategories &&
-            offer.categoryIds.includes(product.category._id))
-      );
-
-      let discountPrice = product.discountPrice;
-      let discountValue = null;
-      let discountType = null;
-
-      if (relevantOffer) {
-        discountType = relevantOffer.discountType;
-        if (discountType === "percentage") {
-          discountValue = `${relevantOffer.discount}%`;
-          discountPrice =
-            product.discountPrice * (1 - relevantOffer.discount / 100);
-        } else if (discountType === "fixed") {
-          discountValue = `${relevantOffer.discount}`;
-          discountPrice = Math.max(
-            0,
-            product.discountPrice - relevantOffer.discount
-          );
-        }
-      }
-
-      return {
-        _id: product._id,
-        name: product.name,
-        image: product.images[0] || null,
-        discountPrice: discountPrice.toFixed(2),
-        originalPrice: product.originalPrice,
-        discount: discountValue,
-        discountType: discountType,
-      };
-    });
-
-    res.json({
-      products: transformedProducts,
-      currentPage: pageInt,
-      totalPages: Math.ceil(totalProducts / limitInt),
-      totalProducts,
-    });
-  } catch (err) {
-    console.error("Error sorting and paginating products:", err.message);
-    res.status(500).json({ message: "Server error while sorting products" });
-  }
-});
-
 // @desc    get sorted product
 // @route   GET /api/product/relatedProduct/category_id/:id
 // @access  Public
@@ -572,13 +472,29 @@ export const getAllPublicProducts = asyncHandler(async (req, res) => {
 // @access  public
 export const getFilteredProducts = asyncHandler(async (req, res) => {
   try {
-    const { categories, minPrice, maxPrice, page = 1, limit = 10 } = req.query;
+    const {
+      search,
+      categories,
+      minPrice,
+      maxPrice,
+      brands,
+      sortBy,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
     const pageInt = parseInt(page);
     const limitInt = parseInt(limit);
     const skip = (pageInt - 1) * limitInt;
 
     const filterCriteria = { isPublished: true };
 
+    // Search by product name (case-insensitive)
+    if (search) {
+      filterCriteria.name = { $regex: search, $options: "i" };
+    }
+
+    // Filter by categories
     if (categories) {
       const categoryArray = categories
         .split(",")
@@ -586,23 +502,66 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       filterCriteria.category = { $in: categoryArray };
     }
 
+    // Filter by price range
     if (minPrice || maxPrice) {
       filterCriteria.discountPrice = {};
       if (minPrice) filterCriteria.discountPrice.$gte = Number(minPrice);
       if (maxPrice) filterCriteria.discountPrice.$lte = Number(maxPrice);
     }
 
+    // Filter by brand
+    if (brands) {
+      const brandArray = brands
+        .split(",")
+        .map((brand) => new mongoose.Types.ObjectId(brand)); // Ensure ObjectId parsing
+      filterCriteria.brand = { $in: brandArray };
+    }
+
+    // sorting criteria
+    let sortCriteria = {};
+    if (sortBy) {
+      switch (sortBy) {
+        case "lowToHigh":
+          sortCriteria = { discountPrice: 1 }; // Ascending price
+          break;
+        case "highToLow":
+          sortCriteria = { discountPrice: -1 }; // Descending price
+          break;
+        case "Aa-Zz":
+          sortCriteria = { name: 1 }; // Alphabetical A-Z
+          break;
+        case "zZ-aA":
+          sortCriteria = { name: -1 }; // Alphabetical Z-A
+          break;
+        case "newArrival":
+          sortCriteria = { createdAt: -1 }; // Newest first
+          break;
+        case "featured":
+          sortCriteria = { isFeatured: -1 }; // Featured products first
+          break;
+        default:
+          sortCriteria = {}; // Default sorting (no sorting applied)
+      }
+    }
+
+    // Fetch active offers
     const activeOffers = await Offer.find({
       status: "active",
       expirationDate: { $gte: new Date() },
     });
 
+    // Get total product count for pagination
     const totalProducts = await Product.countDocuments(filterCriteria);
+
+    // Fetch filtered, sorted, and paginated products
     const products = await Product.find(filterCriteria)
+      .sort(sortCriteria)
       .skip(skip)
       .limit(limitInt)
-      .populate("category", "_id name");
+      .populate("category", "_id name")
+      .populate("brand", "_id name");
 
+    // Transform product data (applying relevant offers and discount calculations)
     const transformedProducts = products.map((product) => {
       const relevantOffer = activeOffers.find(
         (offer) =>

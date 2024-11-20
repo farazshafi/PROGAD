@@ -1,5 +1,5 @@
 import axios from "axios";
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
 
 const API_URL = "http://localhost:5000/api/product";
 
@@ -7,10 +7,14 @@ export const createProductApi = async (productDetails) => {
   try {
     const config = {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      }
+        "Content-Type": "multipart/form-data",
+      },
     };
-    const { data } = await axios.post(`${API_URL}/create_product`, productDetails, config); 
+    const { data } = await axios.post(
+      `${API_URL}/create_product`,
+      productDetails,
+      config
+    );
     return data;
   } catch (e) {
     console.log("Error:", e);
@@ -19,123 +23,116 @@ export const createProductApi = async (productDetails) => {
 };
 
 export const getAllProductsApi = async (page) => {
-  try{
-    const data = await axios.get(`${API_URL}/get_products?page=${page}&limit=${10}`)
+  try {
+    const data = await axios.get(
+      `${API_URL}/get_products?page=${page}&limit=${10}`
+    );
     return data;
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return err;
   }
-}
+};
 
-
-export const handlePublicChangeApi = async (id,isPublished) => {
-  try{
-    const data = await axios.patch(`${API_URL}/handle_public_change/${id}`,{isPublished})
+export const handlePublicChangeApi = async (id, isPublished) => {
+  try {
+    const data = await axios.patch(`${API_URL}/handle_public_change/${id}`, {
+      isPublished,
+    });
     return data;
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return err;
   }
-}
-
+};
 
 export const getProductDetailsApi = async (id) => {
-  try{
-    const data = await axios.get(`${API_URL}/product_details/${id}`)
+  try {
+    const data = await axios.get(`${API_URL}/product_details/${id}`);
     return data;
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return err;
   }
-}
+};
 
-
-export const updateProductApi = async (id,data) => {
-  try{
-    const response = await axios.put(`${API_URL}/update_product/${id}`,data)
+export const updateProductApi = async (id, data) => {
+  try {
+    const response = await axios.put(`${API_URL}/update_product/${id}`, data);
     return response;
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return err;
   }
-}
-
-export const getSortedProductApi = async (sort) => {
-  try{
-    const response = await axios.get(`${API_URL}/sort_product?sortBy=${sort}`)
-    return response;
-  }catch(err){
-    console.log(err);
-    return err;
-  }
-}
+};
 
 export const getRelatedProductApi = async (id) => {
-  try{
-    const response = await axios.get(`${API_URL}/related_product/${id}`)
+  try {
+    const response = await axios.get(`${API_URL}/related_product/${id}`);
     return response;
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return err;
   }
-}
+};
 
 export const getAllPublicProductsForAdminApi = async (id) => {
-  try{
-    const token = JSON.parse(localStorage.getItem("admin")).token
+  try {
+    const token = JSON.parse(localStorage.getItem("admin")).token;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
-    const response = await axios.get(`${API_URL}/public_products`,config)
+      },
+    };
+    const response = await axios.get(`${API_URL}/public_products`, config);
     return response;
-  }catch(err){
+  } catch (err) {
     console.log(err);
     return err;
   }
-}
+};
 
 export const getFilteredProductsApi = async (filters) => {
   try {
-    const { categories, priceRange } = filters;
+    const { categories, priceRange, brands, sort } = filters;
     const params = new URLSearchParams();
 
     if (categories.length > 0) {
-      params.append('categories', categories.join(','));
+      params.append("categories", categories.join(","));
+    }
+    if (brands.length > 0) {
+      params.append("brands", brands.join(","));
     }
     if (priceRange) {
-      params.append('minPrice', priceRange.min);
-      params.append('maxPrice', priceRange.max);
+      params.append("minPrice", priceRange.min);
+      params.append("maxPrice", priceRange.max);
     }
 
-    const response = await axios.get(`${API_URL}/filter_products?${params.toString()}`);
+    const response = await axios.get(
+      `${API_URL}/filter_products?${params.toString()}&sortBy=${sort}`
+    );
 
-    return response.data; 
+    return response.data;
   } catch (err) {
-    console.error('Error fetching filtered products:', err);
+    console.error("Error fetching filtered products:", err);
     return err;
   }
 };
 
-
 export const getTopSellingProductApi = async () => {
   try {
-    const token = JSON.parse(localStorage.getItem("admin")).token
+    const token = JSON.parse(localStorage.getItem("admin")).token;
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-      }
-    }
-    const response = await axios.get(`${API_URL}/best_selling`,config);
+      },
+    };
+    const response = await axios.get(`${API_URL}/best_selling`, config);
     return response.data;
   } catch (err) {
-    console.error('Error fetching filtered products:', err);
-    if(err.response){
-      toast.error(err.response.data.message)
+    console.error("Error fetching filtered products:", err);
+    if (err.response) {
+      toast.error(err.response.data.message);
     }
   }
 };
-
-

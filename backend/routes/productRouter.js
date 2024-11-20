@@ -6,7 +6,6 @@ import {
   getFilteredProducts,
   getProductDetails,
   getRelatedProduct,
-  getSortedProduct,
   getTopSellingProduct,
   handlePublicChange,
   updateProduct,
@@ -32,7 +31,6 @@ router.get("/get_products", getAllProduct);
 router.patch("/handle_public_change/:id", handlePublicChange);
 router.get("/product_details/:id", getProductDetails);
 router.put("/update_product/:id", updateProduct);
-router.get("/sort_product", getSortedProduct);
 router.get("/related_product/:id", getRelatedProduct);
 router.get("/public_products", protect, admin, getAllPublicProducts);
 router.get("/filter_products", getFilteredProducts);

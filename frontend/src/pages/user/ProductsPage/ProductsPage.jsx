@@ -13,9 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import {
-  getAllProductsApi,
   getFilteredProductsApi,
-  getSortedProductApi,
 } from "../../../api/productApi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
@@ -36,6 +34,7 @@ const ProductsPage = () => {
   const [sortOption, setSortOption] = useState("default");
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 50000 });
 
   const dispatch = useDispatch();
@@ -46,6 +45,7 @@ const ProductsPage = () => {
 
   const handleFilterChange = (filters) => {
     setSelectedCategories(filters.categories);
+    setSelectedBrands(filters.brands);
     setPriceRange(filters.priceRange);
   };
 
@@ -57,12 +57,14 @@ const ProductsPage = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  const fetchProducts = async (page) => {
+  const fetchProducts = async (page) => {   
     try {
       const data = await getFilteredProductsApi({
         categories: selectedCategories,
         priceRange: priceRange,
+        brands: selectedBrands,
         page,
+        sort:sortOption
       });
 
       if (data.response) {
@@ -80,28 +82,9 @@ const ProductsPage = () => {
     }
   };
 
-  const fetchSortedProducts = async () => {
-    try {
-      const { data } = await getSortedProductApi(sortOption);
-      console.log("sorted data:", data);
-      if (data) {
-        dispatch(setProducts(data.products));
-      }
-    } catch (err) {
-      toast.error("Failed to sort products. Please try again.");
-      console.error("Fetch Sorted Products Error:", err);
-    }
-  };
-
   useEffect(() => {
     fetchProducts(page);
-  }, [selectedCategories, priceRange, page]);
-
-  useEffect(() => {
-    if (sortOption !== "default") {
-      fetchSortedProducts();
-    }
-  }, [sortOption]);
+  }, [selectedCategories, priceRange, page, selectedBrands, sortOption]);
 
   return (
     <React.Fragment>
