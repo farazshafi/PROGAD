@@ -57,7 +57,11 @@ const ListOrders = () => {
   const handleChangeStatus = async (status) => {
     if (selectedOrder) {
       try {
-        const result = await updateOrderStatusApi(selectedOrder._id, status);
+        const orderData = {
+          status,
+          user: selectedOrder.user._id,
+        }
+        const result = await updateOrderStatusApi(selectedOrder._id, orderData);
         if (result.response) {
           const { status } = result.response;
           if (status === 400 || status === 500) {
@@ -77,7 +81,12 @@ const ListOrders = () => {
 
   const handleCancelOrder = async () => {
     try {
-      const result = await cancelOrderApi(selectedOrder._id);
+      console.log("selected user", selectedOrder)
+      const orderData = {
+        status: "cancelled",
+        user: selectedOrder.user._id,
+      }
+      const result = await updateOrderStatusApi(selectedOrder._id,orderData);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -256,17 +265,41 @@ const ListOrders = () => {
                     >
                       <FaEye style={{ marginRight: 8 }} /> View
                     </MenuItem>
-                    <MenuItem onClick={() => handleChangeStatus("delivered")}>
+                    <MenuItem
+                      disabled={
+                        order.status === "delivered" ||
+                        order.status === "cancelled"
+                      }
+                      onClick={() => handleChangeStatus("delivered")}
+                    >
                       <FaTruck style={{ marginRight: 8 }} /> Mark as Delivered
                     </MenuItem>
-                    <MenuItem onClick={() => handleChangeStatus("shipped")}>
+                    <MenuItem
+                      disabled={
+                        order.status === "delivered" ||
+                        order.status === "cancelled"
+                      }
+                      onClick={() => handleChangeStatus("shipped")}
+                    >
                       <FaShippingFast style={{ marginRight: 8 }} /> Mark as
                       Shipped
                     </MenuItem>
-                    <MenuItem onClick={() => handleChangeStatus("pending")}>
+                    <MenuItem
+                      disabled={
+                        order.status === "delivered" ||
+                        order.status === "cancelled"
+                      }
+                      onClick={() => handleChangeStatus("pending")}
+                    >
                       <FaClock style={{ marginRight: 8 }} /> Mark as Pending
                     </MenuItem>
-                    <MenuItem onClick={handleCancelOrder}>
+                    <MenuItem
+                      disabled={
+                        order.status === "delivered" ||
+                        order.status === "cancelled"
+                      }
+                      onClick={handleCancelOrder}
+                    >
                       <FaBan style={{ marginRight: 8 }} /> Mark as Cancelled
                     </MenuItem>
                   </Menu>

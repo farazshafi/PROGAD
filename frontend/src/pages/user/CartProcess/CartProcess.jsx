@@ -14,10 +14,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectedOrder, setShippingAddress } from "../../../features/user/orderSlice";
 import { logoutUser, selectedUser } from "../../../features/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import { selectedCart } from "../../../features/user/cartSlice";
 
 const CartProcess = () => {
   const user = useSelector(selectedUser)
-  const orderDetails = useSelector(selectedOrder)
+  const cartItems = useSelector(selectedCart)
 
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -35,20 +36,28 @@ const CartProcess = () => {
   }
 
   useEffect(()=>{
+    console.log(user)
     if(!user){
       toast.error("Please login to proceed")
       navigate("/login")
-    }
-    if(!user.isVerified){
-      toast.error("Please verify your email to proceed")
-      dispatch(logoutUser())
-      navigate("/login")
+    }else{
+      if(!user?.isVerified){
+        toast.error("Please verify your email to proceed")
+        dispatch(logoutUser())
+        navigate("/login")
+      }
     }
   },[])
 
+  useEffect(() => {
+    if(cartItems && cartItems.length < 1){
+      navigate("/cart")
+    }
+  }, []);
+
   return (
     <>
-      <Header navbar={false}/>
+      <Header/>
       <Box
         sx={{
           backgroundColor: "#262626",

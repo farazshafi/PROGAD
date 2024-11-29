@@ -145,6 +145,7 @@ export const login = asyncHandler(async (req, res) => {
   const { email, password, googleId, phoneNumber, name } = req.body;
   let userExist;
 
+
   if (googleId) {
     userExist = await User.findOne({ googleId }).populate({
       path: "address",
@@ -165,6 +166,9 @@ export const login = asyncHandler(async (req, res) => {
         phoneNumber: phoneNumber || null,
         isVerified: true,
       });
+    }
+    if(userExist.isBlocked){
+      return res.status(400).json({message: "User is Blocked! , Not Allowed to Continue"})
     }
     return res.json({
       message: "Login successful",
@@ -191,9 +195,13 @@ export const login = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User does not exist" });
   }
 
+  if(userExist.isBlocked){
+    return res.status(400).json({message: "User is Blocked!, Not Allowed to continued"})
+  }
+
   if (!userExist.isVerified) {
     const otp = generateOTP();
-    userExist.otp = otp;
+    userExist.otp = otp;  
     await userExist.save();
     const mailOptions = {
       from: process.env.EMAIL_USER,

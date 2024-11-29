@@ -37,7 +37,7 @@ const CartPage = () => {
     total: 0,
     delivery: 0,
     offer: 0,
-    taxPercent: "",
+    taxPercent: 0,
     couuponOffer: "",
   });
 
@@ -54,7 +54,7 @@ const CartPage = () => {
     // Calculate the discount if a coupon is available and applied
     const discount = isApplied ? (subTotal * couponPercentage) / 100 : 0;
     const total = (subTotal + tax + deliveryFee - discount).toFixed(2);
-    const taxPercentage = (taxRate * 100).toFixed(1) + "%";
+    const taxPercentage = (taxRate * 100).toFixed(1);
 
     setSummary({
       subTotal,
@@ -91,61 +91,6 @@ const CartPage = () => {
 
   const handleDelete = (item) => {
     dispatch(removeFromCart(item.id));
-  };
-
-  const handleApplyCoupon = () => {
-    if (!availableCoupon) {
-      toast.error("Invalid coupon code");
-      return;
-    }
-
-    console.log("available coupon ", availableCoupon)
-  
-    if (availableCoupon.categories && availableCoupon.categories.length > 0) {
-      const isCategoryEligible = cartItems.some((item) =>
-        availableCoupon.categories.includes(item.category._id)
-      );
-   
-      if (!isCategoryEligible) {
-        toast.error("Coupon not applicable for items in your cart");
-        return;
-      }
-    }
-
-    if(availableCoupon.minPurchasePrice > summary.total){
-      toast.error(`Minimum purchase price ${availableCoupon.minPurchasePrice} not met`);
-      return;
-    }
-  
-    // Set the coupon as applied if all checks pass
-    setIsApplied(true);
-    toast.success("Coupon applied successfully");
-  };
-  
-
-  const findCoupon = async () => {
-    if (!user) {
-      toast.warning("Please Login to apply coupon");
-      navigate("/login");
-    }
-    try {
-      setIsApplied(false);
-      console.log("coupon code:", couponCode);
-      const result = await findCouponsApi(couponCode);
-      console.log("result codupon ", result);
-      if (result.response) {
-        const { status } = result.response;
-        if (status === 400 || status === 500) {
-          toast.error(result.response.data.message);
-          return;
-        }
-      }
-      setAvailableCoupon(result.data);
-      setCouponCategory(result.data?.categories);
-    } catch (err) {
-      console.error("Error applying coupon:", err);
-      toast.error(err.message || "Error applying coupon");
-    }
   };
 
   useEffect(() => {
@@ -290,51 +235,6 @@ const CartPage = () => {
                 borderRadius: "8px",
               }}
             >
-              {/* Coupon Input Section */}
-              <div
-                className="cart-coupoun"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="Enter coupon code"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "5px",
-                    border: "none",
-                    marginRight: "10px",
-                    fontSize: "16px",
-                  }}
-                />
-                <span onClick={findCoupon}>
-                  <OurButton text="Find" />
-                </span>
-              </div>
-
-              {availableCoupon && (
-                <div className="my-4 bg-[#262626] w-full rounded py-4 px-3 flex items-center">
-                  <p className="text-black bg-white py-1 px-2 rounded text-md font-poppins w-fit">
-                    {availableCoupon.name}
-                    <span className="ml-2 font-poppins text-[#ff7f11]">
-                      -{availableCoupon.discount}% Off
-                    </span>
-                  </p>
-                  <div
-                    onClick={handleApplyCoupon}
-                    className="text-white w-fit ml-auto cursor-pointer font-poppins bg-[#ff7f11] px-[10px] py-1 rounded hover:bg-orange-600 transition"
-                  >
-                    {isApplied ? <FaCheck /> : <>Apply</>}
-                  </div>
-                </div>
-              )}
-
-              {!availableCoupon && <div className="h-5"></div>}
 
               {/* Price Summary Section */}
               <div
@@ -359,7 +259,7 @@ const CartPage = () => {
                   }}
                 >
                   <p>Tax:</p>
-                  <h6>{summary.taxPercent}</h6>
+                  <h6>{summary.taxPercent}%</h6>
                 </div>
                 <div
                   className="d-flex"

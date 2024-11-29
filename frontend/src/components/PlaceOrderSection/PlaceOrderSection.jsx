@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Card, Paper, Divider } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { selectedOrder } from "../../features/user/orderSlice";
+import { selectedOrder, setSummaryData } from "../../features/user/orderSlice";
 import { selectedUser } from "../../features/user/userSlice";
 import { clearCart, selectedCart } from "../../features/user/cartSlice";
 import { handleRazorpayApi, makeOrderApi } from "../../api/orderApi";
@@ -10,6 +10,7 @@ import { Button, ChakraProvider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import OrderAnimation from "../../assets/animations/order.json";
 import Lottie from "lottie-react";
+import CouponSection from "../CouponSection";
 
 const PlaceOrderSection = () => {
   const orderDetails = useSelector(selectedOrder);
@@ -66,7 +67,7 @@ const PlaceOrderSection = () => {
             orderDetails.shippingAddress
           );
 
-          console.log("payment status frntend", paymentResult)
+          console.log("payment status frntend", paymentResult);
 
           const result = await makeOrderApi({
             ...formattedOrderData,
@@ -86,7 +87,7 @@ const PlaceOrderSection = () => {
             navigate("/order_success");
           }, 4000);
         } catch (error) {
-          console.log("errror ind" ,error)
+          console.log("errror ind", error);
           const result = await makeOrderApi({
             ...formattedOrderData,
             paymentStatus: "unpaid",
@@ -137,7 +138,35 @@ const PlaceOrderSection = () => {
     }
   };
 
-  useEffect(() => {}, []);
+  const handleApply = async (dis) => {
+    const originalAmount = orderDetails.subTotal || Number(orderDetails.totalAmount); // Use subtotal if available
+    const discountValue = (dis / 100) * originalAmount; // Calculate the discount value
+    const discountedAmount = originalAmount - discountValue; // Subtract the discount from the original amount
+  
+    // Calculate tax as a percentage of the discounted amount
+    const taxAmount = (discountedAmount * (orderDetails.tax || 0)) / 100;
+  
+    // Add delivery fee (if any) and calculate the final total
+    const total = (discountedAmount + taxAmount + Number(orderDetails.deliveryFee || 0)).toFixed(2);
+  
+    dispatch(
+      setSummaryData({
+        ...orderDetails,
+        couponDiscount: dis, // Store the discount percentage
+        totalAmount: total, // Update total after applying discount
+      })
+    );
+  
+    console.log("Discount applied: ", dis, "New total: ", total);
+  };
+  
+  
+
+  useEffect(() => {
+    if (cartItems && cartItems.length < 1) {
+      navigate("/cart");
+    }
+  }, []);
 
   return (
     <>
@@ -266,6 +295,8 @@ const PlaceOrderSection = () => {
                 color: "white",
               }}
             >
+              <CouponSection applyCoupon={handleApply} summary={orderDetails} />
+
               <Grid container justifyContent="space-between">
                 <Typography
                   variant="body1"
@@ -291,7 +322,7 @@ const PlaceOrderSection = () => {
                   variant="body1"
                   sx={{ fontFamily: '"Istok Web", sans-serif' }}
                 >
-                  {orderDetails?.tax}
+                  {orderDetails?.tax}%
                 </Typography>
               </Grid>
               <Grid container justifyContent="space-between">

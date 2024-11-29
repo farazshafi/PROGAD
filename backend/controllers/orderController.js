@@ -214,7 +214,6 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       orderDetails.paymentMethod === "razorpay" &&
       orderDetails.paymentStatus === "refunded"
     ) {
-      console.log("eelk bernna test 2");
       let wallet = await Wallet.findOne({ userId: orderDetails.user });
       if (!wallet) {
         wallet = new Wallet({ userId: orderDetails.user });
@@ -272,17 +271,19 @@ export const listAllOrders = asyncHandler(async (req, res) => {
 // @access  private admin
 export const updateStatus = asyncHandler(async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, user } = req.body;
     const { id } = req.params;
 
     const orderDetails = await Order.findById(id);
     if (!orderDetails) {
       return res.status(404).json({ message: "No orders found" });
     }
+
     const validStatuses = ["pending", "shipped", "delivered", "cancelled"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
+
     if (status === "delivered") {
       if (orderDetails.paymentMethod === "cash on delivery") {
         orderDetails.paymentStatus = "paid";
@@ -297,6 +298,31 @@ export const updateStatus = asyncHandler(async (req, res) => {
     }
     if (status === "delivered") {
       orderDetails.deliveredDate = new Date();
+    }
+    if (status === "cancelled") {
+      if (
+        orderDetails.paymentMethod === "razorpay" &&
+        orderDetails.paymentStatus === "paid"
+      ) {
+        let wallet = await Wallet.findOne({ userId: user });
+        if (!wallet) {
+          wallet = new Wallet({ userId: user });
+        }
+        const refundAmount = orderDetails.totalPrice;
+        wallet.balance += refundAmount;
+        console.log("order id", orderDetails._id);
+        wallet.transactions.push({
+          type: "credit",
+          amount: refundAmount,
+          description: `Refund for ${
+            status === "Cancel" ? "canceled" : "Returned "
+          } order`,
+          orderId: orderDetails._id,
+        });
+        await wallet.save();
+        console.log("it has to work")
+        orderDetails.paymentStatus = "refunded";
+      }
     }
 
     orderDetails.status = status;

@@ -6,13 +6,15 @@ import OurButton from "../OurButton/OurButton";
 import QtyCounterInput from "../QtyCounterInput/QtyCounterInput";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../features/user/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, selectedCart } from "../../features/user/cartSlice";
 import addedTOcartAnimation from "../../assets/animations/addToCart.json";
 import Lottie from "lottie-react";
+import { toast } from "react-toastify";
 
 const ProductDetail = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
+  const cartItems = useSelector(selectedCart);
 
   const dispatch = useDispatch();
 
@@ -23,6 +25,15 @@ const ProductDetail = ({ product }) => {
   };
 
   const handleAddToCart = () => {
+    const cartProduct = cartItems.find((item) => item.id === product._id);
+
+    if (cartProduct && cartProduct.quantity + quantity > 10) {
+      toast.info("Product already in your cart. You can only add up to 10 items.");
+      return;
+    }
+
+    console.log("Cart items:", cartItems);
+
     const cartItem = {
       id: product._id,
       name: product.name,
@@ -30,9 +41,10 @@ const ProductDetail = ({ product }) => {
       quantity: quantity,
       image: product.images[0],
       stock: product.totalStock,
-      subTotal: Number(product.discountPrice * quantity,),
-      category:product.category
+      subTotal: Number(product.discountPrice) * quantity,
+      category: product.category,
     };
+
     dispatch(addToCart(cartItem));
     setShowAddToCartAnimation(true);
     setTimeout(() => setShowAddToCartAnimation(false), 2300);

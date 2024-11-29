@@ -8,7 +8,7 @@ import HomePage from "./pages/user/HomePage/HomePage";
 import NewArrivalsPage from "./pages/user/NewArrivalsPage/NewArrivalsPage";
 import TopProducts from "./pages/user/TopProducts/TopProducts";
 import OfferPage from "./pages/user/OfferPage/OfferPage";
-import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
+import ProductsPage from "./pages/user/ProductsPage/ProductsPage"; 
 import ProductDetailsPage from "./pages/user/ProductDetailsPage/ProductDetailsPage";
 import CartPage from "./pages/user/CartPage/CartPage";
 import ProfilePage from "./pages/user/ProfilePage/ProfilePage";

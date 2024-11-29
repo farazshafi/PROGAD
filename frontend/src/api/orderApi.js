@@ -27,11 +27,15 @@ export const laterPaymentApi = async (OrderData) => {
         Authorization: `Bearer ${token}`,
       },
     };
-    const result = await axios.post(`${API_URL}later_payment`, OrderData, config);
+    const result = await axios.post(
+      `${API_URL}later_payment`,
+      OrderData,
+      config
+    );
     return result.data;
   } catch (err) {
     console.log(err);
-    toast.error(err.response.data.message || "Error When Updating Order")
+    toast.error(err.response.data.message || "Error When Updating Order");
   }
 };
 
@@ -79,13 +83,11 @@ export const handleRazorpayApi = async (totalPrice, user, shippingAddress) => {
         toast.error("Payment failed.");
       });
     });
-
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
     throw new Error("Razorpay order creation failed");
   }
 };
-
 
 export const getAllOrdersApi = async (userId) => {
   try {
@@ -125,7 +127,7 @@ export const getOrderDetailsApi = async (orderId) => {
   }
 };
 
-export const cancelOrderApi = async (orderId,orderdata) => {
+export const cancelOrderApi = async (orderId, orderdata) => {
   try {
     const token = JSON.parse(localStorage.getItem("user")).token;
     const config = {
@@ -164,7 +166,7 @@ export const listOrdersApi = async (page) => {
   }
 };
 
-export const updateOrderStatusApi = async (id,status) => {
+export const updateOrderStatusApi = async (id, orderData) => {
   try {
     const token = JSON.parse(localStorage.getItem("admin")).token;
     const config = {
@@ -174,7 +176,7 @@ export const updateOrderStatusApi = async (id,status) => {
     };
     const data = await axios.patch(
       `${API_URL}update_status/${id}`,
-      {status},
+      orderData,
       config
     );
     return data;

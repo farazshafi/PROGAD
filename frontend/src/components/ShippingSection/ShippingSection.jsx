@@ -40,7 +40,6 @@ const ShippingSection = ({ selectedAddress }) => {
 
   useEffect(() => {
     if (!user) {
-      toast.error("Please login to proceed");
       navigate("/login");
     }
   }, []);

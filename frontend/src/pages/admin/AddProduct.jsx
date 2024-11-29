@@ -758,7 +758,7 @@ const AddProduct = () => {
             >
               {allBrands &&
                 allBrands.length > 0 &&
-                allBrands.map((brand) => (
+                allBrands?.map((brand) => (
                   <MenuItem key={brand._id} value={brand._id}>
                     {brand.name}
                   </MenuItem>
