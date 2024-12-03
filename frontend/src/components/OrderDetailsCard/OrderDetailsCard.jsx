@@ -316,7 +316,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
             </span>
           </Typography>
 
-          {order.status !== "cancelled" &&
+          { !isAdmin && order.status !== "cancelled" &&
             order.paymentMethod === "razorpay" &&
             order.paymentStatus === "unpaid" && (
               <div>
@@ -382,15 +382,15 @@ const OrderDetailsCard = ({ isAdmin }) => {
               Phone: {order?.shippingAddress?.phoneNumber}
             </Typography>
           </Box>
-          {order.status === "pending" && (
+          {!isAdmin && order.status === "pending" && (
             <div
               onClick={() => handleOpenDialog("Cancel")}
               style={{ marginTop: "20px" }}
             >
               <OurButton w={"100"} text={"Cancel Order"} />
-            </div>
+            </div> 
           )}
-          {order.status === "delivered" && isReturnEligible && (
+          {!isAdmin && order.status === "delivered" && isReturnEligible && (
             <div
               onClick={() => handleOpenDialog("Return")}
               style={{ marginTop: "20px" }}

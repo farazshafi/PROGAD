@@ -1,9 +1,6 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-// development
-// const API_URL = "http://localhost:5000/api/product";
-
 // production
 const API_URL = `${process.env.REACT_APP_API_URL}/product`
 
@@ -28,13 +25,18 @@ export const createProductApi = async (productDetails) => {
 
 export const getAllProductsApi = async (page) => {
   try {
+    console.log('API URL:', API_URL);
     const data = await axios.get(
       `${API_URL}/get_products?page=${page}&limit=${10}`
     );
+    console.log('Response:', data);
     return data;
   } catch (err) {
-    console.log(err);
-    return err;
+    console.error('Error fetching products:', err.response?.data || err.message);
+    if (err.response && err.response.data) {
+      toast.error(err.response.data.message);
+    }
+    return null;
   }
 };
 

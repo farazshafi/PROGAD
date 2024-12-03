@@ -97,9 +97,9 @@ const WishlistPage = () => {
                 >
                   Remove
                 </button>
-                <button className=" text-white font-semibold w-full bg-ourOrange py-2 px-2 hover:bg-gray-600 rounded transition-colors">
+                {/* <button className=" text-white font-semibold w-full bg-ourOrange py-2 px-2 hover:bg-gray-600 rounded transition-colors">
                   Add To Cart
-                </button>
+                </button> */}
               </div>
             </div>
           ))}

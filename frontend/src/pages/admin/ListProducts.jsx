@@ -131,7 +131,7 @@ const ListProducts = () => {
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#1e1e2d", borderRadius: "8px" }}>
-        <p className="text-4xl text-center text-white py-4">Product Management</p>
+      <p className="text-4xl text-center text-white py-4">Product Management</p>
 
       {/* Filters */}
       <Box display="flex" justifyContent="space-between" mb={2}>
@@ -287,14 +287,17 @@ const ListProducts = () => {
                   >
                     <MenuItem
                       style={{ gap: "20px", color: "black" }}
-                      onClick={() => handleEdit(product)}
-                    >
+                      onClick={() => handleEdit(product)} 
+                    > 
                       <MdEdit /> Edit
                     </MenuItem>
                     <Divider sx={{ height: "1px", backgroundColor: "black" }} />
                     <MenuItem
+                      disabled={!selectedProduct?.isPublished}
                       style={{ gap: "20px", color: "black" }}
-                      onClick={() => handleDelete(product._id)}
+                      onClick={() =>
+                        navigate(`/product_details/${selectedProduct._id}`)
+                      }
                     >
                       <FaEye /> View
                     </MenuItem>
@@ -310,7 +313,7 @@ const ListProducts = () => {
           shape="rounded"
           sx={{
             "& .MuiPaginationItem-root": {
-              color: "white", 
+              color: "white",
             },
           }}
           count={totalPages}

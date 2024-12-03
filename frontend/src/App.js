@@ -21,6 +21,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import EditProduct from "./pages/admin/EditProduct";
 import OrderDetailsCard from "./components/OrderDetailsCard/OrderDetailsCard";
 import CouponsPage from "./pages/user/CouponsPage";
+import AboutUs from "./pages/user/AboutUs";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
             element={<OrderDetailsCard isAdmin={false} />}
           />
           <Route path="/coupons" element={<CouponsPage />} />
+          <Route path="/about" element={<AboutUs />} />
 
           {/* admin route */}
           <Route path="/admin_login" element={<AdminLogin />} />
