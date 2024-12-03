@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify"
 
-const API_URL = "http://localhost:5000/api/brand";
+const API_URL = `${process.env.REACT_APP_API_URL}/brand`
 
 export const createBrandApi = async (brandDetails) => {
   try {

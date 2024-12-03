@@ -1,7 +1,11 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const API_URL = "http://localhost:5000/api/product";
+// development
+// const API_URL = "http://localhost:5000/api/product";
+
+// production
+const API_URL = `${process.env.REACT_APP_API_URL}/product`
 
 export const createProductApi = async (productDetails) => {
   try {
