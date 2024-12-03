@@ -27,7 +27,7 @@ const port = process.env.PORT || 2000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000"
+    origin: "http://ec2-13-127-98-221.ap-south-1.compute.amazonaws.com",
   })
 );
 
