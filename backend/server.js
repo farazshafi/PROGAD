@@ -24,7 +24,6 @@ const app = express();
 const port = process.env.PORT || 2000;
 const allowedOrigins = [
   "http://localhost:3000",
-  "http://ec2-13-127-98-221.ap-south-1.compute.amazonaws.com",
   "https://progad.farazshafi.site",
 ];
 
