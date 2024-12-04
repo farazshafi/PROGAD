@@ -8,7 +8,7 @@ import HomePage from "./pages/user/HomePage/HomePage";
 import NewArrivalsPage from "./pages/user/NewArrivalsPage/NewArrivalsPage";
 import TopProducts from "./pages/user/TopProducts/TopProducts";
 import OfferPage from "./pages/user/OfferPage/OfferPage";
-import ProductsPage from "./pages/user/ProductsPage/ProductsPage"; 
+import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
 import ProductDetailsPage from "./pages/user/ProductDetailsPage/ProductDetailsPage";
 import CartPage from "./pages/user/CartPage/CartPage";
 import ProfilePage from "./pages/user/ProfilePage/ProfilePage";
@@ -16,14 +16,33 @@ import OrderSuccessPage from "./pages/user/OrderSuccessPage/OrderSuccessPage";
 import CartProcess from "./pages/user/CartProcess/CartProcess";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import AdminLogin from "./pages/admin/AdminLogin";
 import EditProduct from "./pages/admin/EditProduct";
 import OrderDetailsCard from "./components/OrderDetailsCard/OrderDetailsCard";
 import CouponsPage from "./pages/user/CouponsPage";
 import AboutUs from "./pages/user/AboutUs";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser, selectedUser } from "./features/user/userSlice";
 
 function App() {
+  const reduxUser = useSelector(selectedUser)
+  const user = JSON.parse(localStorage.getItem("user"))
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(!user){
+      toast.warning("Please Login")
+    }
+    if (user && user.isBlocked) {
+      dispatch(logoutUser());
+      window.location.href = "/login";
+    }
+
+  }, []);
+
   return (
     <>
       <ToastContainer />

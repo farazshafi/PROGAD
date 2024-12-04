@@ -145,7 +145,6 @@ export const login = asyncHandler(async (req, res) => {
   const { email, password, googleId, phoneNumber, name } = req.body;
   let userExist;
 
-
   if (googleId) {
     userExist = await User.findOne({ googleId }).populate({
       path: "address",
@@ -167,8 +166,10 @@ export const login = asyncHandler(async (req, res) => {
         isVerified: true,
       });
     }
-    if(userExist.isBlocked){
-      return res.status(400).json({message: "User is Blocked! , Not Allowed to Continue"})
+    if (userExist.isBlocked) {
+      return res
+        .status(400)
+        .json({ message: "User is Blocked! , Not Allowed to Continue" });
     }
     return res.json({
       message: "Login successful",
@@ -195,13 +196,15 @@ export const login = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User does not exist" });
   }
 
-  if(userExist.isBlocked){
-    return res.status(400).json({message: "User is Blocked!, Not Allowed to continued"})
+  if (userExist.isBlocked) {
+    return res
+      .status(400)
+      .json({ message: "User is Blocked!, Not Allowed to continued" });
   }
 
   if (!userExist.isVerified) {
     const otp = generateOTP();
-    userExist.otp = otp;  
+    userExist.otp = otp;
     await userExist.save();
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -228,6 +231,7 @@ export const login = asyncHandler(async (req, res) => {
           phoneNumber: userExist.phoneNumber,
           city: userExist.city,
           country: userExist.country,
+          isBlocked: userExist.isBlocked,
           addresses: userExist.addresses || null,
           token: generateTokens(),
         },
@@ -258,6 +262,7 @@ export const login = asyncHandler(async (req, res) => {
       city: userExist.city,
       country: userExist.country,
       phone: userExist.phone,
+      isBlocked: userExist.isBlocked,
       addresses: userExist.addresses || null,
       token: generateTokens(userExist._id),
     },
@@ -361,5 +366,53 @@ export const updatePassword = asyncHandler(async (req, res) => {
   } catch (err) {
     console.error("Error updating password:", err);
     res.status(500).json({ message: "Server error while updating password" });
+  }
+});
+
+// @desc    monitering user
+// @route   GET /api/user/monitering_user/:id
+// @access  public
+export const moniteringUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(400).json({ message: "User not found" });
+  }
+  if (user.isBlocked) {
+    return res.status(400).json({
+      message: "User is Blocked",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isAdmin: user.isAdmin,
+        isVerified: user.isVerified,
+        city: user.city,
+        country: user.country,
+        phone: user.phone,
+        isBlocked: user.isBlocked,
+        addresses: user.addresses || null,
+        token: generateTokens(user._id),
+      },
+    });
+  } else {
+    return res.status(200).json({
+      message: "User is Not blocked",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isAdmin: user.isAdmin,
+        isVerified: user.isVerified,
+        city: user.city,
+        country: user.country,
+        phone: user.phone,
+        isBlocked: user.isBlocked,
+        addresses: user.addresses || null,
+        token: generateTokens(user._id),
+      },
+    });
   }
 });

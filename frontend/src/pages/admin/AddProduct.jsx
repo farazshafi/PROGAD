@@ -94,7 +94,7 @@ const AddProduct = () => {
 
   const resetProductData = () => {
     setProductData(initialProductData);
-    setProductMainImg([])
+    setProductMainImg([]);
   };
 
   const resetVariantData = () => {
@@ -475,17 +475,16 @@ const AddProduct = () => {
 
       // Make API call
       const data = await createProductApi(formData);
-
-      if (data && data.error) {
-        toast.error("Failed to add product: " + data.error);
-      } else if (data) {
-        resetProductData();
-        toast.success("Product added successfully");
-      } else {
-        toast.error("Failed to add product");
+      if(data.response){
+        const {status} = data.response
+        if(status=== 400 || status === 500 || status === 401){
+          return toast.error(data.response.data.message || "coud't add product");
+        }
       }
+      resetProductData();
+      toast.success("Product added successfully");
     } catch (err) {
-      toast.error("Error adding product.");
+      console.log("baaki err", err);
       console.error("Error adding product:", err);
     }
   };

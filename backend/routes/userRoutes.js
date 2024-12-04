@@ -1,5 +1,5 @@
 import express from "express"
-import { editUser, login, resendOtp, updatePassword, userRegistration, verifyOtp } from "../controllers/userController.js"
+import { editUser, login, moniteringUser, resendOtp, updatePassword, userRegistration, verifyOtp } from "../controllers/userController.js"
 import {protect} from "../middleware/authMiddleware.js"
 import { getWalletDetails } from "../controllers/walletController.js"
 
@@ -13,5 +13,6 @@ router.post("/resend_otp",protect, resendOtp)
 router.patch("/edit_user",protect, editUser)
 router.patch("/update_password",protect, updatePassword)
 router.get("/wallet/:userId",protect, getWalletDetails)
+router.get("/monitering_user/:id", moniteringUser)
 
 export default router

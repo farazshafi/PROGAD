@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${process.env.REACT_APP_API_URL}/user`
+const API_URL = `${process.env.REACT_APP_API_URL}/user`;
 
 export const userRegisterApi = async (userDetails) => {
   try {
@@ -81,6 +81,16 @@ export const updatePasswordApi = async (password) => {
       password,
       config
     );
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+export const moniteringUserApi = async (id) => {
+  try {
+    const { data } = await axios.get(`${API_URL}/monitering_user/${id}`);
     return data;
   } catch (e) {
     console.log(e);

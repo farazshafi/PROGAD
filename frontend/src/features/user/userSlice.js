@@ -19,6 +19,7 @@ const userSlice = createSlice({
         phoneNumber: action.payload.phoneNumber,
         addresses: action.payload.addresses || [],
         isVerified: action.payload.isVerified,
+        isBlocked: action.payload.isBlocked,
         city: action.payload.city,
         country: action.payload.country,
         token: action.payload.token,

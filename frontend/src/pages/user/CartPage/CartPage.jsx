@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { findCouponsApi } from "../../../api/couponApi";
 import { FaCheck } from "react-icons/fa";
 import { selectedUser } from "../../../features/user/userSlice";
+import { checkCartProductValidApi } from "../../../api/productApi";
 
 const CartPage = () => {
   const cartItems = useSelector(selectedCart);
@@ -75,7 +76,28 @@ const CartPage = () => {
     }
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    try {
+      const cartitemIds = [];
+      for (const items of cartItems) {
+        cartitemIds.push(items.id);
+      }
+      console.log("cart items ids", cartitemIds)
+      const result = await checkCartProductValidApi(cartitemIds);
+      if (result?.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          const products = result.response.data.unAvailableProducts;
+          toast.error(
+            `The following products are not available: ${products.join(", ")}. Please Remove that product`
+          );
+          return 
+        }
+      }
+    } catch (err) {
+      toast.error("Failed to checkout. Please try again later.");
+      console.error("Checkout Error:", err);
+    }
     const couponDiscount = availableCoupon ? availableCoupon.discount : 0;
     const sendSummary = {
       totalAmount: summary.total,
@@ -235,7 +257,6 @@ const CartPage = () => {
                 borderRadius: "8px",
               }}
             >
-
               {/* Price Summary Section */}
               <div
                 className="cart-total-summary"

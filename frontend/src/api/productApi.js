@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 // production
-const API_URL = `${process.env.REACT_APP_API_URL}/product`
+const API_URL = `${process.env.REACT_APP_API_URL}/product`;
 
 export const createProductApi = async (productDetails) => {
   try {
@@ -19,20 +19,23 @@ export const createProductApi = async (productDetails) => {
     return data;
   } catch (e) {
     console.log("Error:", e);
-    return null;
+    return e;
   }
 };
 
 export const getAllProductsApi = async (page) => {
   try {
-    console.log('API URL:', API_URL);
+    console.log("API URL:", API_URL);
     const data = await axios.get(
       `${API_URL}/get_products?page=${page}&limit=${10}`
     );
-    console.log('Response:', data);
+    console.log("Response:", data);
     return data;
   } catch (err) {
-    console.error('Error fetching products:', err.response?.data || err.message);
+    console.error(
+      "Error fetching products:",
+      err.response?.data || err.message
+    );
     if (err.response && err.response.data) {
       toast.error(err.response.data.message);
     }
@@ -45,6 +48,22 @@ export const handlePublicChangeApi = async (id, isPublished) => {
     const data = await axios.patch(`${API_URL}/handle_public_change/${id}`, {
       isPublished,
     });
+    return data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};
+
+export const checkCartProductValidApi = async (cartItems) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const data = await axios.post(`${API_URL}/check_cart_products`, {cartItems} ,config);
     return data;
   } catch (err) {
     console.log(err);

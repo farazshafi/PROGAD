@@ -24,8 +24,19 @@ import { IoMdMore } from "react-icons/io";
 import { getAllUsers, blockUnblockUser } from "../../api/adminApi";
 import { MdEdit, MdBlock } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
+import { moniteringUserApi } from "../../api/userApi";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  logoutUser,
+  setUser,
+  selectedUser as sliceUser,
+} from "../../features/user/userSlice";
 
 const ListUsers = () => {
+  const user = useSelector(sliceUser);
+
+  const dispatch = useDispatch();
+
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("All");
@@ -80,6 +91,20 @@ const ListUsers = () => {
             user._id === selectedUser._id ? { ...user, isBlocked } : user
           )
         );
+
+        const result = await moniteringUserApi(selectedUser._id);
+        if (result.response) {
+          const userId = JSON.parse(localStorage.getItem("user"))._id
+          console.log("itdh vernn")
+          const { status } = result.response;
+          console.log("selcted user",selectedUser._id)
+          console.log("logged user",userId)
+          if ((status === 400 || status === 500) && selectedUser._id === userId) {
+            console.log("User matched for logout");
+            dispatch(setUser({ ...user, isBlocked: true }));
+            dispatch(logoutUser());
+          }
+        }
       }
 
       handleClose();

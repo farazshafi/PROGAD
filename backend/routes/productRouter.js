@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  checkCartProductValid,
   createProduct,
   getAllProduct,
   getAllPublicProducts,
@@ -35,5 +36,6 @@ router.get("/related_product/:id", getRelatedProduct);
 router.get("/public_products", protect, admin, getAllPublicProducts);
 router.get("/filter_products", getFilteredProducts);
 router.get("/best_selling", protect, admin, getTopSellingProduct);
+router.post("/check_cart_products", protect, checkCartProductValid);
 
 export default router;

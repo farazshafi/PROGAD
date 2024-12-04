@@ -77,7 +77,9 @@ export const createProduct = asyncHandler(async (req, res) => {
     // validation
     if (
       !name ||
+      name.trim().length < 2 ||
       !description ||
+      description.trim().length < 5 ||
       !originalPrice ||
       !discountPrice ||
       !totalStock ||
@@ -646,4 +648,40 @@ export const getTopSellingProduct = asyncHandler(async (req, res) => {
     return;
   }
   res.status(200).json(topProducts);
+});
+
+// @desc    before order making sure cart items are listed
+// @route   GET /api/product/check_cart_products
+// @access  private
+export const checkCartProductValid = asyncHandler(async (req, res) => {
+  const { cartItems } = req.body;
+
+  console.log("cart items", cartItems);
+
+  if (!cartItems || cartItems.length === 0) {
+    return res.status(400).json({ message: "Cart is empty." });
+  }
+
+  const products = await Product.find({ _id: { $in: cartItems } });
+
+  console.log("working ");
+
+  const unAvailableProducts = [];
+  for (const item of cartItems) {
+    const product = products.find((p) => p._id.toString() === item);
+    if (!product || !product.isPublished) {
+      unAvailableProducts.push(
+        product ? product.name : `Unknown product (${item})`
+      );
+    }
+  }
+
+  if (unAvailableProducts.length > 0) {
+    return res.status(400).json({
+      message: "Some products in your cart are unavailable.",
+      unAvailableProducts,
+    });
+  }
+
+  res.status(200).json({ message: "All products are available." });
 });
