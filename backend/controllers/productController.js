@@ -616,8 +616,9 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
 
 // @desc    Get top 10 best selling product
 // @route   GET /api/product/best_selling
-// @access  private admin
+// @access  public
 export const getTopSellingProduct = asyncHandler(async (req, res) => {
+  const {limit=10} = req.query
   const topProductsAggregation = await Order.aggregate([
     { $unwind: "$items" },
     {
@@ -627,7 +628,7 @@ export const getTopSellingProduct = asyncHandler(async (req, res) => {
       },
     },
     { $sort: { totalSold: -1 } },
-    { $limit: 10 },
+    { $limit: Number(limit) },
   ]);
 
   const topProducts = await Promise.all(

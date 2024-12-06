@@ -1,29 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header/Header";
 import OfferBanner from "../../../components/OfferBanner/OfferBanner";
 import HilightSection from "../../../components/HighlightSection/HilightSection";
-import headphoneImg from "../../../assets/images/products/headphone.jpeg";
-import boatImg from "../../../assets/images/products/boat.jpeg";
-import jblImg from "../../../assets/images/products/jbl.jpeg";
-import podImg from "../../../assets/images/products/blutooth.jpeg";
 import ProductGrid from "../../../components/ProductGrid/ProductGrid";
 import ProductCard from "../../../components/ProductCard/ProductCard";
 import { Divider } from "@mui/material";
+import { toast } from "react-toastify";
+import { getTopSellingProductApi } from "../../../api/productApi";
 
 const HomePage = () => {
+  const [topProducts, setTopProducts] = useState([]);
+
+  const fetchTopProducts = async () => {
+    try {
+      const result = await getTopSellingProductApi(5);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 400 || status === 500) {
+          toast.error(result.response.data.message || "server error");
+          return;
+        }
+      }
+      setTopProducts(result);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch top products");
+    }
+  };
+
+  useEffect(() => {
+    fetchTopProducts();
+  }, []);
+
   return (
     <React.Fragment>
-      <div style={{padding:" 0% 2%"}}>
-        <Header />
-        <Divider sx={{marginTop:"80px"}} />
+      <div style={{ padding: " 0% 2%" }}>
+        <Header navbar={true}/>
+        <Divider sx={{ marginTop: "80px" }} />
         <OfferBanner hide={"false"} brand={["Boat, JBL"]} title={"Eid Offer"} />
         <HilightSection nav={"newarrivals"} text={"New Arrivals"} />
-        <ProductGrid
-          img1={headphoneImg}
-          img2={boatImg}
-          img3={jblImg}
-          img4={podImg}
-        />
+        {topProducts.length > 0 && <ProductGrid products={topProducts} />}
         <HilightSection text={"Top Products"} />
         <ProductCard />
       </div>

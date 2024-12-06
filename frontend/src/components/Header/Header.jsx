@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Center,
   ChakraProvider,
   Text,
   Menu,
@@ -11,17 +10,13 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import { FaSearch, FaUser } from "react-icons/fa";
-import "./Header.css";
+import { FaBars, FaSearch, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, selectedUser } from "../../features/user/userSlice";
 import AnimatedSearchBar from "../AnimatedSearchBar";
 
 const Header = ({ navbar = true }) => {
   const user = useSelector(selectedUser);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -38,158 +33,127 @@ const Header = ({ navbar = true }) => {
           mb={{ base: "50px", md: "30px", lg: "20px" }}
           className="header"
         >
-          <Text
-            fontSize={{ base: "15px", md: "20px", lg: "30px" }}
-            className="progad"
-            textAlign={"center"}
-            alignItems={"center"}
-          >
-            PROGAD
-          </Text>
-          {navbar ? (
+          <Link to={"/"}>
+            <Text
+              className="text-gray-400 font-poppins text-2xl mb-2 tracking-[10px]	"
+              fontSize={{ base: "15px", md: "20px", lg: "30px" }}
+              textAlign={"center"}
+              alignItems={"center"}
+            >
+              PROGAD
+            </Text>
+          </Link>
+
+          {navbar && (
             <>
-              <Navbar expand="lg" className="navbar">
-                <Box id="box1" className="nav-progad-box">
-                  <Navbar.Brand>
-                    <Text
-                      fontSize={{ base: "15px" }}
-                      display={{ base: "none", lg: "inline-block" }}
-                      pt={{ md: "20px" }}
-                      className="nav-progad "
-                    >
+              <div className="flex justify-between items-center px-4">
+                <Box id="box1" className="text-left">
+                  <Link to="/">
+                    <Text className="font-semibold text-lg text-white font-poppins tracking-[5px]">
                       PROGAD
                     </Text>
-                  </Navbar.Brand>
+                  </Link>
                 </Box>
-                <Box id="box2">
-                  <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                  <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto nav-items-div">
-                      <Nav.Link as={Link} to="/" className="nav-link-chakra">
-                        <i className="fa-solid fa-house"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                        >
-                          Home
-                        </Text>
-                      </Nav.Link>
-                      <Nav.Link
-                        as={Link}
-                        to="/products"
-                        className="nav-link-chakra"
-                      >
-                        <i className="fa-solid fa-headphones"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                        >
-                          Products
-                        </Text>
-                      </Nav.Link>
-                      <Nav.Link
-                        as={Link}
-                        to="/cart"
-                        className="nav-link-chakra"
-                      >
-                        <i className="fa-solid fa-cart-shopping"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                        >
-                          Cart
-                        </Text>
-                      </Nav.Link>
-                      <Nav.Link
-                        as={Link}
-                        to="/coupons"
-                        className="nav-link-chakra"
-                      >
-                        <i className="fa-solid fa-message"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                        >
-                          Coupons
-                        </Text>
-                      </Nav.Link>
-                      <Nav.Link
-                        as={Link}
-                        to="/about"
-                        className="nav-link-chakra"
-                      >
-                        <i className="fa-solid fa-address-card"></i>
-                        <Text
-                          className="nav-items"
-                          color={"black"}
-                          fontSize={{ base: "15px", md: "20px", lg: "15px" }}
-                        >
-                          About us
-                        </Text>
-                      </Nav.Link>
-                    </Nav>
-                  </Navbar.Collapse>
-                </Box>
-                <Box id="box3" display={{ base: "none", lg: "flex" }}>
-                  <Box className="nav-icons">
-                    {/* Search Icon */}
 
-                    <AnimatedSearchBar />
+                <Box id="box2" className="relative">
+                  <div className="hidden lg:flex bg-white rounded-3xl mt-2 px-4 py-1 gap-3 py-2">
+                    <Link
+                      to="/"
+                      className=" text-black font-poppins text-lg py-1"
+                    >
+                      Home
+                    </Link>
+                    <Link
+                      to="/products"
+                      className=" text-black font-poppins text-lg py-1"
+                    >
+                      Products
+                    </Link>
+                    <Link
+                      to="/cart"
+                      className=" text-black font-poppins text-lg py-1"
+                    >
+                      Cart
+                    </Link>
+                    <Link
+                      to="/about"
+                      className=" text-black font-poppins text-lg py-1"
+                    >
+                      About Us
+                    </Link>
+                    <Link
+                      to="/coupons"
+                      className=" text-black font-poppins text-lg py-1"
+                    >
+                      Coupons
+                    </Link>
+                  </div>
 
-                    {/* Profile Dropdown */}
+                  <div className="lg:hidden">
                     <Menu>
                       <MenuButton
                         as={IconButton}
-                        icon={
-                          <Center
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              borderRadius: "50%",
-                              backgroundColor: "#262626",
-                              marginTop: "10px",
-                            }}
-                            _hover={{ backgroundColor: "#333333" }} // Change on hover
-                          >
-                            <FaUser color="white" />
-                          </Center>
-                        }
-                        background="none"
-                        _hover={{ background: "none" }}
+                        icon={<FaBars />}
+                        className="text-black"
                       />
-                      <MenuList bg="white" color="black">
-                        <MenuItem
-                          as={Link}
-                          disabled={user ? false : true}
-                          to="/profile"
-                          _hover={{
-                            backgroundColor: "#262626",
-                            color: "#FF7F11",
-                          }} // Change color on hover
-                        >
-                          Profile
+                      <MenuList>
+                        <MenuItem as={Link} to="/">
+                          Home
                         </MenuItem>
-                        <MenuItem
-                          onClick={handleLogout}
-                          _hover={{
-                            backgroundColor: "#262626",
-                            color: "#FF7F11",
-                          }}
-                        >
-                          {user ? "Logout" : "Login"}
+                        <MenuItem as={Link} to="/products">
+                          Products
+                        </MenuItem>
+                        <MenuItem as={Link} to="/cart">
+                          Cart
+                        </MenuItem>
+                        <MenuItem as={Link} to="/about">
+                          About Us
+                        </MenuItem>
+                        <MenuItem as={Link} to="/coupons">
+                          Coupons
                         </MenuItem>
                       </MenuList>
                     </Menu>
-                  </Box>
+                  </div>
                 </Box>
-              </Navbar>
+
+                {/* Box 3: Right-aligned icons */}
+                <Box id="box3" className="flex items-center">
+                  {/* Search */}
+                  <AnimatedSearchBar />
+
+                  {/* User Profile Dropdown */}
+                  <Menu>
+                    <MenuButton
+                      as={IconButton}
+                      icon={<FaUser className="text-black" />}
+                    />
+                    <MenuList>
+                      <MenuItem
+                        as={Link}
+                        to="/profile"
+                        disabled={!user}
+                        _hover={{
+                          backgroundColor: "#262626",
+                          color: "#FF7F11",
+                        }}
+                      >
+                        Profile
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleLogout}
+                        _hover={{
+                          backgroundColor: "#262626",
+                          color: "#FF7F11",
+                        }}
+                      >
+                        {user ? "Logout" : "Login"}
+                      </MenuItem>
+                    </MenuList>
+                  </Menu>
+                </Box>
+              </div>
             </>
-          ) : (
-            <></>
           )}
         </Box>
       </ChakraProvider>

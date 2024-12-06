@@ -149,7 +149,7 @@ export const getAllOrders = asyncHandler(async (req, res) => {
 
     const allOrders = await Order.find({ user: id }).populate(
       "shippingAddress"
-    );
+    ).sort({orderDate:-1})
     if (!allOrders) {
       return res.status(404).json({ message: "No orders found" });
     }
@@ -250,7 +250,8 @@ export const listAllOrders = asyncHandler(async (req, res) => {
     const allOrders = await Order.find()
       .populate("user", "_id name email")
       .limit(limit)
-      .skip(skip);
+      .skip(skip)
+      .sort({orderDate:-1})
     if (!allOrders) {
       return res.status(404).json({ message: "No orders found" });
     }

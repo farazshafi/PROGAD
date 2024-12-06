@@ -31,10 +31,11 @@ const walletSchema = new mongoose.Schema(
         orderId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Order",
-          required: function() {
-            return this.type === 'credit';
-          }
+          required: function () {
+            return this.type === "credit";
+          },
         },
+        createdAt: { type: Date, default: Date.now },
       },
     ],
   },

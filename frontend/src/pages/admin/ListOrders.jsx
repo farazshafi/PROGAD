@@ -60,7 +60,7 @@ const ListOrders = () => {
         const orderData = {
           status,
           user: selectedOrder.user._id,
-        }
+        };
         const result = await updateOrderStatusApi(selectedOrder._id, orderData);
         if (result.response) {
           const { status } = result.response;
@@ -81,12 +81,12 @@ const ListOrders = () => {
 
   const handleCancelOrder = async () => {
     try {
-      console.log("selected user", selectedOrder)
+      console.log("selected user", selectedOrder);
       const orderData = {
         status: "cancelled",
         user: selectedOrder.user._id,
-      }
-      const result = await updateOrderStatusApi(selectedOrder._id,orderData);
+      };
+      const result = await updateOrderStatusApi(selectedOrder._id, orderData);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -267,8 +267,9 @@ const ListOrders = () => {
                     </MenuItem>
                     <MenuItem
                       disabled={
-                        order.status === "delivered" ||
-                        order.status === "cancelled"
+                        selectedOrder?.status === "delivered" ||
+                        selectedOrder?.status === "cancelled" ||
+                        selectedOrder?.status === "returned"
                       }
                       onClick={() => handleChangeStatus("delivered")}
                     >
@@ -276,8 +277,9 @@ const ListOrders = () => {
                     </MenuItem>
                     <MenuItem
                       disabled={
-                        order.status === "delivered" ||
-                        order.status === "cancelled"
+                        selectedOrder?.status === "delivered" ||
+                        selectedOrder?.status === "cancelled" ||
+                        selectedOrder?.status === "returned"
                       }
                       onClick={() => handleChangeStatus("shipped")}
                     >
@@ -286,8 +288,9 @@ const ListOrders = () => {
                     </MenuItem>
                     <MenuItem
                       disabled={
-                        order.status === "delivered" ||
-                        order.status === "cancelled"
+                        selectedOrder?.status === "delivered" ||
+                        selectedOrder?.status === "cancelled" ||
+                        selectedOrder?.status === "returned"
                       }
                       onClick={() => handleChangeStatus("pending")}
                     >
@@ -295,8 +298,9 @@ const ListOrders = () => {
                     </MenuItem>
                     <MenuItem
                       disabled={
-                        order.status === "delivered" ||
-                        order.status === "cancelled"
+                        selectedOrder?.status === "delivered" ||
+                        selectedOrder?.status === "cancelled" ||
+                        selectedOrder?.status === "returned"
                       }
                       onClick={handleCancelOrder}
                     >

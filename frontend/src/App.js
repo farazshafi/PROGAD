@@ -23,11 +23,10 @@ import OrderDetailsCard from "./components/OrderDetailsCard/OrderDetailsCard";
 import CouponsPage from "./pages/user/CouponsPage";
 import AboutUs from "./pages/user/AboutUs";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUser, selectedUser } from "./features/user/userSlice";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "./features/user/userSlice";
 
 function App() {
-  const reduxUser = useSelector(selectedUser)
   const user = JSON.parse(localStorage.getItem("user"))
 
   const dispatch = useDispatch();

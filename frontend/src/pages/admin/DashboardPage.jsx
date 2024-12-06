@@ -90,7 +90,7 @@ const DashboardPage = () => {
   };
 
   const fetchTopProducts = async () => {
-    const result = await getTopSellingProductApi();
+    const result = await getTopSellingProductApi(10);
     setTopProducts(result);
   };
 

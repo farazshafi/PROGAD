@@ -1,181 +1,57 @@
 import React from "react";
-import { Box, ChakraProvider, Grid, GridItem, Text } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { FaChevronCircleRight } from "react-icons/fa";
+import { FaChevronCircleLeft } from "react-icons/fa";
 
-const ProductGrid = ({ img1, img2, img3, img4 }) => {
+const ProductGrid = ({ products }) => {
+  const navigate = useNavigate();
+
   return (
-    <ChakraProvider>
-      <Box p={{ lg: "0 10px 0px 10px" }} mt={5}>
-        <Grid
-          height={{ lg: "400px", md: "400px"}}
-          templateRows={{
-            base: "repeat(4, 200px)",
-            md: "repeat(2, 1fr)",
-            lg: "repeat(2, 1fr)",
-          }}
-          templateColumns={{
-            base: "repeat(2, 1fr)",
-            md: "repeat(6, 1fr)",
-            lg: "repeat(7, 1fr)",
-          }}
-          gap={4}
-        >
-          <GridItem
-            rowSpan={{ base: 1, md: 2, lg: 2 }}
-            colSpan={{ base: 2, md: 3, lg: 3 }}
-            position="relative"
-          >
-            <Box
-              backgroundImage={`url(${img1})`}
-              backgroundSize="cover"
-              backgroundPosition="center"
-              w="100%"
-              h="100%"
-              transition="filter 0.3s ease"
-              _hover={{ filter: "blur(4px)" }}
-            />
-            <Box
-              position="absolute"
-              top="0"
-              left="0"
-              w="100%"
-              h="100%"
-              bg="rgba(0, 0, 0, 0.6)"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              color="white"
-              fontSize="lg"
-              fontWeight="bold"
-              opacity={0}
-              transition="opacity 0.3s ease"
-              _hover={{ opacity: 1 }}
+    <div className="relative">
+      <div className="overflow-hidden">
+        <div className="flex gap-4 overflow-x-auto no-scrollbar">
+          {products.map((product) => (
+            <div
+              key={product.productId}
+              className="flex-shrink-0 w-64 p-4 bg-white rounded-lg shadow-lg cursor-pointer"
+              onClick={() => navigate(`/product_details/${product.productId}`)}
             >
-              <Text>Headphones</Text>
-              <Text>$299</Text>
-            </Box>
-          </GridItem>
-
-          {/* Product 2 */}
-          <GridItem
-            colSpan={{ base: 1, md: 2, lg: 2 }}
-            rowSpan={{ base: 1, lg: 1 }}
-            position="relative"
-          >
-            <Box
-              backgroundImage={`url(${img2})`}
-              backgroundSize="cover"
-              backgroundPosition="center"
-              w="100%"
-              h="100%"
-              transition="filter 0.3s ease"
-              _hover={{ filter: "blur(4px)" }}
-            />
-            <Box
-              position="absolute"
-              top="0"
-              left="0"
-              w="100%"
-              h="100%"
-              bg="rgba(0, 0, 0, 0.6)"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              color="white"
-              fontSize="lg"
-              fontWeight="bold"
-              opacity={0}
-              transition="opacity 0.3s ease"
-              _hover={{ opacity: 1 }}
-            >
-              <Text>JBL Speaker</Text>
-              <Text>$199</Text>
-            </Box>
-          </GridItem>
-
-          {/* Product 3 */}
-          <GridItem
-            colSpan={{ base: 1, md: 2, lg: 2 }}
-            rowSpan={{ base: 1, lg: 1 }}
-            position="relative"
-          >
-            <Box
-              backgroundImage={`url(${img3})`}
-              backgroundSize="cover"
-              backgroundPosition="center"
-              w="100%"
-              h="100%"
-              transition="filter 0.3s ease"
-              _hover={{ filter: "blur(4px)" }}
-            />
-            <Box
-              position="absolute"
-              top="0"
-              left="0"
-              w="100%"
-              h="100%"
-              bg="rgba(0, 0, 0, 0.6)"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              color="white"
-              fontSize="lg"
-              fontWeight="bold"
-              opacity={0}
-              transition="opacity 0.3s ease"
-              _hover={{ opacity: 1 }}
-            >
-              <Text>Boat Neckband</Text>
-              <Text>$149</Text>
-            </Box>
-          </GridItem>
-
-          {/* Product 4 */}
-          <GridItem
-            colSpan={{
-              base: 2,
-              md: 6,
-              lg: 4,
-            }}
-            rowSpan={{ base: 1, lg: 1 }}
-            position="relative"
-          >
-            <Box
-              backgroundImage={`url(${img4})`}
-              backgroundSize="cover"
-              backgroundPosition="center"
-              w="100%"
-              h="100%"
-              transition="filter 0.3s ease"
-              _hover={{ filter: "blur(4px)" }}
-            />
-            <Box
-              position="absolute"
-              top="0"
-              left="0"
-              w="100%"
-              h="100%"
-              bg="rgba(0, 0, 0, 0.6)"
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              color="white"
-              fontSize="lg"
-              fontWeight="bold"
-              opacity={0}
-              transition="opacity 0.3s ease"
-              _hover={{ opacity: 1 }}
-            >
-              <Text>Bluetooth Pods</Text>
-              <Text>$89</Text>
-            </Box>
-          </GridItem>
-        </Grid>
-      </Box>
-    </ChakraProvider>
+              <img
+                src={product?.productDetails?.firstImage}
+                alt={product?.productDetails?.name}
+                className="w-full h-40 object-cover rounded-md"
+              />
+              <h3 className="mt-2 text-lg font-semibold text-gray-800">
+                {product.name}
+              </h3>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Navigation Buttons */}
+      <button
+        className="absolute top-1/2 left-0 transform -translate-y-1/ mt-[-20px] bg-gray-800 text-white px-3 py-3 ml-2 rounded-full shadow-md hover:text-gray-700"
+        onClick={() => {
+          document.querySelector(".no-scrollbar").scrollBy({
+            left: -300,
+            behavior: "smooth",
+          });
+        }}
+      >
+        <FaChevronCircleLeft />
+      </button>
+      <button
+        className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-3 mr-2 rounded-full shadow-md hover:bg-gray-700"
+        onClick={() => {
+          document.querySelector(".no-scrollbar").scrollBy({
+            left: 300,
+            behavior: "smooth",
+          });
+        }}
+      >
+        <FaChevronCircleRight />
+      </button>
+    </div>
   );
 };
 

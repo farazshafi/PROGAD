@@ -35,7 +35,7 @@ router.put("/update_product/:id", updateProduct);
 router.get("/related_product/:id", getRelatedProduct);
 router.get("/public_products", protect, admin, getAllPublicProducts);
 router.get("/filter_products", getFilteredProducts);
-router.get("/best_selling", protect, admin, getTopSellingProduct);
+router.get("/best_selling",getTopSellingProduct);
 router.post("/check_cart_products", protect, checkCartProductValid);
 
 export default router;

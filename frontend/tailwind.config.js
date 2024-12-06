@@ -1,17 +1,20 @@
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}", 
+    "./src/**/*.{js,jsx,ts,tsx}",
     "./public/index.html",
+    "./node_modules/flowbite/**/*.js", 
   ],
   theme: {
     extend: {
-      colors:{
-        ourOrange:"#ff7f11"
+      colors: {
+        ourOrange: "#ff7f11",
       },
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin') 
+  ],
 };

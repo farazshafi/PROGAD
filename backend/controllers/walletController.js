@@ -8,10 +8,14 @@ import Wallet from "../models/walletModel.js"
 export const getWalletDetails = asyncHandler(async(req,res)=>{
     const {userId} = req.params
 
-    const wallet = await Wallet.findOne({userId}).select("balance _id transactions")
+    const wallet = await Wallet.findOne({userId}).sort({"transactions.createdAt":-1}).select("balance _id transactions")
+
     if(!wallet){
-        return res.status(404).json({message: "No wallet found"})
+        return res.status(201).json([])
     }
+
+    wallet.transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     res.status(200).json(wallet)
 
 })

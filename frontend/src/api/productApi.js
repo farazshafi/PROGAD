@@ -144,15 +144,10 @@ export const getFilteredProductsApi = async (filters) => {
   }
 };
 
-export const getTopSellingProductApi = async () => {
+export const getTopSellingProductApi = async (limit) => {
   try {
-    const token = JSON.parse(localStorage.getItem("admin")).token;
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const response = await axios.get(`${API_URL}/best_selling`, config);
+    
+    const response = await axios.get(`${API_URL}/best_selling?limit=${limit}`);
     return response.data;
   } catch (err) {
     console.error("Error fetching filtered products:", err);
