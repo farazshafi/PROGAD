@@ -147,7 +147,7 @@ export const login = asyncHandler(async (req, res) => {
 
   if (googleId) {
     userExist = await User.findOne({ googleId }).populate({
-      path: "address",
+      path: "addresses",
       select:
         "_id type street apartment city state zip country phoneNumber email",
     });

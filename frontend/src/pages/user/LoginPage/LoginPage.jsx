@@ -38,7 +38,7 @@ const LoginPage = () => {
       (data && data.response && data.response.status === 400) ||
       (data && data.response && data.response.status === 500)
     ) {
-      toast.error(data.response.data.message);
+      toast.error(data.response.data.message || "something went wrong");
       return;
     }
 
