@@ -137,6 +137,7 @@ export const getActiveOffer = asyncHandler(async (req, res) => {
       "name discountType discount expirationDate applyToProducts applyToCategories categoryIds"
     )
     .populate("categoryIds", "name _id");
+
   res.status(200).json(activeOffer);
 });
 
@@ -163,11 +164,19 @@ export const offerProducts = asyncHandler(async (req, res) => {
     });
 
     const products = await Product.find({
-      $or: [
-        { _id: { $in: Array.from(productIds) } },
-        { category: { $in: Array.from(categoryIds) } },
+      $and: [
+        {
+          $or: [
+            { _id: { $in: Array.from(productIds) } },
+            { category: { $in: Array.from(categoryIds) } },
+          ],
+        },
+        { isPublished: true },
       ],
     });
+    
+
+    console.log("products offer", products)
 
     const filteredProducts = products.map((product) => {
       const relevantOffer = offers.find(
