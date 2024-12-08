@@ -62,6 +62,7 @@ const UserProfileCard = ({ user }) => {
       {user && (
         <>
           <Card
+            className="mt-5"
             variant="outlined"
             sx={{
               display: "flex",
@@ -134,7 +135,11 @@ const UserProfileCard = ({ user }) => {
                 >
                   Edit Profile
                 </Button>
-                <Button onClick={()=> dispatch(logoutUser())} variant="contained" sx={{ backgroundColor: "#262626" }}>
+                <Button
+                  onClick={() => dispatch(logoutUser())}
+                  variant="contained"
+                  sx={{ backgroundColor: "#262626" }}
+                >
                   Logout
                 </Button>
               </CardActions>

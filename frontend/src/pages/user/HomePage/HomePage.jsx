@@ -39,10 +39,8 @@ const HomePage = () => {
         <Header navbar={true}/>
         <Divider sx={{ marginTop: "80px" }} />
         <OfferBanner hide={"false"} brand={["Boat, JBL"]} title={"Eid Offer"} />
-        <HilightSection nav={"newarrivals"} text={"New Arrivals"} />
+        <HilightSection showMore={false} text={"Top Products"} />
         {topProducts.length > 0 && <ProductGrid products={topProducts} />}
-        <HilightSection text={"Top Products"} />
-        <ProductCard />
         <Footer />
       </div> 
     </React.Fragment>

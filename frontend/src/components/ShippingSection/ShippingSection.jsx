@@ -10,11 +10,15 @@ import { useNavigate } from "react-router-dom";
 const ShippingSection = ({ selectedAddress }) => {
   const user = useSelector(selectedUser);
 
-  const [address, setAddress] = useState(null);
+  const [address, setAddress] = useState({});
 
   const navigate = useNavigate();
 
   const handleAddressClick = (address) => {
+    console.log("address clicked", address);
+    if (Object.keys(address).length === 0) {
+      return toast.error("Please select a address");
+    }
     setAddress({
       id: address._id,
       type: address.type,
@@ -31,25 +35,18 @@ const ShippingSection = ({ selectedAddress }) => {
     });
   };
 
-  const handleSelectedAddress = () => {
-    if (address.name === undefined || address.name.length < 1) {
-      return toast.error("Please select atleast one address");
-    }
-    selectedAddress(address);
-  };
-
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
-  }, []);
+    if (Object.keys(address).length !== 0) {
+      selectedAddress(address);
+    }
+  }, [address]);
 
   return (
     <Box sx={{ padding: { sm: "0px 10px", lg: "0px 80px", xs: "0px 7px" } }}>
-      <Typography
-        variant="h6"
-        sx={{ marginTop: 4, marginBottom: 4, textAlign: "center" }}
-      >
+      <Typography variant="h6" sx={{ marginTop: 4, textAlign: "center" }}>
         SHIPPING ADDRESS
       </Typography>
 
@@ -63,7 +60,7 @@ const ShippingSection = ({ selectedAddress }) => {
           marginBottom: "30px",
         }}
       />
-      {address && (
+      {Object.keys(address).length !==0  && (
         <form>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -322,9 +319,6 @@ const ShippingSection = ({ selectedAddress }) => {
             </Grid>
           </Grid>
           <Divider sx={{ mt: "20px" }} />
-          <span onClick={handleSelectedAddress}>
-            <OurButton text={"Save Address"} w={"100"} />
-          </span>
         </form>
       )}
     </Box>

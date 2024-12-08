@@ -54,6 +54,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
     breadcrumbPath = [
       { label: "Home", url: "/" },
       { label: "Profile", url: "/profile" },
+      { label: "Orders", url: "/profile/orders" },
       { label: order?._id, url: "" },
     ];
   }

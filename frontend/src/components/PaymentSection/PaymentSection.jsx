@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   RadioGroup,
@@ -13,6 +13,7 @@ import {
   setPaymentMethod,
 } from "../../features/user/orderSlice";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const PaymentSection = () => {
   const orderDetails = useSelector(selectedOrder);
@@ -20,15 +21,21 @@ const PaymentSection = () => {
   const [payment, setPayment] = useState("razorpay");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate()
 
   const handlePaymentChange = (event) => {
-    setPayment(event.target.value);
+    setPayment(event.target.value)
+    dispatch(setPaymentMethod(event.target.value));
   };
 
-  const handlePaymentMethod = () => {
-    dispatch(setPaymentMethod(payment));
-    toast.success("Saved Payment method");
-  };
+
+  useEffect(()=>{
+    if(Object.keys(orderDetails?.shippingAddress).length === 0){ 
+      toast.error("Please select a shipping address")
+      navigate("/cart_process/shipping")
+      return
+    }
+  },[])
 
   return (
     <Box
@@ -50,11 +57,6 @@ const PaymentSection = () => {
         sx={{ color: "#FFF" }}
       >
         <FormControlLabel
-          value="creditCard"
-          control={<Radio sx={{ color: "#fff" }} />}
-          label="Credit Card"
-        />
-        <FormControlLabel
           value="razorpay"
           control={<Radio sx={{ color: "#ffff" }} />}
           label="Razorpay"
@@ -63,7 +65,7 @@ const PaymentSection = () => {
           value="cashOnDelivery"
           control={<Radio sx={{ color: "#fff" }} />}
           label="Cash on Delivery"
-          disabled={Number(orderDetails.totalAmount) > 10000}
+          hidden={Number(orderDetails.totalAmount) > 10000}
           sx={{
             color: Number(orderDetails.totalAmount) > 10000 ? "grey" : "white",
             "& .MuiFormControlLabel-label.Mui-disabled": { color: "grey" },
@@ -76,9 +78,9 @@ const PaymentSection = () => {
         variant="contained"
         fullWidth
         sx={{ mt: 3, backgroundColor: "#FF7F11", color: "#FFF" }}
-        onClick={handlePaymentMethod}
+        onClick={()=>navigate("/cart_process/place_order")}
       >
-        Save Payment Method
+        Next
       </Button>
     </Box>
   );

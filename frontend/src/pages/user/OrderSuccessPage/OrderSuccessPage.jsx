@@ -1,13 +1,15 @@
 import React from "react";
 import "./OrderSuccessPage.css";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import OurButton from "../../../components/OurButton/OurButton";
 import Lottie from "lottie-react";
 import orderSuccessAnimation from "../../../assets/animations/order success.json";
 import Header from "../../../components/Header/Header";
 
-const orderSuccessPage = () => {
+const OrderSuccessPage = () => {
+  const { id } = useParams();
+  console.log("success order id", id);
   return (
     <>
       <Header />
@@ -43,7 +45,7 @@ const orderSuccessPage = () => {
               Go Home
             </Button>
           </Link>
-          <Link to={"/profile"}>
+          <Link to={`/order_details/${id}`}>
             <OurButton text={"View Order"} />
           </Link>
         </Box>
@@ -52,4 +54,4 @@ const orderSuccessPage = () => {
   );
 };
 
-export default orderSuccessPage;
+export default OrderSuccessPage;

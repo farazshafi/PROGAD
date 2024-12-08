@@ -3,7 +3,7 @@ import "./Footer.css";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 font-poppins rounded-lg text-black">
+    <footer className="bg-gray-100 font-poppins rounded-lg mt-5 text-black">
       <div className="mx-auto py-10 px-5 sm:px-10 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* About Us Section */}
         <div>
@@ -45,14 +45,6 @@ const Footer = () => {
                 className="hover:text-[#ff7f11] transition-colors duration-300"
               >
                 About Us
-              </a>
-            </li>
-            <li>
-              <a
-                href="/contact"
-                className="hover:text-[#ff7f11] transition-colors duration-300"
-              >
-                Contact
               </a>
             </li>
           </ul>

@@ -209,7 +209,7 @@ const AddressCard = ({ onAddressClick }) => {
 
   return (
     <>
-      <Button sx={{ background: "white", color: "black" }} onClick={handleOpen}>
+      <Button sx={{ background: "white", color: "black", mt:"40px" }} onClick={handleOpen}>
         Add Address
       </Button>
 

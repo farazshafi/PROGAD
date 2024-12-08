@@ -108,7 +108,7 @@ const CartPage = () => {
       couponCode: isApplied ? couponCode : null,
     };
     dispatch(setSummaryData(sendSummary));
-    navigate("/cart_process");
+    navigate("/cart_process/shipping");
   };
 
   const handleDelete = (item) => {

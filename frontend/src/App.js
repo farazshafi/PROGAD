@@ -25,21 +25,21 @@ import AboutUs from "./pages/user/AboutUs";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, selectedUser } from "./features/user/userSlice";
+import TestingComponent from "./components/TestingComponent";
 
 function App() {
-  const user = useSelector(selectedUser)
+  const user = useSelector(selectedUser);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!user){
-      toast.warning("Please Login")
+    if (!user) {
+      toast.warning("Please Login");
     }
     if (user && user.isBlocked) {
       dispatch(logoutUser());
       window.location.href = "/login";
     }
-
   }, []);
 
   return (
@@ -58,9 +58,9 @@ function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/product_details/:id" element={<ProductDetailsPage />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/cart_process" element={<CartProcess />} />
-          <Route path="/order_success" element={<OrderSuccessPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/cart_process/:component" element={<CartProcess />} />
+          <Route path="/order_success/:id" element={<OrderSuccessPage />} />
+          <Route path="/profile/:component?" element={<ProfilePage />} />
           <Route
             path="/order_details/:id"
             element={<OrderDetailsCard isAdmin={false} />}
@@ -82,6 +82,7 @@ function App() {
 
           {/* 404 page */}
           <Route path="*" element={<NotFoundPage />} />
+          <Route path="/test/" element={<TestingComponent />} />
         </Routes>
       </Router>
     </>

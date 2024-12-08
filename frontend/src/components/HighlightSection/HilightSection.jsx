@@ -4,14 +4,13 @@ import OurButton from "../OurButton/OurButton";
 import "./HilightSection.css";
 import { useNavigate } from "react-router-dom";
 
-const HilightSection = ({ nav,text }) => {
-
-  const navigate = useNavigate()
-  const navigateText = text.split(" ").join("").toLowerCase()
+const HilightSection = ({ showMore, text }) => {
+  const navigate = useNavigate();
+  const navigateText = text.split(" ").join("").toLowerCase();
 
   const handleClick = (wow) => {
-    navigate(`/${navigateText}`)
-  }
+    navigate(`/${navigateText}`);
+  };
 
   return (
     <ChakraProvider>
@@ -39,9 +38,11 @@ const HilightSection = ({ nav,text }) => {
               Featured
             </Text>
           </Box>
-          <Box ml={"auto"}>
-            <OurButton handleClick={handleClick} text={"Show More"} />
-          </Box>
+          {showMore && (
+            <Box ml={"auto"}>
+              <OurButton handleClick={handleClick} text={"Show More"} />
+            </Box>
+          )}
         </HStack>
         <Text
           className="section-name"

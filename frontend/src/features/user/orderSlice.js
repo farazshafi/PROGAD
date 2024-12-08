@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const savedShippingAddress =
   JSON.parse(localStorage.getItem("shippingAddress")) || {};
 const savedPaymentMethod =
-  JSON.parse(localStorage.getItem("paymentMethod")) || "";
+  JSON.parse(localStorage.getItem("paymentMethod")) || null;
 const savedOrderSummary =
   JSON.parse(localStorage.getItem("orderSummary")) || {};
 

@@ -1,126 +1,126 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Tabs,
-  Tab,
-  Divider,
-} from "@mui/material";
+import React, { useEffect } from "react";
+import { Box } from "@mui/material";
 import Header from "../../../components/Header/Header";
 import ShippingSection from "../../../components/ShippingSection/ShippingSection";
 import PaymentSection from "../../../components/PaymentSection/PaymentSection";
 import PlaceOrderSection from "../../../components/PlaceOrderSection/PlaceOrderSection";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { selectedOrder, setShippingAddress } from "../../../features/user/orderSlice";
+import { setShippingAddress } from "../../../features/user/orderSlice";
 import { logoutUser, selectedUser } from "../../../features/user/userSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { selectedCart } from "../../../features/user/cartSlice";
+import { FaLocationCrosshairs } from "react-icons/fa6";
+import { MdOutlinePayments } from "react-icons/md";
+import { FaBoxOpen } from "react-icons/fa";
 
 const CartProcess = () => {
-  const user = useSelector(selectedUser)
-  const cartItems = useSelector(selectedCart)
+  const user = useSelector(selectedUser);
+  const cartItems = useSelector(selectedCart);
 
-  const [tabIndex, setTabIndex] = useState(0);
+  const { component } = useParams();
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
-  const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue);
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSelectedAddress = (address) => {
-    console.log("selected address" , address)
-    dispatch(setShippingAddress(address))
-    toast.success("Address saved")
-  }
-
-  useEffect(()=>{
-    console.log(user)
-    if(!user){
-      toast.error("Please login to proceed")
-      navigate("/login")
-    }else{
-      if(!user?.isVerified){
-        toast.error("Please verify your email to proceed")
-        dispatch(logoutUser())
-        navigate("/login")
-      }
-    }
-  },[])
+    dispatch(setShippingAddress(address));
+    navigate("/cart_process/payment");
+  };
 
   useEffect(() => {
-    if(cartItems && cartItems.length < 1){
-      navigate("/cart")
+    console.log(user);
+    if (!user) {
+      toast.error("Please login to proceed");
+      navigate("/login");
+    } else {
+      if (!user?.isVerified) {
+        toast.error("Please verify your email to proceed");
+        dispatch(logoutUser());
+        navigate("/login");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (cartItems && cartItems.length < 1) {
+      navigate("/cart");
     }
   }, []);
 
   return (
     <>
-      <Header/>
+      <Header />
       <Box
         sx={{
           backgroundColor: "#262626",
-          padding: 3, 
+          padding: 3,
           borderRadius: 2,
           margin: "0 auto",
           color: "#FFFF",
         }}
       >
-        {/* Tabs for switching between sections */}
-        <Tabs
-          sx={{ width: "100%" }}
-          value={tabIndex}
-          onChange={handleTabChange}
-          centered
-          TabIndicatorProps={{
-            style: { backgroundColor: "#FF7F11" },
-          }}
-        >
-          <Tab
-            label="Shipping address"
-            sx={{
-              // mx: 2,
-              color: "#FFF",
-              "&.Mui-selected": {
-                color: "#FF7F11",
-              },
-            }}
-          />
-          <Tab
-            label="Payment details"
-            sx={{
-              mx: 2,
-              color: "#FFF",
-              "&.Mui-selected": {
-                color: "#FF7F11",
-              },
-            }}
-          />
-          <Tab
-            label="Place order"
-            sx={{
-              mx: 2,
-              color: "#FFF",
-              "&.Mui-selected": {
-                color: "#FF7F11",
-              },
-            }}
-          />
-        </Tabs>
-        <Divider
-          sx={{
-            mt: "20px",
-            mb: "10px",
-            height: "1px",
-            backgroundColor: "white",
-          }}
-        />
-
-        {/* Conditionally Render Sections Based on the Selected Tab */}
-        {tabIndex === 0 && <ShippingSection selectedAddress={handleSelectedAddress}/>} 
-        {tabIndex === 1 && <PaymentSection />}
-        {tabIndex === 2 && <PlaceOrderSection />}
+        <>
+          <div className="border-b pb-2 border-gray-600">
+            <ul className="flex flex-wrap -mb-px text-sm font-poppins text-center text-gray-100 dark:text-gray-400">
+              <li>
+                <button
+                  className={`inline-flex text-[15px] items-center p-4 ${
+                    component === "shipping"
+                      ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
+                      : ""
+                  }`}
+                  onClick={() => navigate("/cart_process/shipping")}
+                >
+                  <FaLocationCrosshairs className={`mr-2  ${
+                      component === "shipping"
+                        ? "text-2xl" : ""
+                    }`} />
+                  Shipping address
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`inline-flex text-[15px] items-center p-4 ${
+                    component === "payment"
+                      ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
+                      : ""
+                  }`}
+                  onClick={() => navigate("/cart_process/payment")}
+                >
+                  <MdOutlinePayments
+                    className={`mr-2  ${
+                      component === "payment"
+                        ? "text-2xl" : ""
+                    }`}
+                  />
+                  Payment details
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`inline-flex text-[15px] items-center p-4 ${
+                    component === "place_order"
+                      ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
+                      : ""
+                  }`}
+                  onClick={() => navigate("/cart_process/place_order")}
+                >
+                  <FaBoxOpen className={`mr-2  ${
+                      component === "place_order"
+                        ? "text-2xl" : ""
+                    }`} />
+                  Place order
+                </button>
+              </li>
+            </ul>
+          </div>
+          {component === "shipping" && (
+            <ShippingSection selectedAddress={handleSelectedAddress} />
+          )}
+          {component === "payment" && <PaymentSection />}
+          {component === "place_order" && <PlaceOrderSection />}
+        </>
       </Box>
     </>
   );

@@ -75,6 +75,8 @@ const PlaceOrderSection = () => {
             razorpayOrderId: paymentResult.razorpay_order_id,
           });
 
+          console.log("payment result :",result)
+
           if (result.response && result.response.status >= 400) {
             toast.error(result.response.data.message);
             return;
@@ -84,7 +86,7 @@ const PlaceOrderSection = () => {
           setTimeout(() => {
             setShowOrderedAnimation(false);
             dispatch(clearCart());
-            navigate("/order_success");
+            navigate(`/order_success/${result.data.orderId}`)
           }, 4000);
         } catch (error) {
           console.log("errror ind", error);
@@ -92,6 +94,8 @@ const PlaceOrderSection = () => {
             ...formattedOrderData,
             paymentStatus: "unpaid",
           });
+          console.log("payment result :",result)
+
 
           if (result.response) {
             const { status } = result.response;
@@ -112,7 +116,7 @@ const PlaceOrderSection = () => {
           setTimeout(() => {
             setShowOrderedAnimation(false);
             dispatch(clearCart());
-            navigate("/order_success");
+            navigate(`/order_success/${result.data.orderId}`)
           }, 4000);
         }
       } else {
@@ -120,6 +124,8 @@ const PlaceOrderSection = () => {
           ...formattedOrderData,
           paymentStatus: "unpaid",
         });
+        console.log("payment result :",result)
+
 
         if (result.response && result.response.status >= 400) {
           toast.error(result.response.data.message);
@@ -130,7 +136,7 @@ const PlaceOrderSection = () => {
         setTimeout(() => {
           setShowOrderedAnimation(false);
           dispatch(clearCart());
-          navigate("/order_success");
+          navigate(`/order_success/${result.data.orderId}`)
         }, 4000);
       }
     } catch (err) {
@@ -139,16 +145,21 @@ const PlaceOrderSection = () => {
   };
 
   const handleApply = async (dis) => {
-    const originalAmount = orderDetails.subTotal || Number(orderDetails.totalAmount); // Use subtotal if available
+    const originalAmount =
+      orderDetails.subTotal || Number(orderDetails.totalAmount); // Use subtotal if available
     const discountValue = (dis / 100) * originalAmount; // Calculate the discount value
     const discountedAmount = originalAmount - discountValue; // Subtract the discount from the original amount
-  
+
     // Calculate tax as a percentage of the discounted amount
     const taxAmount = (discountedAmount * (orderDetails.tax || 0)) / 100;
-  
+
     // Add delivery fee (if any) and calculate the final total
-    const total = (discountedAmount + taxAmount + Number(orderDetails.deliveryFee || 0)).toFixed(2);
-  
+    const total = (
+      discountedAmount +
+      taxAmount +
+      Number(orderDetails.deliveryFee || 0)
+    ).toFixed(2);
+
     dispatch(
       setSummaryData({
         ...orderDetails,
@@ -156,15 +167,17 @@ const PlaceOrderSection = () => {
         totalAmount: total, // Update total after applying discount
       })
     );
-  
+
     console.log("Discount applied: ", dis, "New total: ", total);
   };
-  
-  
 
   useEffect(() => {
     if (cartItems && cartItems.length < 1) {
-      navigate("/cart");
+      return navigate("/cart");
+    }
+    if(!orderDetails.paymentMethod){
+      toast.warning("Please select a payment method")
+      return navigate("/cart_process/payment");
     }
   }, []);
 

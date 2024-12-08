@@ -47,12 +47,12 @@ const WalletPage = () => {
   return (
     <div className=" flex flex-col items-center justify-center p-4">
       <h1 className="text-center text-4xl font-bold mb-2">Wallet</h1>
-      {walletDetails?.length < 1 && (
+      {walletDetails?.transactions?.length < 1 && (
         <p className="text-center font-poppins text-white opacity-50 mb-6">
           Wallet is Empty!. No Transaction Available
         </p>
       )}
-      {walletDetails && (
+      {walletDetails?.transactions?.length > 0 && walletDetails && (
         <>
           <Box className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
             <Typography
