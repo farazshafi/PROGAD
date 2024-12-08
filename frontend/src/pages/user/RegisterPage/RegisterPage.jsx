@@ -233,7 +233,7 @@ const RegisterPage = () => {
           </Box>
         </Center>
       </Box>
-      <Footer />
+      {/* <Footer /> */}
     </ChakraProvider>
   );
 };

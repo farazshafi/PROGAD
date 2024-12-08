@@ -155,7 +155,7 @@ const LoginPage = () => {
           </Box>
         </Center>
       </Box>
-      <Footer />
+      {/* <Footer /> */}
     </ChakraProvider>
   );
 };

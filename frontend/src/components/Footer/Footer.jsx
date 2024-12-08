@@ -1,253 +1,131 @@
 import React from "react";
 import "./Footer.css";
-import {
-  Box,
-  Center,
-  Text,
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
-  Td,
-  ChakraProvider,
-} from "@chakra-ui/react"; // MODIFIED
 
 const Footer = () => {
   return (
-    <ChakraProvider>
-      <Box
-        mt={{ base: "50px", md: "50px", lg: "50px" }}
-        className="footer-main-div"
-      >
-        <Box className="row">
-          <Box padding={{ base: "10px 20px" }} className="col-md-4">
-            <Center display={"inline"}>
-              <Text
-                fontSize={{ base: "15px" }}
-                color={"black"}
-                className="nav-progad"
-                mb={0}
+    <footer className="bg-gray-100 font-poppins rounded-lg text-black">
+      <div className="mx-auto py-10 px-5 sm:px-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* About Us Section */}
+        <div>
+          <h2 className="text-xl font-semibold text-black mb-4">
+            About PROGAD
+          </h2>
+          <p>
+            Welcome to PROGAD, your go-to destination for premium headphones and
+            audio products. Founded in 2023, our mission is to deliver the best
+            quality sound experience to all customers. With a wide range of
+            audio accessories, we cater to everyone—music lovers, audiophiles,
+            and everyday users alike.
+          </p>
+        </div>
+
+        {/* Quick Links Section */}
+        <div>
+          <h2 className="text-xl font-semibold text-black mb-4">Quick Links</h2>
+          <ul className="space-y-2">
+            <li>
+              <a
+                href="/"
+                className="hover:text-[#ff7f11] transition-colors duration-300"
               >
-                PROGAD
-              </Text>
-              <br />
-              <Text fontSize={{ base: "15px" }}>
-                Welcome to PROGAD, your go-to destination for premium headphones
-                and audio products. Founded in 2023, our mission is to deliver
-                the best quality sound experience to all customers. We
-                specialize in a wide range of headphones and audio accessories,
-                catering to music lovers, audiophiles, and everyday users alike.
-                With a commitment to quality and customer satisfaction, we aim
-                to bring the latest and greatest in audio technology to your
-                doorstep.
-              </Text>
-            </Center>
-          </Box>
-          <Box className="col-md-8">
-            <Box
-              className="footer-nav-div"
-              style={{
-                overflowX: "auto",
-                width: "100%",
-              }}
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="/products"
+                className="hover:text-[#ff7f11] transition-colors duration-300"
+              >
+                Products
+              </a>
+            </li>
+            <li>
+              <a
+                href="/about"
+                className="hover:text-[#ff7f11] transition-colors duration-300"
+              >
+                About Us
+              </a>
+            </li>
+            <li>
+              <a
+                href="/contact"
+                className="hover:text-[#ff7f11] transition-colors duration-300"
+              >
+                Contact
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact Section */}
+        <div>
+          <h2 className="text-xl font-semibold text-black mb-4">Contact</h2>
+          <p>Feel free to reach out to us:</p>
+          <ul className="mt-2 space-y-2">
+            <li>
+              <span className="font-semibold">Email:</span>{" "}
+              <a
+                href="mailto:support@progad.com"
+                className="hover:text-teal-400 transition-colors duration-300"
+              >
+                support@progad.com
+              </a>
+            </li>
+            <li>
+              <span className="font-semibold">Phone:</span>{" "}
+              <a
+                href="tel:+123456789"
+                className="hover:text-teal-400 transition-colors duration-300"
+              >
+                +91 9188773788
+              </a>
+            </li>
+            <li>
+              <span className="font-semibold">Location:</span> Kasaragod,
+              Kerala, INDIA
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="border-t border-gray-700">
+        <div className="container mx-auto py-3 px-5 sm:px-10 flex flex-col sm:flex-row justify-between items-center">
+          {/* Social Media */}
+          <div className="flex space-x-4">
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400 transition-colors duration-300"
             >
-              <Table
-                style={
-                  {
-                    // borderRadius:"20px"
-                  }
-                }
-              >
-                <Thead backgroundColor={"#262626"}>
-                  <Tr>
-                    <Th color="white">Navigation</Th>
-                    <Th color="white">Category</Th>
-                    <Th color="white">Brands</Th>
-                    <Th color="white">Contact</Th>
-                    <Th color="white">Help</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  <Tr>
-                    <Td className="tab-items" color="white">
-                      <a href="/home" style={{ color: "black" }}>
-                        Home
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="/categories/headphones"
-                        style={{ color: "black" }}
-                      >
-                        Headphones
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="tel:+9188773788" style={{ color: "black" }}>
-                        9188773788
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="/help/forgot-password"
-                        style={{ color: "black" }}
-                      >
-                        Forgot Password
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/brands/boat" style={{ color: "black" }}>
-                        Boat
-                      </a>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Td className="tab-items" color="white">
-                      <a href="/cart" style={{ color: "black" }}>
-                        Cart
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/categories/neckband" style={{ color: "black" }}>
-                        Neckband
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="tel:+049942042049" style={{ color: "black" }}>
-                        04994 2042049
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/help/update-address" style={{ color: "black" }}>
-                        Update Address
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/brands/jbl" style={{ color: "black" }}>
-                        JBL
-                      </a>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Td className="tab-items" color="white">
-                      <a href="/settings" style={{ color: "black" }}>
-                        Settings
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="/categories/gaming-headsets"
-                        style={{ color: "black" }}
-                      >
-                        Gaming Headsets
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="mailto:support@shop.com"
-                        style={{ color: "black" }}
-                      >
-                        support@shop.com
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/help/account-help" style={{ color: "black" }}>
-                        Account Help
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/brands/skullcandy" style={{ color: "black" }}>
-                        Skullcandy
-                      </a>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Td className="tab-items" color="white">
-                      <a href="/wishlist" style={{ color: "black" }}>
-                        Wishlist
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="/categories/wired-earphones"
-                        style={{ color: "black" }}
-                      >
-                        Wired Earphones
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="mailto:farazpachu777@gmail.com"
-                        style={{ color: "black" }}
-                      >
-                        farazpachu777@gmail.com
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/help/update-name" style={{ color: "black" }}>
-                        Update Name
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/brands/sony" style={{ color: "black" }}>
-                        Sony
-                      </a>
-                    </Td>
-                  </Tr>
-                  <Tr>
-                    <Td className="tab-items" color="white">
-                      <a href="/profile" style={{ color: "black" }}>
-                        Profile
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="/categories/wireless-earbuds"
-                        style={{ color: "black" }}
-                      >
-                        Wireless Earbuds
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="mailto:hello@support.com"
-                        style={{ color: "black" }}
-                      >
-                        hello@support.com
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a
-                        href="/help/change-password"
-                        style={{ color: "black" }}
-                      >
-                        Change Password
-                      </a>
-                    </Td>
-                    <Td className="tab-items" color="white">
-                      <a href="/brands/sennheiser" style={{ color: "black" }}>
-                        Sennheiser
-                      </a>
-                    </Td>
-                  </Tr>
-                </Tbody>
-              </Table>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-      <Box
-        padding={"10px 10px 5px 10px"}
-        width={"100%"}
-        bg={"black"}
-        color={"white"}
-      >
-        <p style={{ textAlign: "center", fontSize: "10px" }}>
-          Copyright &copy; ProGad 2024
-        </p>
-      </Box>
-    </ChakraProvider>
+              Facebook
+            </a>
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400 transition-colors duration-300"
+            >
+              Twitter
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-teal-400 transition-colors duration-300"
+            >
+              Instagram
+            </a>
+          </div>
+
+          {/* Footer Text */}
+          <p className="mt-4 sm:mt-0 text-sm text-gray-400">
+            © {new Date().getFullYear()} PROGAD. All Rights Reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
   );
 };
 

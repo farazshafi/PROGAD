@@ -7,8 +7,9 @@ import ProductCard from "../../../components/ProductCard/ProductCard";
 import { Divider } from "@mui/material";
 import { toast } from "react-toastify";
 import { getTopSellingProductApi } from "../../../api/productApi";
+import Footer from "../../../components/Footer/Footer";
 
-const HomePage = () => {
+const HomePage = () => { 
   const [topProducts, setTopProducts] = useState([]);
 
   const fetchTopProducts = async () => {
@@ -42,7 +43,8 @@ const HomePage = () => {
         {topProducts.length > 0 && <ProductGrid products={topProducts} />}
         <HilightSection text={"Top Products"} />
         <ProductCard />
-      </div>
+        <Footer />
+      </div> 
     </React.Fragment>
   );
 };
