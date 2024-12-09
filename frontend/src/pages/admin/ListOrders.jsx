@@ -187,7 +187,7 @@ const ListOrders = () => {
           <TableBody>
             {filteredOrders?.map((order) => (
               <TableRow key={order._id}>
-                <TableCell sx={{ color: "white" }}>{order._id}</TableCell>
+                <TableCell sx={{ color: "white" }}>{order?.orderId ? order.orderId : order._id}</TableCell>
                 <TableCell sx={{ color: "white" }}>
                   {order?.user?.email}
                 </TableCell>
@@ -259,7 +259,7 @@ const ListOrders = () => {
                     <MenuItem
                       onClick={() =>
                         navigate(
-                          `/admin_dashboard/order_details/${selectedOrder._id}`
+                          `/admin_dashboard/order_details/${selectedOrder.orderId}`
                         )
                       }
                     >

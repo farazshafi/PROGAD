@@ -21,6 +21,9 @@ import {
   CategoryScale,
 } from "chart.js";
 import { getSalesChartDataApi } from "../../api/salesApi";
+import { useSelector } from "react-redux";
+import { selectedAdmin } from "../../features/admin/adminSlice";
+import { useNavigate } from "react-router-dom";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale);
 
@@ -44,6 +47,10 @@ const mockSalesData = {
 };
 
 const DashboardPage = () => {
+  const admin = useSelector(selectedAdmin)
+
+  const navigate = useNavigate()
+
   const [topProducts, setTopProducts] = useState(null);
   const [topCategories, setTopCategories] = useState(null);
   const [topBrands, setTopBrands] = useState(null);
@@ -119,6 +126,9 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
+    if(!admin){
+      return navigate("/admin_login")
+    }
     fetchTopProducts();
     fetchTopCategories();
     fetchTopBrands();

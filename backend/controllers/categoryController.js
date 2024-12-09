@@ -7,7 +7,7 @@ import Order from "../models/orderModel.js"
 // @access  private admin
 export const createCategory = asyncHandler(async (req, res) => {
   const { name, description, isPublished } = req.body;
-  const categoryExist = await Category.findOne({ name });
+  const categoryExist = await Category.findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } })
   if (categoryExist) {
     return res.status(400).json({ message: "Category already exists" });
   }

@@ -4,6 +4,7 @@ import Coupon from "../models/couponModel.js";
 import Product from "../models/productModel.js";
 import razorpayInstance from "../config/razorpay.js";
 import Wallet from "../models/walletModel.js";
+import { generateIds } from "../utils/generateIds.js";
 
 // @desc    make a order
 // @route   POST /api/order/make_order
@@ -20,7 +21,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
       deliveryCost,
       shippingAddress,
       paymentMethod,
-      couponCode,
       totalPrice,
       paymentStatus,
     } = req.body;
@@ -44,8 +44,12 @@ export const makeOrder = asyncHandler(async (req, res) => {
       return { ...item, subTotal: itemSubTotal };
     });
 
+    const orderId = generateIds("order");
+    console.log("item with subtotal:", itemWithSubTotal);
+
     // create an order with initial data
     let order = await Order.create({
+      orderId,
       user,
       items: itemWithSubTotal,
       status,
@@ -60,6 +64,25 @@ export const makeOrder = asyncHandler(async (req, res) => {
       razorpayOrderId: paymentMethod === "Razorpay" ? razorpayOrderId : null,
     });
 
+    // update stock
+    for (const prod of itemWithSubTotal) {
+      const product = await Product.findById(prod.id);
+      if (!product) {
+        return res.status(400).json({ message: "Product Unavailable!" });
+      }
+      console.log("our product:", product);
+      console.log("product stock:", product.totalStock);
+      console.log("prod qty:", prod.quantity);
+
+      if (product.totalStock >= prod.quantity) {
+        console.log("test 2");
+        product.totalStock -= prod.quantity;
+        await product.save();
+      } else {
+        return res.status(400).json({ message: "Insufficient stock" });
+      }
+    }
+
     // handle wallet
     if (paymentMethod === "wallet") {
       const wallet = await Wallet.findOne({ userId: user });
@@ -67,7 +90,9 @@ export const makeOrder = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "User does not have a wallet" });
       }
       if (wallet.balance < totalPrice) {
-        return res.status(400).json({ message: "Insufficient balance in wallet" });
+        return res
+          .status(400)
+          .json({ message: "Insufficient balance in wallet" });
       }
       wallet.balance -= totalPrice;
       wallet.transactions.push({
@@ -75,31 +100,12 @@ export const makeOrder = asyncHandler(async (req, res) => {
         amount: totalPrice,
         description: `Debited for your order`,
         orderId: order._id,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       });
       await wallet.save();
       paymentStatus = "paid";
       order.paymentStatus = "paid";
       await order.save();
-    }
-
-    if (paymentStatus === "paid") {
-      for (const item of items) {
-        const product = await Product.findById(item.id);
-        if (!product) {
-          return res.status(400).json({ message: "Product not found" });
-        }
-
-        if (product.stock < item.quantity) {
-          return res.status(400).json({
-            message: `Product ${product.name} has only ${product.stock} left`,
-          });
-        }
-
-        product.stock -= item.quantity;
-        product.sold += item.quantity;
-        await product.save();
-      }
     }
 
     res.status(201).json({
@@ -112,7 +118,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
 
 // @desc    later payment , in order details page
 // @route   POST /api/order/later_payment
@@ -190,7 +195,7 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const orderDetails = await Order.findById(id)
+    const orderDetails = await Order.findOne({ orderId: id })
       .populate("shippingAddress")
       .populate("items.id", "images name");
     if (!orderDetails) {
@@ -234,7 +239,8 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     }
     await orderDetails.save();
     if (
-      orderDetails.paymentMethod === "razorpay" &&
+      (orderDetails.paymentMethod === "wallet" ||
+        orderDetails.paymentMethod === "razorpay") &&
       orderDetails.paymentStatus === "refunded"
     ) {
       let wallet = await Wallet.findOne({ userId: orderDetails.user });

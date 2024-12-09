@@ -15,11 +15,11 @@ export const getAllCategories = async () => {
 
 export const onCreateCategory = async (obj) => {
   try {
-    const { data } = await axios.post(`${API_URL}/create_category`, obj);
+    const data = await axios.post(`${API_URL}/create_category`, obj);
+    console.log(data)
     return data;
   } catch (e) {
-    console.log(e);
-    return null;
+    return e;
   }
 };
 
@@ -28,8 +28,7 @@ export const onDeleteCategory = async (id) => {
     const { data } = await axios.delete(`${API_URL}/delete_category/${id}`);
     return data;
   } catch (e) {
-    console.log(e);
-    return null;
+    return e;
   }
 };
 
@@ -74,7 +73,7 @@ export const getTopSellingCategoriesApi = async () => {
       },
     };
     const response = await axios.get(`${API_URL}/top_selling`, config);
-    return response.data;
+    return response?.data;
   } catch (e) {
     toast.error(
       e.response.data.message || "server Error! cannot get top categories"

@@ -14,7 +14,6 @@ const cartSlice = createSlice({
         const product = action.payload
         const existingProduct = state.cartItems.find(item => item.id === product.id)
         if(existingProduct){
-            existingProduct.quantity += product.quantity
             existingProduct.subTotal += product.subTotal
         }else{
             state.cartItems.push(product)

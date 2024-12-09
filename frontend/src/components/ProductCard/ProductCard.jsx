@@ -10,20 +10,22 @@ import {
 } from "@mui/material";
 import { Row, Col, Container } from "react-bootstrap";
 import OurButton from "../OurButton/OurButton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectedProduct } from "../../features/product/productSlice";
 import { selectedUser } from "../../features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { createWishlistApi } from "../../api/wishlistApi";
+import { addToCart } from "../../features/user/cartSlice";
 
 const ProductCard = ({ page }) => {
   const user = useSelector(selectedUser);
   const products = useSelector(selectedProduct);
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // State to manage the visibility of the heart icon on hover
   const [hoveredProductId, setHoveredProductId] = useState(null);
 
   const handleNavigate = (productId) => () => {
@@ -53,6 +55,25 @@ const ProductCard = ({ page }) => {
       toast.error("Failed when adding to whishlist");
       console.log(err);
     }
+  };
+
+  const handleAddToCart = (product) => {
+    console.log("products cart ", product);
+    const cartItem = {
+      id: product._id,
+      name: product.name,
+      price: Number(product.discountPrice),
+      quantity: 1,
+      image: product.image,
+      stock: product.totalStock,
+      subTotal: Number(product.discountPrice) * 1,
+      category: product.category,
+    };
+
+    dispatch(addToCart(cartItem));
+    toast.success("Product added to cart");
+    // setShowAddToCartAnimation(true);
+    // setTimeout(() => setShowAddToCartAnimation(false), 2300);
   };
 
   return (
@@ -154,6 +175,24 @@ const ProductCard = ({ page }) => {
                         : product.originalPrice}
                     </Typography>
                   </CardActions>
+                    <div className="mt-2 py-3 px-2">
+                      {product.stock < 1 ? (
+                        <button
+                          disabled
+                          onClick={() => handleAddToCart(product)}
+                          className="text-red-600 font-poppins w-full bg-gray-300 rounded p-2" 
+                        >
+                          Out of Stock
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleAddToCart(product)}
+                          className="text-black font-poppins w-full bg-white hover:bg-gray-400 rounded p-2"
+                        >
+                          Add to Cart
+                        </button>
+                      )}
+                    </div>
                 </Card>
               </Col>
             ))

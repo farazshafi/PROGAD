@@ -67,14 +67,19 @@ const ListCoupons = () => {
   };
 
   const filteredCoupons = coupons.filter((coupon) => {
-    const isExpired = new Date(coupon.expirationDate) < new Date();
+    const currentDate = new Date();
+    const couponExpirationDate = dayjs(coupon.expirationDate);
+
+    const isExpired = couponExpirationDate.isBefore(currentDate, "day");
     const matchesSearch = coupon.code
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesExpired = !showExpiredOnly || isExpired;
     const matchesDate = selectedDate
-      ? dayjs(coupon.expirationDate).isSame(selectedDate, "day")
+      ? couponExpirationDate.isAfter(selectedDate, "day") ||
+        couponExpirationDate.isSame(selectedDate, "day")
       : true;
+
     return matchesSearch && matchesExpired && matchesDate;
   });
 
@@ -175,6 +180,7 @@ const ListCoupons = () => {
           label="Filter by Expiry Date"
           value={selectedDate}
           onChange={(newDate) => setSelectedDate(newDate)}
+          minDate={dayjs()}
           renderInput={(params) => (
             <TextField
               {...params}

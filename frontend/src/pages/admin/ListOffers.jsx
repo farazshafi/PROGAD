@@ -73,16 +73,21 @@ const ListOffers = () => {
   };
 
   const filteredOffers = offers?.filter((offer) => {
-    const isExpired = new Date(offer.expirationDate) < new Date();
+    const currentDate = new Date();
+    const offerExpirationDate = dayjs(offer.expirationDate);
+  
+    const isExpired = offerExpirationDate.isBefore(currentDate, "day");
     const matchesSearch = offer.offerCode
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesExpired = !showExpiredOnly || isExpired;
     const matchesDate = selectedDate
-      ? dayjs(offer.expirationDate).isSame(selectedDate, "day")
+      ? offerExpirationDate.isAfter(selectedDate, "day") || offerExpirationDate.isSame(selectedDate, "day")
       : true;
+  
     return matchesSearch && matchesExpired && matchesDate;
   });
+  
 
   const handleMenuClick = (event, offer) => {
     setAnchorEl(event.currentTarget);
@@ -186,6 +191,7 @@ const ListOffers = () => {
               label="Filter by Expiry Date"
               value={selectedDate}
               onChange={(newDate) => setSelectedDate(newDate)}
+              minDate={dayjs()}
               renderInput={(params) => (
                 <TextField
                   {...params}

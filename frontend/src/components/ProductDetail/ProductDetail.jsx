@@ -20,18 +20,7 @@ const ProductDetail = ({ product }) => {
 
   const [showAddToCartAnimation, setShowAddToCartAnimation] = useState(false);
 
-  const handleQuantityChange = (newQuantity) => {
-    setQuantity(newQuantity);
-  };
-
   const handleAddToCart = () => {
-    const cartProduct = cartItems.find((item) => item.id === product._id);
-
-    if (cartProduct && cartProduct.quantity + quantity > 10) {
-      toast.info("Product already in your cart. You can only add up to 10 items.");
-      return;
-    }
-
     console.log("Cart items:", cartItems);
 
     const cartItem = {
@@ -202,7 +191,7 @@ const ProductDetail = ({ product }) => {
                   }}
                 ></Divider>
                 {/* if in stock */}
-                {product.totalStock > 1 ? (
+                {product.totalStock > 0 ? (
                   <>
                     <div className="stock-management-is">
                       <Typography
@@ -244,14 +233,7 @@ const ProductDetail = ({ product }) => {
                     </div>
                   </>
                 )}
-                <div className="action-button">
-                  <div style={{ width: "100%" }}>
-                    <QtyCounterInput
-                      value={quantity}
-                      onChange={handleQuantityChange}
-                      stock={product.totalStock}
-                    />
-                  </div>
+                <div className={`action-button ${product.totalStock < 1 ? "invisible" : ""}`}>
                   <div
                     onClick={() => handleAddToCart(product)}
                     style={{ width: "100%" }}

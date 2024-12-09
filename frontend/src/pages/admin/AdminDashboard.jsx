@@ -281,7 +281,7 @@ function AdminDashboard(props) {
 
   useEffect(() => {
     if (!admin) {
-      navigate("/admin_login");
+      return navigate("/admin_login");
     }
   }, []);
 

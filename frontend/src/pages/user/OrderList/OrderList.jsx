@@ -138,7 +138,7 @@ const OrderList = () => {
                   </TableCell>
                   <TableCell>
                     <IconButton
-                      onClick={() => navigate(`/order_details/${order._id}`)}
+                      onClick={() => navigate(`/order_details/${order.orderId}`)}
                       color="primary"
                       sx={{ color: "#FF7F11" }}
                     >

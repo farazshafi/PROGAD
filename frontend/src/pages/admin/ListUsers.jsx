@@ -19,6 +19,9 @@ import {
   Divider,
   Stack,
   Pagination,
+  Dialog,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
 import { getAllUsers, blockUnblockUser } from "../../api/adminApi";
@@ -41,6 +44,7 @@ const ListUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("All");
   const [showBannedOnly, setShowBannedOnly] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -67,6 +71,11 @@ const ListUsers = () => {
   const totalUsers = users.length;
   const bannedUsers = users.filter((user) => user.isBlocked).length;
 
+  const handleOpenDialog = (status) => {
+    setOpenDialog(true);
+  };
+  const handleCloseDialog = () => setOpenDialog(false);
+
   useEffect(() => {
     fetchUsers(page);
   }, [page]);
@@ -83,6 +92,7 @@ const ListUsers = () => {
 
   const handleBlock = async () => {
     try {
+      handleCloseDialog();
       const isBlocked = !selectedUser.isBlocked;
       const updatedUser = await blockUnblockUser(selectedUser._id, isBlocked);
       if (updatedUser) {
@@ -94,12 +104,15 @@ const ListUsers = () => {
 
         const result = await moniteringUserApi(selectedUser._id);
         if (result.response) {
-          const userId = JSON.parse(localStorage.getItem("user"))._id
-          console.log("itdh vernn")
+          const userId = JSON.parse(localStorage.getItem("user"))._id;
+          console.log("itdh vernn");
           const { status } = result.response;
-          console.log("selcted user",selectedUser._id)
-          console.log("logged user",userId)
-          if ((status === 400 || status === 500) && selectedUser._id === userId) {
+          console.log("selcted user", selectedUser._id);
+          console.log("logged user", userId);
+          if (
+            (status === 400 || status === 500) &&
+            selectedUser._id === userId
+          ) {
             console.log("User matched for logout");
             dispatch(setUser({ ...user, isBlocked: true }));
             dispatch(logoutUser());
@@ -287,7 +300,7 @@ const ListUsers = () => {
                     sx={{ "& .MuiPaper-root": { backgroundColor: "white" } }}
                   >
                     <MenuItem
-                      onClick={handleBlock}
+                      onClick={handleOpenDialog}
                       sx={{ color: "red", gap: "15px" }}
                     >
                       <MdBlock fontSize={"25px"} />
@@ -329,6 +342,30 @@ const ListUsers = () => {
           onChange={handleChange}
         />
       </Stack>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogContent>
+          <Typography variant="h6">
+            Are you sure you want to 
+            {selectedUser?.isBlocked ? " Unblock" : " Block"}?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <button
+            className="text-white py-2 px-3 rounded bg-black opacity-80"
+            onClick={handleCloseDialog}
+          >
+            No
+          </button>
+          <button
+            className="text-black py-2 px-3 rounded bg-white"
+            onClick={() => {
+              handleBlock();
+            }}
+          >
+            Yes
+          </button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

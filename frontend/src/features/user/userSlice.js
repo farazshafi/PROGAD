@@ -33,6 +33,10 @@ const userSlice = createSlice({
     logoutUser(state) {
       state.user = null;
       localStorage.removeItem("user");
+      localStorage.removeItem("cart");
+      localStorage.removeItem("orderSummary");
+      localStorage.removeItem("paymentMethod");
+      localStorage.removeItem("shippingAddress");
     },
     setAllAddresses(state,action){
       state.user.addresses = action.payload;

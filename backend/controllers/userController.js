@@ -67,6 +67,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
   }
 
   const otp = generateOTP();
+  console.log("otp :", otp)
 
   user = await User.create({
     email,

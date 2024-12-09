@@ -55,7 +55,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
       { label: "Home", url: "/" },
       { label: "Profile", url: "/profile" },
       { label: "Orders", url: "/profile/orders" },
-      { label: order?._id, url: "" },
+      { label: order?.orderId, url: "" },
     ];
   }
   const fetchOrderDetails = async () => {
@@ -144,9 +144,9 @@ const OrderDetailsCard = ({ isAdmin }) => {
     doc.setFontSize(18);
     doc.text("PROGAD", 20, 20);
     doc.setFontSize(12);
-    doc.text(`Invoice ID: ${order._id}`, 20, 30);
+    doc.text(`Invoice ID: ${order.orderId}`, 20, 30);
     doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`, 20, 40);
-    doc.text(`Order ID: ${order._id}`, 20, 50);
+    doc.text(`Order ID: ${order.orderId}`, 20, 50);
     doc.text(
       `Order Date: ${new Date(order.orderDate).toLocaleDateString()}`,
       20,
@@ -203,10 +203,13 @@ const OrderDetailsCard = ({ isAdmin }) => {
     // Add total summary
     const totalY = tableBottomY + 10;
     doc.text(`Total Items: ${order.items.length}`, 20, totalY);
-    doc.text(`Total Price: Rs. ${order.totalPrice}`, 20, totalY + 10); // Use ₹ directly
+    if (order.couponDiscount > 0) {
+      doc.text(`Coupon Applied: -${order.couponDiscount}%`, 20, totalY + 10);
+    }
+    doc.text(`Total Price: Rs. ${order.totalPrice}`, 20, totalY + 20);
 
     // Draw a line after the total summary
-    doc.line(20, totalY + 20, 190, totalY + 20);
+    doc.line(20, totalY + 30, 180, totalY + 30);
 
     // Add thank you message
     doc.text("Thank you for shopping with PROGAD!", 20, totalY + 30);
@@ -245,14 +248,16 @@ const OrderDetailsCard = ({ isAdmin }) => {
             marginTop: "10px",
           }}
         >
-          <div className="flex justify-between">
-            <p className="font-poppins text-xl mb-2">Order ID: {order._id}</p>
+          <div className="block sm:flex justify-between">
+            <p className="font-poppins text-xl mb-2">
+              Order ID: {order.orderId}
+            </p>
             <button
               onClick={handleDownloadInvoice}
-              className="btn flex justify-between gap-1 bg-white text-black py-2 px-3 rounded hover:bg-gray-200"
+              className="btn flex items-center justify-center w-full sm:w-fit gap-1 bg-white text-black py-2 px-3 rounded hover:bg-gray-200"
             >
-              <IoMdDownload className="mt-1" />
-              Invoice
+              <IoMdDownload className="text-center" />
+              <span>Invoice</span>
             </button>
           </div>
           <Divider sx={{ marginY: "10px", background: "white" }} />
@@ -264,7 +269,10 @@ const OrderDetailsCard = ({ isAdmin }) => {
                 marginLeft: "5px",
                 padding: "3px",
                 borderRadius: "5px",
-                color: order.status === "returned" ? "black" : "white",
+                color:
+                  order.status === "returned" || order.status === "pending"
+                    ? "black"
+                    : "white",
                 backgroundColor:
                   order.status === "pending"
                     ? "yellow"
@@ -286,6 +294,12 @@ const OrderDetailsCard = ({ isAdmin }) => {
             <strong>Order Date:</strong>{" "}
             {new Date(order.orderDate).toLocaleDateString()}
           </Typography>
+          {order.couponDiscount > 0 && (
+            <Typography variant="body1">
+              <strong>Coupon Applied:</strong> -{order?.couponDiscount}%
+            </Typography>
+          )}
+
           <Typography variant="body1">
             <strong>Total:</strong> ₹ {order.totalPrice}
           </Typography>
@@ -317,7 +331,8 @@ const OrderDetailsCard = ({ isAdmin }) => {
             </span>
           </Typography>
 
-          { !isAdmin && order.status !== "cancelled" &&
+          {!isAdmin &&
+            order.status !== "cancelled" &&
             order.paymentMethod === "razorpay" &&
             order.paymentStatus === "unpaid" && (
               <div>
@@ -389,7 +404,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
               style={{ marginTop: "20px" }}
             >
               <OurButton w={"100"} text={"Cancel Order"} />
-            </div> 
+            </div>
           )}
           {!isAdmin && order.status === "delivered" && isReturnEligible && (
             <div

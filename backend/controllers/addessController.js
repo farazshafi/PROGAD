@@ -55,10 +55,12 @@ export const createAddress = asyncHandler(async (req, res) => {
   }
 
   try {
-    const address = await Address.findOne({ user:id });
-    console.log("id",id)
-    if (address && address.type === type) {
-      return res.status(400).json({ message: "Address type already exists" });
+    const address = await Address.find({ user:id });
+    console.log("My addresses: ",address)
+    for(const add of address){
+      if(add.type === type){
+        return res.status(400).json({ message: "Address type already exists" });
+      }
     }
     const user = await User.findById(id);
     if (user && user.addresses.length >= 4) {

@@ -7,9 +7,10 @@ const orderSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    orderId: { type: String, unique: true, required: true },
     couponDiscount: {
       type: Number,
-      default:0
+      default: 0,
     },
     items: [
       {
@@ -71,15 +72,15 @@ const orderSchema = mongoose.Schema(
       enum: ["unpaid", "paid", "refunded"],
       default: "unpaid",
     },
-    cancelReason:{
-      type:String,
+    cancelReason: {
+      type: String,
       default: null,
     },
-    returnReason:{
-      type:String,
+    returnReason: {
+      type: String,
       default: null,
     },
-    deliveredDate:{
+    deliveredDate: {
       type: Date,
       default: null,
     },

@@ -39,9 +39,7 @@ export const createWishlist = asyncHandler(async (req, res) => {
 // @access  private
 export const getAllWishlist = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { productId } = req.body;
   console.log("id", id);
-  // validation
   if (!id) {
     return res.status(400).json({ message: "Invalid userId" });
   }
@@ -52,8 +50,8 @@ export const getAllWishlist = asyncHandler(async (req, res) => {
   if (existWishlist) {
     res.status(201).json({ wishlistedProducts: existWishlist?.products });
     return;
-  } else {
-    res.status(400).json({ message: "No wishlist found" });
+  }else{
+    return res.status(200).json({wishlistedProducts:[]})
   }
 });
 

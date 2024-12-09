@@ -274,6 +274,7 @@ export const getAllProduct = asyncHandler(async (req, res) => {
       return {
         _id: product._id,
         name: product.name,
+        stock: product.totalStock,
         image: product.images[0] || null,
         discountPrice: discountPrice.toFixed(2),
         originalPrice: product.originalPrice,
@@ -594,6 +595,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       return {
         _id: product._id,
         name: product.name,
+        stock: product.totalStock,
         image: product.images[0] || null,
         discountPrice: discountPrice.toFixed(2),
         originalPrice: product.originalPrice,

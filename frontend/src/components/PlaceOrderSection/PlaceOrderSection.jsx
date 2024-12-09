@@ -86,7 +86,7 @@ const PlaceOrderSection = () => {
           setTimeout(() => {
             setShowOrderedAnimation(false);
             dispatch(clearCart());
-            navigate(`/order_success/${result.data.orderId}`);
+            navigate(`/order_success/${result?.data?.order?.orderId}`);
           }, 4000);
         } catch (error) {
           console.log("errror ind", error);
@@ -116,7 +116,7 @@ const PlaceOrderSection = () => {
           setTimeout(() => {
             setShowOrderedAnimation(false);
             dispatch(clearCart());
-            navigate(`/order_success/${result.data.orderId}`);
+            navigate(`/order_success/${result.data.order.orderId}`);
           }, 4000);
         }
       } else {
@@ -135,7 +135,7 @@ const PlaceOrderSection = () => {
         setTimeout(() => {
           setShowOrderedAnimation(false);
           dispatch(clearCart());
-          navigate(`/order_success/${result.data.orderId}`);
+          navigate(`/order_success/${result.data.order.orderId}`);
         }, 4000);
       }
     } catch (err) {

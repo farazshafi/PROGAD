@@ -139,7 +139,7 @@ const CartPage = () => {
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg shadow-white shadow-[rgba(255,255,255,0.05)] shadow-md space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-200 !text-black sm:!text-white sm:bg-transparent"
+                className="flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg shadow-white shadow-[rgba(255,255,255,0.32)] shadow-md space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-200 !text-black sm:!text-white sm:bg-transparent"
               >
                 {/* Image */}
                 <img
@@ -169,7 +169,7 @@ const CartPage = () => {
                   >
                     -
                   </button>
-                  <Typography sx={{ color: "white" }}>
+                  <Typography className="text-black sm:text-white">
                     {item.quantity}
                   </Typography>
                   <button
@@ -218,7 +218,6 @@ const CartPage = () => {
         )}
 
         <Row style={{ marginTop: "30px" }}>
-          {/* product summary details */}
           {cartItems.length > 0 && (
             <Col
               style={{
@@ -227,79 +226,24 @@ const CartPage = () => {
                 borderRadius: "8px",
               }}
             >
-              {/* Price Summary Section */}
-              <div
-                className="cart-total-summary"
-                style={{ color: "white", fontFamily: "Istok Web" }}
-              >
-                <div
-                  className="d-flex"
-                  style={{
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
+              <div className="w-full">
+                <div className="flex text-lg text-white font-poppins justify-between">
                   <p>Subtotal:</p>
-                  <h6>₹{summary.subTotal}</h6>
+                  <p>₹{summary.subTotal}</p>
                 </div>
-                <div
-                  className="d-flex"
-                  style={{
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div className="flex text-lg text-white font-poppins justify-between">
                   <p>Tax:</p>
-                  <h6>{summary.taxPercent}%</h6>
+                  <p>{summary.taxPercent}%</p>
                 </div>
-                <div
-                  className="d-flex"
-                  style={{
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div className="flex text-lg text-white font-poppins justify-between">
                   <p>Delivery fee:</p>
-                  {summary.total > 500 ? "Free" : <h6>₹ {summary.delivery}</h6>}
+                  {summary.total > 500 ? <p>Free</p> : <p>{summary.delivery}</p>}
                 </div>
-                {isApplied && (
-                  <div
-                    className="d-flex"
-                    style={{
-                      justifyContent: "space-between",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    <p>Coupon Discount:</p>
-                    <h6>{availableCoupon?.discount}%</h6>
-                  </div>
-                )}
-                {/* <div
-                  className="d-flex"
-                  style={{
-                    justifyContent: "space-between",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <p>Offer Discount:</p>
-                  <h6>{summary.offerPercentage}</h6>
-                </div> */}
-
-                {/* Total Amount */}
-                <div
-                  className="d-flex"
-                  style={{
-                    justifyContent: "space-between",
-                    marginTop: "20px",
-                    fontWeight: "bold",
-                    fontSize: "18px",
-                  }}
-                >
-                  <p>TOTAL</p>
-                  <h6 style={{ color: "#FF7F11" }}>{summary.total}</h6>
-                </div>
+                <div className="flex text-lg text-white font-poppins justify-between">
+                  <p>Total:</p>
+                  <p>{summary.total}</p>
+                </div> 
               </div>
-
               {/* Checkout Button */}
               <div onClick={handleCheckout} style={{ marginTop: "30px" }}>
                 <OurButton w="100" text="PROCEED TO CHECKOUT" />

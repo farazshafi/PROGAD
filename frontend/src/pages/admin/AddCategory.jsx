@@ -26,7 +26,15 @@ const AddCategory = () => {
       isPublished,
     };
     try {
-      await onCreateCategory(newCategory);
+      const result = await onCreateCategory(newCategory);
+      console.log("result : ",result)
+      if(result.response){
+        const {status} = result.response
+        if(status === 400 || status === 500){
+          toast.error(result.response.data.message);
+          return;
+        }
+      }
       setName('');
       setDescription('');
       setIsPublished(true); 

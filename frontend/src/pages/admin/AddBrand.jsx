@@ -42,7 +42,7 @@ const AddBrand = () => {
         Create Offer
       </p>
       <div className="flex justify-center items-center">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <div className="bg-white text-black p-8 rounded-lg shadow-md w-full max-w-md">
           <h2 className="text-2xl font-bold text-center mb-6">Add Brand</h2>
           <form>
             <div className="mb-4">
