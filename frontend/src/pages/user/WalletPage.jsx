@@ -38,9 +38,9 @@ const WalletPage = () => {
   };
 
   useEffect(() => {
-    // if (!user) {
-    //   navigate("/login");
-    // }
+    if (!user) {
+      navigate("/login");
+    }
     fetchWalletDetails();
   }, []);
 

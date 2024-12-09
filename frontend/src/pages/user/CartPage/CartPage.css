@@ -1,6 +1,6 @@
 .cart-container {
   width: 100%;
-  padding: 5px 50px;
+  padding: 5px 20px;
 }
 
 /* Cart item container */
@@ -68,6 +68,13 @@
 
 /* Media query for small devices */
 @media (max-width: 768px) {
+
+  .cart-container p{
+    width: 100%;
+    text-align: center;
+  }
+  
+
   .cart-item-div {
     flex-direction: column; /* Stack items vertically */
     align-items: center;

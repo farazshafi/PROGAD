@@ -141,6 +141,50 @@ const Header = ({ navbar = true }) => {
                         Profile
                       </MenuItem>
                       <MenuItem
+                        as={Link}
+                        to="/profile/orders"
+                        disabled={!user}
+                        _hover={{
+                          backgroundColor: "#262626",
+                          color: "#FF7F11",
+                        }}
+                      >
+                        Orders
+                      </MenuItem>
+                      <MenuItem
+                        as={Link}
+                        to="/profile/address"
+                        disabled={!user}
+                        _hover={{
+                          backgroundColor: "#262626",
+                          color: "#FF7F11",
+                        }}
+                      >
+                        Address
+                      </MenuItem>
+                      <MenuItem
+                        as={Link}
+                        to="/profile/wishlist"
+                        disabled={!user}
+                        _hover={{
+                          backgroundColor: "#262626",
+                          color: "#FF7F11",
+                        }}
+                      >
+                        Wishlist
+                      </MenuItem>
+                      <MenuItem
+                        as={Link}
+                        to="/profile/wallet"
+                        disabled={!user}
+                        _hover={{
+                          backgroundColor: "#262626",
+                          color: "#FF7F11",
+                        }}
+                      >
+                        Wallet
+                      </MenuItem>
+                      <MenuItem
                         onClick={handleLogout}
                         _hover={{
                           backgroundColor: "#262626",

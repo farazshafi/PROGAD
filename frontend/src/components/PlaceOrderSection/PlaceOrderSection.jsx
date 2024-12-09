@@ -75,7 +75,7 @@ const PlaceOrderSection = () => {
             razorpayOrderId: paymentResult.razorpay_order_id,
           });
 
-          console.log("payment result :",result)
+          console.log("payment result :", result);
 
           if (result.response && result.response.status >= 400) {
             toast.error(result.response.data.message);
@@ -86,7 +86,7 @@ const PlaceOrderSection = () => {
           setTimeout(() => {
             setShowOrderedAnimation(false);
             dispatch(clearCart());
-            navigate(`/order_success/${result.data.orderId}`)
+            navigate(`/order_success/${result.data.orderId}`);
           }, 4000);
         } catch (error) {
           console.log("errror ind", error);
@@ -94,8 +94,7 @@ const PlaceOrderSection = () => {
             ...formattedOrderData,
             paymentStatus: "unpaid",
           });
-          console.log("payment result :",result)
-
+          console.log("payment result :", result);
 
           if (result.response) {
             const { status } = result.response;
@@ -109,6 +108,7 @@ const PlaceOrderSection = () => {
             toast.error(result.response.data.message);
             return;
           }
+
           setTimeout(() => {
             toast.warning("Payment failed, order saved as pending.");
           }, 5000);
@@ -116,7 +116,7 @@ const PlaceOrderSection = () => {
           setTimeout(() => {
             setShowOrderedAnimation(false);
             dispatch(clearCart());
-            navigate(`/order_success/${result.data.orderId}`)
+            navigate(`/order_success/${result.data.orderId}`);
           }, 4000);
         }
       } else {
@@ -124,8 +124,7 @@ const PlaceOrderSection = () => {
           ...formattedOrderData,
           paymentStatus: "unpaid",
         });
-        console.log("payment result :",result)
-
+        console.log("payment result :", result);
 
         if (result.response && result.response.status >= 400) {
           toast.error(result.response.data.message);
@@ -136,7 +135,7 @@ const PlaceOrderSection = () => {
         setTimeout(() => {
           setShowOrderedAnimation(false);
           dispatch(clearCart());
-          navigate(`/order_success/${result.data.orderId}`)
+          navigate(`/order_success/${result.data.orderId}`);
         }, 4000);
       }
     } catch (err) {
@@ -175,8 +174,8 @@ const PlaceOrderSection = () => {
     if (cartItems && cartItems.length < 1) {
       return navigate("/cart");
     }
-    if(!orderDetails.paymentMethod){
-      toast.warning("Please select a payment method")
+    if (!orderDetails.paymentMethod) {
+      toast.warning("Please select a payment method");
       return navigate("/cart_process/payment");
     }
   }, []);
@@ -190,9 +189,6 @@ const PlaceOrderSection = () => {
             style={{
               width: 300,
               height: 300,
-              // backgroundColor: "white",
-              // borderRadius: "15%",
-              // padding: "20px",
             }}
             loop={true}
             autoPlay={true}
@@ -207,221 +203,174 @@ const PlaceOrderSection = () => {
           minHeight: "100vh",
         }}
       >
-        <Grid container spacing={4}>
-          <Grid item lg={4} xs={12}>
-            <Paper
-              sx={{ padding: "20px", background: "#212121", color: "white" }}
-            >
-              <Typography variant="h6">Saved Address</Typography>
-              <Divider
-                sx={{ height: "1px", background: "white", margin: "10px 0" }}
-              />
-              <Grid
-                container
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography variant="body1">
-                  Address: {orderDetails.shippingAddress.country},{" "}
-                  {orderDetails.shippingAddress.state},{" "}
-                  {orderDetails.shippingAddress.city},{" "}
-                  {orderDetails.shippingAddress.zipCode},
-                  {orderDetails.shippingAddress.street},{" "}
-                  {orderDetails.shippingAddress.address},
-                  {orderDetails.shippingAddress.apartment},{" "}
+        <div className="w-full flex flex-col lg:flex-row">
+          <div className="p-3 gap-3 font-poppins w-full flex flex-col lg:flex-row">
+            {/* address */}
+            <div className="p-3 bg-gray-100 h-min text-black rounded">
+              <p className="text-lg font-semibold">Address</p>
+              <p className="text-sm">
+                Country:{" "}
+                <span className="font-semibold">
+                  {orderDetails.shippingAddress.country}
+                </span>
+              </p>
+              <p className="text-sm">
+                State:{" "}
+                <span className="font-semibold">
+                  {orderDetails.shippingAddress.state}
+                </span>
+              </p>
+              <p className="text-sm">
+                City:{" "}
+                <span className="font-semibold">
+                  {orderDetails.shippingAddress.city}
+                </span>
+              </p>
+              <p className="text-sm">
+                Zip Code:{" "}
+                <span className="font-semibold">
+                  {orderDetails.shippingAddress.zipCode}
+                </span>
+              </p>
+              <p className="text-sm">
+                Street:{" "}
+                <span className="font-semibold">
+                  {orderDetails.shippingAddress.street}
+                </span>
+              </p>
+              <p className="text-sm">
+                Apartment:{" "}
+                <span className="font-semibold">
+                  {orderDetails.shippingAddress.apartment}
+                </span>
+              </p>
+              <p className="text-sm">
+                Phone Number:{" "}
+                <span className="font-semibold">
                   {orderDetails.shippingAddress.phoneNumber}
-                </Typography>
-              </Grid>
-              <Typography variant="body1">User Details</Typography>
-              <Typography variant="body1">{user.name}</Typography>
-              <Typography variant="body1">{user.email}</Typography>
-            </Paper>
-          </Grid>
-
-          {/* Payment Method Section for PayPal */}
-          <Grid item lg={4} xs={12}>
-            <Paper
-              sx={{
-                padding: "20px",
-                background: "#212121",
-                color: "white",
-              }}
-            >
-              <Typography variant="h6">Payment Method</Typography>
-              <Divider
-                sx={{ height: "1px", background: "white", margin: "10px 0" }}
-              />
-              <Typography variant="body1">
-                {orderDetails.paymentMethod}
-              </Typography>
-              <Typography sx={{ mb: "20px" }} variant="body2">
-                {/* Pay securely using your PayPal account. */}
-              </Typography>
-            </Paper>
-          </Grid>
-
-          {/* Cart items */}
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                padding: "20px",
-                backgroundColor: "#212121",
-                color: "white",
-              }}
-            >
-              <Typography variant="h6">Cart Items</Typography>
-              <Divider
-                sx={{ height: "1px", background: "white", margin: "10px 0" }}
-              />
-              {cartItems.map((item) => (
-                <Grid key={item.id} container alignItems="center">
-                  <Grid item xs={2}>
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      style={{ width: "80px", height: "auto" }}
-                    />
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">{item.name}</Typography>
-                  </Grid>
-                  <Grid item xs={3} textAlign="center">
-                    <Typography variant="body1">X{item.quantity}</Typography>
-                    <Typography variant="body1">₹ {item.price}</Typography>
-                  </Grid>
-                  <Grid item xs={3} textAlign="right">
-                    <Typography variant="body1">
-                      ₹ {Number(item.quantity * item.price)}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              ))}
-            </Paper>
-          </Grid>
-
-          {/* Price Summary */}
-          <Grid item lg={5} xs={12}>
-            <Card
-              sx={{
-                padding: "20px",
-                backgroundColor: "#212121",
-                color: "white",
-              }}
-            >
+                </span>
+              </p>
+            </div>
+            {/* user and payment */}
+            <div className="flex flex-col gap-3">
+              <div className="p-3 bg-gray-100 h-min text-black rounded">
+                <p className="text-lg font-semibold">User</p>
+                <p className="text-sm">
+                  Name: <span className="font-semibold">{user.name}</span>
+                </p>
+                <p className="text-sm">
+                  Email: <span className="font-semibold">{user.email}</span>
+                </p>
+              </div>
+              <div className="p-3 bg-gray-100 h-min text-black rounded">
+                <p className="text-lg font-semibold">Payment Method</p>
+                <p className="text-sm">
+                  Payment:{" "}
+                  <span className="font-semibold">
+                    {orderDetails.paymentMethod}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className=" font-poppins flex-1 flex-row">
+            <div className="bg-black flex flex-col gap-2 rounded p-3">
               <CouponSection applyCoupon={handleApply} summary={orderDetails} />
-
-              <Grid container justifyContent="space-between">
-                <Typography
-                  variant="body1"
-                  sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                >
-                  Subtotal
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                >
-                  ₹ {orderDetails?.subTotal}
-                </Typography>
-              </Grid>
-              <Grid container justifyContent="space-between">
-                <Typography
-                  variant="body1"
-                  sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                >
-                  Tax
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                >
-                  {orderDetails?.tax}%
-                </Typography>
-              </Grid>
-              <Grid container justifyContent="space-between">
-                <Typography
-                  variant="body1"
-                  sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                >
-                  Delivery Fee
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                >
-                  {orderDetails?.deliveryFee}
-                </Typography>
-              </Grid>
-              {orderDetails.couponDiscount !== undefined &&
+              <div className="flex justify-between">
+                <p>Subtotal: </p>
+                <p>₹ {orderDetails?.subTotal}</p>
+              </div>
+              <div className="flex justify-between">
+                <p>Tax: </p>
+                <p>₹ {orderDetails?.tax}%</p>
+              </div>
+              <div className="flex justify-between">
+                <p>Delivery Fee: </p>
+                <p>
+                  {orderDetails?.deliveryFee === null ||
+                  orderDetails?.deliveryFee === 0
+                    ? "Free"
+                    : orderDetails?.deliveryFee}
+                </p>
+              </div>
+              {orderDetails.couponDiscount !== null &&
                 orderDetails.couponDiscount !== 0 && (
-                  <Grid container justifyContent="space-between">
-                    <Typography
-                      variant="body1"
-                      sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                    >
-                      Coupon Discount
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontFamily: '"Istok Web", sans-serif' }}
-                    >
-                      {orderDetails?.couponDiscount}%
-                    </Typography>
-                  </Grid>
+                  <div className="flex justify-between">
+                    <p>Coupon Applied</p>
+                    <p>-{orderDetails?.couponDiscount}%</p>
+                  </div>
                 )}
-
-              <Divider
-                sx={{ height: "1px", background: "white", mt: "20px" }}
-              />
-              <Grid container justifyContent="space-between" mt={2}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontFamily: '"Istok Web", sans-serif',
-                    fontWeight: 800,
-                  }}
-                >
-                  TOTAL
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontFamily: '"Istok Web", sans-serif',
-                    fontWeight: 800,
-                    color: "#FF7F11",
-                  }}
-                >
-                  ₹ {orderDetails?.totalAmount}/-
-                </Typography>
-              </Grid>
-            </Card>
-          </Grid>
-
-          {/* Payment Methods */}
-          <Grid item lg={7} xs={12}>
-            <Card
-              sx={{
-                padding: "20px",
-                backgroundColor: "#333",
-                textAlign: "center",
-              }}
-            >
-              <ChakraProvider>
-                <Button
+              <div className="flex justify-between">
+                <p>Total Amount: </p>
+                <p>{orderDetails?.totalAmount}</p>
+              </div>
+              <div className="text-center items-center">
+                <button
                   onClick={handlePayment}
-                  sx={{
-                    width: "100%",
-                    bg: "#ff7f11",
-                    paddingTop: "30px",
-                    paddingBottom: "30px",
-                  }}
+                  className={`w-full flex text-white rounded justify-between py-2 px-3 bg-[#ff7f11]`}
                 >
-                  Place Order
-                </Button>
-              </ChakraProvider>
-            </Card>
-          </Grid>
-        </Grid>
+                  Proceed to Checkout
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6 ml-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H11"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="font-semibold font-poppins text-lg mt-3">Order Items:</p>
+        {cartItems.length > 0 && (
+          <div className="space-y-4 mt-3 border-t border-white">
+            {cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg shadow-white shadow-[rgba(255,255,255,0.05)] shadow-md space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-200 !text-black sm:!text-white sm:bg-transparent"
+              >
+                {/* Image */}
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-24 h-24 object-cover rounded"
+                />
+
+                {/* Details */}
+                <div className="flex-grow">
+                  <h2 className="text-lg font-semibold">{item.name}</h2>
+                  <p className="text-gray-400">Price: ₹{item.price}</p>
+                </div>
+
+                {/* Quantity */}
+                <div className="flex items-center space-x-2">
+                  <Typography sx={{ color: "white" }}>
+                    Quantity: {item.quantity}
+                  </Typography>
+                </div>
+
+                {/* Subtotal */}
+                <div>
+                  <p className="text-lg font-semibold">
+                    Total:{" "}
+                    <span className="text-[#ff7f11]">
+                      ₹{item.subTotal.toFixed(2)}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </Box>
     </>
   );

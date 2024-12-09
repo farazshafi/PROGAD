@@ -10,7 +10,7 @@ import Wallet from "../models/walletModel.js";
 // @access  private
 export const makeOrder = asyncHandler(async (req, res) => {
   try {
-    const {
+    let {
       user,
       items,
       razorpayOrderId,
@@ -24,8 +24,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
       totalPrice,
       paymentStatus,
     } = req.body;
-
-    console.log("req body: ", req.body);
 
     if (
       !user ||
@@ -46,26 +44,8 @@ export const makeOrder = asyncHandler(async (req, res) => {
       return { ...item, subTotal: itemSubTotal };
     });
 
-    if (paymentStatus === "paid") {
-      for (const item of items) {
-        const product = await Product.findById(item.id);
-        if (!product) {
-          return res.status(400).json({ message: "Product not found" });
-        }
-
-        if (product.stock < item.quantity) {
-          return res.status(400).json({
-            message: `Product ${product.name} has only ${product.stock} left`,
-          });
-        }
-
-        product.totalStock -= item.quantity;
-        product.sold += item.quantity;
-        await product.save();
-      }
-    }
-
-    const order = await Order.create({
+    // create an order with initial data
+    let order = await Order.create({
       user,
       items: itemWithSubTotal,
       status,
@@ -80,6 +60,48 @@ export const makeOrder = asyncHandler(async (req, res) => {
       razorpayOrderId: paymentMethod === "Razorpay" ? razorpayOrderId : null,
     });
 
+    // handle wallet
+    if (paymentMethod === "wallet") {
+      const wallet = await Wallet.findOne({ userId: user });
+      if (!wallet) {
+        return res.status(400).json({ message: "User does not have a wallet" });
+      }
+      if (wallet.balance < totalPrice) {
+        return res.status(400).json({ message: "Insufficient balance in wallet" });
+      }
+      wallet.balance -= totalPrice;
+      wallet.transactions.push({
+        type: "debit",
+        amount: totalPrice,
+        description: `Debited for your order`,
+        orderId: order._id,
+        createdAt: new Date().toISOString()
+      });
+      await wallet.save();
+      paymentStatus = "paid";
+      order.paymentStatus = "paid";
+      await order.save();
+    }
+
+    if (paymentStatus === "paid") {
+      for (const item of items) {
+        const product = await Product.findById(item.id);
+        if (!product) {
+          return res.status(400).json({ message: "Product not found" });
+        }
+
+        if (product.stock < item.quantity) {
+          return res.status(400).json({
+            message: `Product ${product.name} has only ${product.stock} left`,
+          });
+        }
+
+        product.stock -= item.quantity;
+        product.sold += item.quantity;
+        await product.save();
+      }
+    }
+
     res.status(201).json({
       message: "Order created successfully",
       orderId: order._id,
@@ -90,6 +112,7 @@ export const makeOrder = asyncHandler(async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 // @desc    later payment , in order details page
 // @route   POST /api/order/later_payment
@@ -147,9 +170,9 @@ export const getAllOrders = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const allOrders = await Order.find({ user: id }).populate(
-      "shippingAddress"
-    ).sort({orderDate:-1})
+    const allOrders = await Order.find({ user: id })
+      .populate("shippingAddress")
+      .sort({ orderDate: -1 });
     if (!allOrders) {
       return res.status(404).json({ message: "No orders found" });
     }
@@ -220,7 +243,6 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       }
       const refundAmount = orderDetails.totalPrice;
       wallet.balance += refundAmount;
-      console.log("order id", orderDetails._id);
       wallet.transactions.push({
         type: "credit",
         amount: refundAmount,
@@ -228,6 +250,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
           status === "Cancel" ? "canceled" : "Returned "
         } order`,
         orderId: orderDetails._id,
+        createdAt: new Date().toISOString(),
       });
       await wallet.save();
     }
@@ -251,7 +274,7 @@ export const listAllOrders = asyncHandler(async (req, res) => {
       .populate("user", "_id name email")
       .limit(limit)
       .skip(skip)
-      .sort({orderDate:-1})
+      .sort({ orderDate: -1 });
     if (!allOrders) {
       return res.status(404).json({ message: "No orders found" });
     }
@@ -319,9 +342,10 @@ export const updateStatus = asyncHandler(async (req, res) => {
             status === "Cancel" ? "canceled" : "Returned "
           } order`,
           orderId: orderDetails._id,
+          createdAt: new Date().toISOString(),
         });
         await wallet.save();
-        console.log("it has to work")
+        console.log("it has to work");
         orderDetails.paymentStatus = "refunded";
       }
     }

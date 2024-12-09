@@ -13,16 +13,16 @@ import {
   selectedCart,
 } from "../../../features/user/cartSlice";
 import { useNavigate } from "react-router-dom";
-import { setSummaryData } from "../../../features/user/orderSlice";
+import {
+  selectedOrder,
+  setSummaryData,
+} from "../../../features/user/orderSlice";
 import { toast } from "react-toastify";
-import { findCouponsApi } from "../../../api/couponApi";
-import { FaCheck } from "react-icons/fa";
-import { selectedUser } from "../../../features/user/userSlice";
 import { checkCartProductValidApi } from "../../../api/productApi";
 
 const CartPage = () => {
   const cartItems = useSelector(selectedCart);
-  const user = useSelector(selectedUser);
+  const orderDetails = useSelector(selectedOrder);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,7 +30,6 @@ const CartPage = () => {
   const [availableCoupon, setAvailableCoupon] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [isApplied, setIsApplied] = useState(false);
-  const [couponCategory, setCouponCategory] = useState([]);
   const [summary, setSummary] = useState({
     summary: 0,
     tax: 0,
@@ -82,7 +81,7 @@ const CartPage = () => {
       for (const items of cartItems) {
         cartitemIds.push(items.id);
       }
-      console.log("cart items ids", cartitemIds)
+      console.log("cart items ids", cartitemIds);
       const result = await checkCartProductValidApi(cartitemIds);
       if (result?.response) {
         const { status } = result.response;
@@ -91,7 +90,7 @@ const CartPage = () => {
           toast.error(
             `The following products are not available: ${products.join(", ")}. Please Remove that product`
           );
-          return 
+          return;
         }
       }
     } catch (err) {
@@ -108,7 +107,14 @@ const CartPage = () => {
       couponCode: isApplied ? couponCode : null,
     };
     dispatch(setSummaryData(sendSummary));
-    navigate("/cart_process/shipping");
+    if (orderDetails && Object.keys(orderDetails.shippingAddress).length > 0) {
+      if (orderDetails.paymentMethod != null) {
+        return navigate("/cart_process/place_order");
+      }
+      return navigate("/cart_process/payment");
+    } else {
+      navigate("/cart_process/shipping");
+    }
   };
 
   const handleDelete = (item) => {
@@ -123,131 +129,95 @@ const CartPage = () => {
     <>
       <Header />
       <Box className="cart-container">
-        <Typography
-          sx={{
-            fontFamily: "Istok Web",
-            fontSize: "30px",
-            fontWeight: "700",
-            color: "white",
-          }}
-        >
+        <p className="font-poppins text-white text-xl">
           {cartItems.length > 0
             ? `Your shopping cart (${cartItems.length})`
             : "Your shopping cart is empty"}
-        </Typography>
-        <Row style={{ marginTop: "30px" }}>
-          {/* cart items */}
-          <Col sm={12} md={6} lg={8}>
-            {cartItems.length > 0 &&
-              cartItems.map((item) => (
-                <Row key={item.id} style={{ marginBottom: "20px" }}>
-                  <Col lg={2} md={2} sm={2}>
-                    <img
-                      className="rounded-lg"
-                      src={item.image}
-                      alt="Product"
-                      style={{
-                        width: "100%",
-                        height: "100px",
-                        objectFit: "cover",
+        </p>
+        {cartItems.length > 0 && (
+          <div className="space-y-4 mt-3">
+            {cartItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg shadow-white shadow-[rgba(255,255,255,0.05)] shadow-md space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-200 !text-black sm:!text-white sm:bg-transparent"
+              >
+                {/* Image */}
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-24 h-24 object-cover rounded"
+                />
+
+                {/* Details */}
+                <div className="flex-grow">
+                  <h2 className="text-lg font-semibold">{item.name}</h2>
+                  <p className="text-gray-700 sm:text-gray-400">
+                    Price: ₹{item.price}
+                  </p>
+                </div>
+
+                {/* Quantity */}
+                <div className="flex items-center space-x-2">
+                  <button
+                    className="py-2 px-3 rounded bg-white text-black"
+                    style={{
+                      backgroundColor: item.quantity === 1 ? "gray" : "",
+                    }}
+                    disabled={item.quantity === 1}
+                    onClick={(e) => handleQuantityChange(e, item)}
+                    value="-"
+                  >
+                    -
+                  </button>
+                  <Typography sx={{ color: "white" }}>
+                    {item.quantity}
+                  </Typography>
+                  <button
+                    className="py-2 px-3 rounded bg-white text-black"
+                    style={{
+                      backgroundColor: item.quantity === 10 ? "gray" : "",
+                    }}
+                    disabled={item.quantity === 10}
+                    onClick={(e) => handleQuantityChange(e, item)}
+                    value="+"
+                  >
+                    +
+                  </button>
+                </div>
+
+                {/* Subtotal */}
+                <div>
+                  <p className="text-lg font-semibold">
+                    Total:{" "}
+                    <span className="text-[#ff7f11]">
+                      ₹{item.subTotal.toFixed(2)}
+                    </span>
+                  </p>
+                </div>
+                <div className="bg-[#ff7f11] sm:bg-transparent text-white rounded p-2">
+                  <span
+                    className="flex items-center"
+                    onClick={() => handleDelete(item)}
+                  >
+                    <p className="block lg:hidden">Delete</p>
+
+                    {/* Show the DeleteIcon only on large screens */}
+                    <DeleteIcon
+                      className="hidden lg:block"
+                      sx={{
+                        color: "white",
+                        marginLeft: "20px",
+                        cursor: "pointer",
                       }}
                     />
-                  </Col>
-                  <Col lg={6} md={6} sm={6}>
-                    <Typography
-                      sx={{
-                        color: "white",
-                        fontFamily: "Istok Web",
-                        fontSize: "20px",
-                        fontWeight: "700",
-                        textAlign: "center",
-                      }}
-                    >
-                      {item.name}
-                      <br />
-                      {item.price}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "white",
-                        fontFamily: "Istok Web",
-                        fontSize: "15px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {item.description}
-                    </Typography>
-                  </Col>
-                  <Col lg={1} md={1} sm={1}>
-                    <div className="cart-item-qty-div">
-                      <button
-                        style={{
-                          backgroundColor: item.quantity === 1 ? "gray" : "",
-                        }}
-                        disabled={item.quantity === 1}
-                        onClick={(e) => handleQuantityChange(e, item)}
-                        value="-"
-                      >
-                        -
-                      </button>
-                      <Typography sx={{ color: "white" }}>
-                        {item.quantity}
-                      </Typography>
-                      <button
-                        style={{
-                          backgroundColor: item.quantity === 10 ? "gray" : "",
-                        }}
-                        disabled={item.quantity === 10}
-                        onClick={(e) => handleQuantityChange(e, item)}
-                        value="+"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </Col>
-                  <Col lg={3} md={3} sm={3}>
-                    <div
-                      className="cart-item-price_remove"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: "100%",
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontFamily: "Istok Web",
-                          fontWeight: "700",
-                          fontSize: "20px",
-                          color: "white",
-                        }}
-                      >
-                        ₹ {Number(item.quantity * item.price)}
-                      </Typography>
-                      <span onClick={() => handleDelete(item)}>
-                        <DeleteIcon
-                          sx={{
-                            color: "white",
-                            marginLeft: "20px",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </span>
-                    </div>
-                  </Col>
-                  <Divider
-                    sx={{
-                      height: "1px",
-                      background: "white",
-                      width: "90%",
-                      marginTop: "20px",
-                    }}
-                  />
-                </Row>
-              ))}
-          </Col>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
+        <Row style={{ marginTop: "30px" }}>
           {/* product summary details */}
           {cartItems.length > 0 && (
             <Col

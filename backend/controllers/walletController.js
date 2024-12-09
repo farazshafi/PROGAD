@@ -1,21 +1,30 @@
-import asyncHandler from  "express-async-handler"
-import Wallet from "../models/walletModel.js"
-
+import asyncHandler from "express-async-handler";
+import Wallet from "../models/walletModel.js";
 
 // @desc    get wallet details
 // @route   GET /api/user/wallet/:userId
 // @access  private
-export const getWalletDetails = asyncHandler(async(req,res)=>{
-    const {userId} = req.params
+export const getWalletDetails = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
 
-    const wallet = await Wallet.findOne({userId}).sort({"transactions.createdAt":-1}).select("balance _id transactions")
+  const wallet = await Wallet.findOne({ userId }).select(
+    "balance _id transactions"
+  );
 
-    if(!wallet){
-        return res.status(201).json([])
-    }
+  if (!wallet) {
+    return res.status(201).json([]);
+  }
 
-    wallet.transactions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  await Wallet.updateMany(
+    { "transactions.createdAt": { $exists: false } }, // Find transactions without createdAt
+    { $set: { "transactions.$[].createdAt": new Date() } } // Set the current timestamp
+  );
+  
 
-    res.status(200).json(wallet)
+  wallet.transactions = wallet.transactions.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  
 
-})
+  res.status(200).json(wallet);
+});
