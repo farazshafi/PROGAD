@@ -15,7 +15,6 @@ const ShippingSection = ({ selectedAddress }) => {
   const navigate = useNavigate();
 
   const handleAddressClick = (address) => {
-    console.log("address clicked", address);
     if (Object.keys(address).length === 0) {
       return toast.error("Please select a address");
     }

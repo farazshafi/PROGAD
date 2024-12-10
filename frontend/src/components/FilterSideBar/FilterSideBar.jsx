@@ -61,7 +61,6 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
           return;
         }
       }
-      console.log("result category: ", result);
       setAllCategories(result);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -93,7 +92,6 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
 
   // Apply filters when the sidebar closes or updates
   const applyFilters = () => {
-    console.log("brands..", brands)
     onFilterChange({ categories, priceRange , brands});
     toggleSidebar(); 
   };

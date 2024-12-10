@@ -81,7 +81,6 @@ const CartPage = () => {
       for (const items of cartItems) {
         cartitemIds.push(items.id);
       }
-      console.log("cart items ids", cartitemIds);
       const result = await checkCartProductValidApi(cartitemIds);
       if (result?.response) {
         const { status } = result.response;
@@ -169,9 +168,19 @@ const CartPage = () => {
                   >
                     -
                   </button>
-                  <Typography className="text-black sm:text-white">
+                  <Typography
+                    sx={{
+                      color: {
+                        xs: "black",
+                        sm: "black",
+                        md: "white",
+                        lg: "white",
+                      },
+                    }}
+                  >
                     {item.quantity}
                   </Typography>
+
                   <button
                     className="py-2 px-3 rounded bg-white text-black"
                     style={{
@@ -237,12 +246,16 @@ const CartPage = () => {
                 </div>
                 <div className="flex text-lg text-white font-poppins justify-between">
                   <p>Delivery fee:</p>
-                  {summary.total > 500 ? <p>Free</p> : <p>{summary.delivery}</p>}
+                  {summary.total > 500 ? (
+                    <p>Free</p>
+                  ) : (
+                    <p>{summary.delivery}</p>
+                  )}
                 </div>
                 <div className="flex text-lg text-white font-poppins justify-between">
                   <p>Total:</p>
                   <p>{summary.total}</p>
-                </div> 
+                </div>
               </div>
               {/* Checkout Button */}
               <div onClick={handleCheckout} style={{ marginTop: "30px" }}>

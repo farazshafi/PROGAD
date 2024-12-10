@@ -61,7 +61,6 @@ const OrderDetailsCard = ({ isAdmin }) => {
   const fetchOrderDetails = async () => {
     try {
       const result = await getOrderDetailsApi(id);
-      console.log("result", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {

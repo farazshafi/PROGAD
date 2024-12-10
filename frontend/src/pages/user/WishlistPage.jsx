@@ -19,7 +19,6 @@ const WishlistPage = () => {
         productId: id,
       };
       const result = await deleteWishlistApi(dataObj);
-      console.log("result remove", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -45,7 +44,6 @@ const WishlistPage = () => {
         }
       }
       setWishlistItems(result.wishlistedProducts);
-      console.log("products ", result.wishlistedProducts);
     } catch (err) {
       console.log(err);
       return toast.error("Failed to fetch wishlist");

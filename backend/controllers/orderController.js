@@ -45,24 +45,6 @@ export const makeOrder = asyncHandler(async (req, res) => {
     });
 
     const orderId = generateIds("order");
-    console.log("item with subtotal:", itemWithSubTotal);
-
-    // create an order with initial data
-    let order = await Order.create({
-      orderId,
-      user,
-      items: itemWithSubTotal,
-      status,
-      couponDiscount,
-      tax,
-      totalPrice,
-      deliveryCost,
-      subTotal: orderSubTotal,
-      shippingAddress,
-      paymentMethod,
-      paymentStatus,
-      razorpayOrderId: paymentMethod === "Razorpay" ? razorpayOrderId : null,
-    });
 
     // update stock
     for (const prod of itemWithSubTotal) {
@@ -70,12 +52,8 @@ export const makeOrder = asyncHandler(async (req, res) => {
       if (!product) {
         return res.status(400).json({ message: "Product Unavailable!" });
       }
-      console.log("our product:", product);
-      console.log("product stock:", product.totalStock);
-      console.log("prod qty:", prod.quantity);
 
       if (product.totalStock >= prod.quantity) {
-        console.log("test 2");
         product.totalStock -= prod.quantity;
         await product.save();
       } else {
@@ -107,6 +85,23 @@ export const makeOrder = asyncHandler(async (req, res) => {
       order.paymentStatus = "paid";
       await order.save();
     }
+
+    // create an order with initial data
+    let order = await Order.create({
+      orderId,
+      user,
+      items: itemWithSubTotal,
+      status,
+      couponDiscount,
+      tax,
+      totalPrice,
+      deliveryCost,
+      subTotal: orderSubTotal,
+      shippingAddress,
+      paymentMethod,
+      paymentStatus,
+      razorpayOrderId: paymentMethod === "Razorpay" ? razorpayOrderId : null,
+    });
 
     res.status(201).json({
       message: "Order created successfully",
@@ -215,7 +210,6 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
     const { reason, status } = req.body;
-    console.log("reason :", reason);
 
     const orderDetails = await Order.findById(id);
     if (!orderDetails) {
@@ -340,7 +334,6 @@ export const updateStatus = asyncHandler(async (req, res) => {
         }
         const refundAmount = orderDetails.totalPrice;
         wallet.balance += refundAmount;
-        console.log("order id", orderDetails._id);
         wallet.transactions.push({
           type: "credit",
           amount: refundAmount,
@@ -351,7 +344,6 @@ export const updateStatus = asyncHandler(async (req, res) => {
           createdAt: new Date().toISOString(),
         });
         await wallet.save();
-        console.log("it has to work");
         orderDetails.paymentStatus = "refunded";
       }
     }

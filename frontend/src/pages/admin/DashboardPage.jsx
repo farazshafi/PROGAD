@@ -103,20 +103,16 @@ const DashboardPage = () => {
 
   const fetchTopCategories = async () => {
     const result = await getTopSellingCategoriesApi();
-    console.log("top categories:", result);
     setTopCategories(result);
   };
 
   const fetchTopBrands = async () => {
     const result = await getTopSellingBrandsApi();
-    console.log("top categories:", result);
     setTopBrands(result);
   };
 
   const fetchSalesData = async (path) => {
-    console.log("pathy : ",path)
     const result = await getSalesChartDataApi(path);
-    console.log("result:", result)
     // return mockSalesData[path];
     
     return {

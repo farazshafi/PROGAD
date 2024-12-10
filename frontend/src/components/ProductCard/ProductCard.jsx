@@ -42,7 +42,6 @@ const ProductCard = ({ page }) => {
         userId: user._id,
         productId: id,
       });
-      console.log("wishlist result : ", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -58,14 +57,13 @@ const ProductCard = ({ page }) => {
   };
 
   const handleAddToCart = (product) => {
-    console.log("products cart ", product);
     const cartItem = {
       id: product._id,
       name: product.name,
       price: Number(product.discountPrice),
       quantity: 1,
       image: product.image,
-      stock: product.totalStock,
+      stock: product.stock,
       subTotal: Number(product.discountPrice) * 1,
       category: product.category,
     };
@@ -154,7 +152,7 @@ const ProductCard = ({ page }) => {
                   </CardActionArea>
                   <CardActions sx={{ justifyContent: "center", gap: "10px" }}>
                     <OurButton
-                      type={"rupees"}
+                      isRupees={true}
                       text={Number(
                         product.hasVariants
                           ? product.variants[0].discountPrice
@@ -170,29 +168,29 @@ const ProductCard = ({ page }) => {
                         color: "white",
                       }}
                     >
-                      {product.hasVariants
+                      ₹{product.hasVariants
                         ? product.variants[0].originalPrice
                         : product.originalPrice}
                     </Typography>
                   </CardActions>
-                    <div className="mt-2 py-3 px-2">
-                      {product.stock < 1 ? (
-                        <button
-                          disabled
-                          onClick={() => handleAddToCart(product)}
-                          className="text-red-600 font-poppins w-full bg-gray-300 rounded p-2" 
-                        >
-                          Out of Stock
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleAddToCart(product)}
-                          className="text-black font-poppins w-full bg-white hover:bg-gray-400 rounded p-2"
-                        >
-                          Add to Cart
-                        </button>
-                      )}
-                    </div>
+                  <div className="mt-2 py-3 px-2">
+                    {product.stock < 1 ? (
+                      <button
+                        disabled
+                        onClick={() => handleAddToCart(product)}
+                        className="text-red-600 font-poppins w-full bg-gray-300 rounded p-2"
+                      >
+                        Out of Stock
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="text-black font-poppins w-full bg-white hover:bg-gray-400 rounded p-2"
+                      >
+                        Add to Cart
+                      </button>
+                    )}
+                  </div>
                 </Card>
               </Col>
             ))

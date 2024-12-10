@@ -29,7 +29,6 @@ const CartProcess = () => {
   };
 
   useEffect(() => {
-    console.log(user);
     if (!user) {
       toast.error("Please login to proceed");
       navigate("/login");

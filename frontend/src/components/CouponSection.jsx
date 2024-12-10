@@ -26,9 +26,6 @@ const CouponSection = ({summary, applyCoupon}) => {
       return;
     }
 
-    console.log("Available coupon :", availableCoupon)
-    console.log("summary :", summary)
-
     if (availableCoupon.categories && availableCoupon.categories.length > 0) {
       const isCategoryEligible = cartItems.some((item) =>
         availableCoupon.categories.includes(item.category._id)
@@ -58,9 +55,7 @@ const CouponSection = ({summary, applyCoupon}) => {
     }
     try {
       setIsApplied(false);
-      console.log("coupon code:", couponCode);
       const result = await findCouponsApi(couponCode);
-      console.log("result codupon ", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {

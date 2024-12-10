@@ -1,7 +1,7 @@
 import { Button, ChakraProvider } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 
-const OurButton = ({ isLoading, text, type = "button", page, w, disabled }) => {
+const OurButton = ({ isLoading, text, type = "button", page, w, disabled, isRupees = false }) => {
 
   useEffect(()=>{
   },[disabled])
@@ -25,7 +25,7 @@ const OurButton = ({ isLoading, text, type = "button", page, w, disabled }) => {
           color: "white",
         }}
       >
-        {type === "rupees" ? <>{text}</> : text}
+        {isRupees ? <>₹{text}</> : text}
       </Button>
     </ChakraProvider>
   );

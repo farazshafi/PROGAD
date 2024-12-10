@@ -43,7 +43,6 @@ const ProductDetailsPage = () => {
   const fetchProductDetails = async () => {
     try {
       const result = await getProductDetailsApi(id);
-      console.log("product details ",result)
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -54,7 +53,6 @@ const ProductDetailsPage = () => {
         }
       } else {
         setProduct(result.data);
-        console.log("category test", result.data);
         fetchRelatedProducts(result.data?.category?._id);
       }
     } catch (err) {

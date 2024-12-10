@@ -108,7 +108,6 @@ const AddressCard = ({ onAddressClick }) => {
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
-          console.log("Error fetching user address");
           toast.error(result.response.data.message);
           setLoading(false);
           return;
@@ -172,7 +171,6 @@ const AddressCard = ({ onAddressClick }) => {
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
-          console.log("Error deleting address");
           toast.error(result.response.data.message);
           return;
         }
@@ -191,7 +189,6 @@ const AddressCard = ({ onAddressClick }) => {
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
-          console.log("Error fetching user address");
           toast.error(result.response.data.message);
           return;
         }

@@ -19,7 +19,6 @@ export const createOffer = asyncHandler(async (req, res) => {
     categoryIds,
     status,
   } = req.body;
-  console.log("req body bro. ", req.body);
   // validation
   if (
     !name ||
@@ -176,7 +175,6 @@ export const offerProducts = asyncHandler(async (req, res) => {
     });
     
 
-    console.log("products offer", products)
 
     const filteredProducts = products.map((product) => {
       const relevantOffer = offers.find(

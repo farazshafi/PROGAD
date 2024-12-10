@@ -9,7 +9,6 @@ import Order from "../models/orderModel.js"
 export const createBrand = asyncHandler(async (req, res) => {
   try {
     const { name, description, isPublished } = req.body;
-    console.log("Req.body :", req.body);
 
     const existBrand = await Brand.findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
     if (existBrand) {

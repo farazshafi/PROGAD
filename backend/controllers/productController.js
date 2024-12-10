@@ -339,8 +339,6 @@ export const getProductDetails = asyncHandler(async (req, res) => {
       $or: [{ productIds: product._id }, { categoryIds: product.category._id }],
     });
 
-    console.log("Relevant Offer: ", relevantOffer);
-
     let discountValue = 0;
     let discountPrice = product.discountPrice;
     let discountType = null;
@@ -659,15 +657,12 @@ export const getTopSellingProduct = asyncHandler(async (req, res) => {
 export const checkCartProductValid = asyncHandler(async (req, res) => {
   const { cartItems } = req.body;
 
-  console.log("cart items", cartItems);
 
   if (!cartItems || cartItems.length === 0) {
     return res.status(400).json({ message: "Cart is empty." });
   }
 
   const products = await Product.find({ _id: { $in: cartItems } });
-
-  console.log("working ");
 
   const unAvailableProducts = [];
   for (const item of cartItems) {

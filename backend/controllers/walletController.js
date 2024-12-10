@@ -18,8 +18,6 @@ export const getWalletDetails = asyncHandler(async (req, res) => {
     return res.status(201).json([]);
   }
 
-  console.log("Wallet : ", wallet);
-
   wallet.transactions = wallet.transactions.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );

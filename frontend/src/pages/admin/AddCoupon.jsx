@@ -61,9 +61,7 @@ const AddCoupon = () => {
   };
 
   const handleShowCouponDetails = async () => {
-    console.log("coupons category", coupon.categories);
     try {
-      console.log("coupon", coupon);
       if (
         !coupon.name ||
         !coupon.code ||
@@ -97,7 +95,6 @@ const AddCoupon = () => {
         categories: newCategories,
       };
       const result = await createCouponApi(couponWithDate);
-      console.log("result coupon ", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -129,7 +126,6 @@ const AddCoupon = () => {
   const fetchCategories = async () => {
     try {
       const result = await getPublishedCategoriesApi();
-      console.log("categor result", result);
       setCategories(result);
     } catch (err) {
       toast.error(err);

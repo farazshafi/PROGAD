@@ -51,7 +51,6 @@ const ListCoupons = () => {
   const fetchCoupons = async () => {
     try {
       const coupons = await getAllCouponsApi();
-      console.log("coupons da", coupons);
       if (coupons.response) {
         const { status } = coupons.response;
         if (status === 400 || status === 500) {
@@ -113,7 +112,6 @@ const ListCoupons = () => {
   const handleSave = async () => {
     setModalOpen(false);
     try {
-      console.log("new data", couponData);
       const result = await editCouponApi(selectedCoupon._id, couponData);
       if (result.response) {
         const { status } = result.response;

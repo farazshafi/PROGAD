@@ -21,7 +21,6 @@ const ProductDetail = ({ product }) => {
   const [showAddToCartAnimation, setShowAddToCartAnimation] = useState(false);
 
   const handleAddToCart = () => {
-    console.log("Cart items:", cartItems);
 
     const cartItem = {
       id: product._id,

@@ -41,7 +41,6 @@ const SalesReport = () => {
           return;
         }
       }
-      console.log("Sales report:", result);
       setReport(result.data);
     } catch (err) {
       toast.error("Error fetching sales data");

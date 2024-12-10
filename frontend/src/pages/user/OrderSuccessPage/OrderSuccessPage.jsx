@@ -9,7 +9,6 @@ import Header from "../../../components/Header/Header";
 
 const OrderSuccessPage = () => {
   const { id } = useParams();
-  console.log("success order id", id);
   return (
     <>
       <Header />

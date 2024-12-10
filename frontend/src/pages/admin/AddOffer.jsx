@@ -128,7 +128,6 @@ const AddOffer = () => {
       toast.error("Failed to add offer. Please try again.");
       console.log(err);
     }
-    console.log(offerDetails);
   };
 
   const fetchAllProducts = async () => {
@@ -151,7 +150,6 @@ const AddOffer = () => {
   const fetchAllCategories = async () => {
     try {
       const result = await getPublishedCategoriesApi();
-      console.log("categoriess : ", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {

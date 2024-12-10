@@ -484,7 +484,7 @@ const AddProduct = () => {
       resetProductData();
       toast.success("Product added successfully");
     } catch (err) {
-      console.log("baaki err", err);
+      console.log("baaki", err);
       console.error("Error adding product:", err);
     }
   };
@@ -502,7 +502,6 @@ const AddProduct = () => {
   const fetchBrands = async () => {
     try {
       const data = await getAllPublicBrandsApi();
-      console.log("brands:", data);
       setAllBrands(data);
     } catch (err) {
       toast.error(err);

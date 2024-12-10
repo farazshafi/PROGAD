@@ -60,7 +60,6 @@ const ListBrands = () => {
   };
 
   const handleSave = async () => {
-    console.log("current brand: ", currentBrand);
     try {
       const result = await editBrandApi(currentBrand._id, currentBrand);
       if (result.response) {

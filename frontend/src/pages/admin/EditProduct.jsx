@@ -117,7 +117,7 @@ const EditProduct = () => {
   };
 
   const enqueueSnackbar = (message, options) => {
-    // console.log("Showing snackbar:", message);
+    // 
   };
 
   const handleClose = () => {
@@ -298,7 +298,6 @@ const EditProduct = () => {
       }));
     } catch (error) {
       console.error("Error updating product:", error);
-      console.log("Failed to update product.");
     }
   };
 

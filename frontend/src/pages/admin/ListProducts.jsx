@@ -73,7 +73,6 @@ const ListProducts = () => {
   const fetchProducts = async () => {
     try {
       const { data } = await getAllProductsApi(page);
-      console.log("the data , ", data);
       if (data.response) {
         const { status } = data.response;
         if (status === 400 || status === 500) {

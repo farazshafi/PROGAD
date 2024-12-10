@@ -20,7 +20,6 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!user) {
-      console.log("user Indo", user);
       return navigate("/login");
     }
   }, []);

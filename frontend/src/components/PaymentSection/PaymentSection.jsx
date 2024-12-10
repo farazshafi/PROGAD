@@ -36,9 +36,7 @@ const PaymentSection = () => {
 
   const fetchWalletDetails = async () => {
     try {
-      console.log("test 1 ");
       const result = await getWalletDetailsApi(user._id);
-      console.log("Wallet Details", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 500) {

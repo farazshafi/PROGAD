@@ -105,15 +105,11 @@ const ListUsers = () => {
         const result = await moniteringUserApi(selectedUser._id);
         if (result.response) {
           const userId = JSON.parse(localStorage.getItem("user"))._id;
-          console.log("itdh vernn");
           const { status } = result.response;
-          console.log("selcted user", selectedUser._id);
-          console.log("logged user", userId);
           if (
             (status === 400 || status === 500) &&
             selectedUser._id === userId
           ) {
-            console.log("User matched for logout");
             dispatch(setUser({ ...user, isBlocked: true }));
             dispatch(logoutUser());
           }

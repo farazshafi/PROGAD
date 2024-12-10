@@ -39,7 +39,6 @@ export const createWishlist = asyncHandler(async (req, res) => {
 // @access  private
 export const getAllWishlist = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log("id", id);
   if (!id) {
     return res.status(400).json({ message: "Invalid userId" });
   }

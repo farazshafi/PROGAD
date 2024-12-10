@@ -53,7 +53,6 @@ const ListOffers = () => {
   const fetchOffers = async () => {
     try {
       const offers = await getAllOffersAdminApi();
-      console.log("offers :", offers.data);
       if (offers.response) {
         const { status } = offers.response;
         if (status === 400 || status === 500) {
@@ -146,7 +145,6 @@ const ListOffers = () => {
   const handleDelete = async () => {
     try {
       const result = await deleteOfferApi(selectedOffer._id);
-      console.log("result delete ", result);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {

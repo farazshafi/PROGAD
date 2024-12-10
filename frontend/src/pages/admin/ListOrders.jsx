@@ -81,7 +81,6 @@ const ListOrders = () => {
 
   const handleCancelOrder = async () => {
     try {
-      console.log("selected user", selectedOrder);
       const orderData = {
         status: "cancelled",
         user: selectedOrder.user._id,
@@ -105,7 +104,6 @@ const ListOrders = () => {
   const fetchOrders = async () => {
     try {
       const { data } = await listOrdersApi(page);
-      console.log("fetched orders", data);
       setOrders(data.allOrders);
       setTotalPages(data.totalPages);
     } catch (err) {

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid, Typography, Card, Paper, Divider } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { selectedOrder, setSummaryData } from "../../features/user/orderSlice";
 import { selectedUser } from "../../features/user/userSlice";
 import { clearCart, selectedCart } from "../../features/user/cartSlice";
 import { handleRazorpayApi, makeOrderApi } from "../../api/orderApi";
 import { toast } from "react-toastify";
-import { Button, ChakraProvider } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import OrderAnimation from "../../assets/animations/order.json";
 import Lottie from "lottie-react";
 import CouponSection from "../CouponSection";
+import { getWalletDetailsApi } from "../../api/walletApi";
 
 const PlaceOrderSection = () => {
   const orderDetails = useSelector(selectedOrder);
@@ -21,6 +21,7 @@ const PlaceOrderSection = () => {
   const dispatch = useDispatch();
 
   const [showOrderedAnimation, setShowOrderedAnimation] = useState(false);
+  const [walletDetails, setWalletDetails] = useState({});
 
   const [orderData, setOrderData] = useState({
     user: user._id,
@@ -67,15 +68,12 @@ const PlaceOrderSection = () => {
             orderDetails.shippingAddress
           );
 
-          console.log("payment status frntend", paymentResult);
 
           const result = await makeOrderApi({
             ...formattedOrderData,
             paymentStatus: "paid",
             razorpayOrderId: paymentResult.razorpay_order_id,
           });
-
-          console.log("payment result :", result);
 
           if (result.response && result.response.status >= 400) {
             toast.error(result.response.data.message);
@@ -94,8 +92,6 @@ const PlaceOrderSection = () => {
             ...formattedOrderData,
             paymentStatus: "unpaid",
           });
-          console.log("payment result :", result);
-
           if (result.response) {
             const { status } = result.response;
             if (status === 400 || status === 404 || status === 500) {
@@ -124,7 +120,6 @@ const PlaceOrderSection = () => {
           ...formattedOrderData,
           paymentStatus: "unpaid",
         });
-        console.log("payment result :", result);
 
         if (result.response && result.response.status >= 400) {
           toast.error(result.response.data.message);
@@ -167,16 +162,44 @@ const PlaceOrderSection = () => {
       })
     );
 
-    console.log("Discount applied: ", dis, "New total: ", total);
+  };
+
+  const fetchWalletDetails = async () => {
+    try {
+      const result = await getWalletDetailsApi(user._id);
+      if (result.response) {
+        const { status } = result.response;
+        if (status === 500) {
+          toast.error(result.response.data.message || "Cannot Fetch walledt");
+          return;
+        }
+      }
+      setWalletDetails(result);
+    } catch (err) {
+      toast.error("Server Error");
+      console.log(err);
+    }
+  };
+
+  const isWalletEligible = () => {
+    return walletDetails.balance > orderDetails.totalAmount;
   };
 
   useEffect(() => {
+    fetchWalletDetails();
     if (cartItems && cartItems.length < 1) {
       return navigate("/cart");
     }
     if (!orderDetails.paymentMethod) {
       toast.warning("Please select a payment method");
       return navigate("/cart_process/payment");
+    }
+    if (orderDetails.paymentMethod === "wallet") {
+      const isEligible = isWalletEligible();
+      if (!isEligible) {
+        toast.info("Select a Payment Method");
+        return navigate("/cart_process/payment");
+      }
     }
   }, []);
 
