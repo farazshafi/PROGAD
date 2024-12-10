@@ -1,20 +1,55 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronCircleRight } from "react-icons/fa";
 import { FaChevronCircleLeft } from "react-icons/fa";
 import "./ProductGrid.css";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
 const ProductGrid = ({ products }) => {
   const navigate = useNavigate();
+  const carouselRef = useRef(null); 
+  const lastScrollY = useRef(window.scrollY);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDelta = lastScrollY.current - currentScrollY;
+    
+      const items = carouselRef.current?.querySelectorAll(".product-item");
+    
+      if (items) {
+        items.forEach((item, index) => {
+          gsap.to(item, {
+            x: `+=${scrollDelta * 0.7}`,
+            duration: 0.3,
+            ease: "power1.out",
+          });
+        });
+      }
+    
+      lastScrollY.current = currentScrollY;
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <div className="relative">
       <div className="overflow-hidden">
-        <div className="flex gap-4 overflow-x-auto custom-scrollbar">
+        <div
+          ref={carouselRef}
+          className="flex gap-4 overflow-x-auto custom-scrollbar"
+        >
           {products.map((product) => (
             <div
               key={product.productId}
-              className="flex-shrink-0 w-64 p-4 bg-white rounded-lg shadow-lg cursor-pointer"
+              className="flex-shrink-0 w-64 p-4 bg-white rounded-lg shadow-lg cursor-pointer product-item" // Add "product-item" class
               onClick={() => navigate(`/product_details/${product.productId}`)}
             >
               <img
