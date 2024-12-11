@@ -44,12 +44,12 @@ const LoginPage = () => {
 
     toast.success(data.message);
     dispatch(setUser({ ...data.user }));
-    const user = data.user
+    const user = data.user;
     if (user?.isVerified) {
       navigate("/");
-    }else{
-      toast.warning(data.warning)
-      navigate("/otp")
+    } else {
+      toast.warning(data.warning);
+      navigate("/otp");
     }
   };
 
@@ -80,7 +80,7 @@ const LoginPage = () => {
     if (user) {
       navigate("/");
     }
-  },[]);
+  }, []);
 
   return (
     <ChakraProvider>
@@ -124,14 +124,11 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   name="passwrod"
                 />
-                <Text
-                  mt={"10px"}
-                  mb={{ base: "20px", md: "30px" }}
-                  fontSize={{ base: "10px", md: "20px", lg: "15px" }}
-                  className="forgot-password"
-                >
-                  forgot password?
-                </Text>
+                <Link to={"/forgott_password"}>
+                  <p className="font-poppins my-2 text-sm text-gray-500 hover:text-gray-800 hover:underline">
+                    Forgott Password?
+                  </p>
+                </Link>
                 <div onClick={hanldeLogin}>
                   <OurButton w="100" text={"SIGN IN"} />
                 </div>

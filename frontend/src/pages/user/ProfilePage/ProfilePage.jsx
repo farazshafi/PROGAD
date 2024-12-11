@@ -5,6 +5,7 @@ import BreadCrums from "../../../components/BreadCrums";
 import { useSelector } from "react-redux";
 import { selectedUser } from "../../../features/user/userSlice";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -20,7 +21,13 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!user) {
+      toast.error("Please login to view your profile");
       return navigate("/login");
+    }else{
+      if(!user.isVerified){
+        toast.error("Please verify your email to proceed");
+        navigate("/")
+      }
     }
   }, []);
   return (

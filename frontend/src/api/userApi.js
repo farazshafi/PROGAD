@@ -23,14 +23,8 @@ export const verifyOtpApi = async (otp) => {
 };
 
 export const resendOtpApi = async (email) => {
-  const token = JSON.parse(localStorage.getItem("user")).token;
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
   try {
-    const data = await axios.post(`${API_URL}/resend_otp`, { email }, config);
+    const data = await axios.post(`${API_URL}/resend_otp`, { email });
     return data;
   } catch (e) {
     console.log(e);
@@ -91,6 +85,28 @@ export const updatePasswordApi = async (password) => {
 export const moniteringUserApi = async (id) => {
   try {
     const { data } = await axios.get(`${API_URL}/monitering_user/${id}`);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+export const forgottPasswordApi = async (email) => {
+  try {
+    const data = await axios.get(`${API_URL}/forgott_password?email=${email}`);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+export const resetPasswordApi = async (password) => {
+  try {
+    const { data } = await axios.patch(
+      `${API_URL}/reset_password`,
+      password,    );
     return data;
   } catch (e) {
     console.log(e);

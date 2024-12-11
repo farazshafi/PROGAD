@@ -67,7 +67,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
   }
 
   const otp = generateOTP();
-  console.log("otp :", otp)
+  console.log("otp :", otp);
 
   user = await User.create({
     email,
@@ -116,6 +116,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
 // @access  public
 export const verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
+  
   const userExist = await User.findOne({ email });
 
   if (!userExist) {
@@ -205,6 +206,7 @@ export const login = asyncHandler(async (req, res) => {
 
   if (!userExist.isVerified) {
     const otp = generateOTP();
+    console.log("otp",otp)
     userExist.otp = otp;
     await userExist.save();
     const mailOptions = {
@@ -279,10 +281,16 @@ export const resendOtp = asyncHandler(async (req, res) => {
   if (!userExist) {
     return res.status(400).json({ message: "User does not exist" });
   }
-  if (userExist.isVerified) {
-    return res.status(400).json({ message: "User already verified" });
+  if (userExist.isBlocked) {
+    return res
+      .status(400)
+      .json({ message: "User is Blocked! , Not Allowed to Continue" });
   }
+  // if (userExist.isVerified) {
+  //   return res.status(400).json({ message: "User already verified" });
+  // }
   const otp = generateOTP();
+  console.log("otp:",otp)
   userExist.otp = otp;
   await userExist.save();
   const mailOptions = {
@@ -415,5 +423,78 @@ export const moniteringUser = asyncHandler(async (req, res) => {
         token: generateTokens(user._id),
       },
     });
+  }
+});
+
+// @desc    Reset password
+// @route   GET /api/user/forgott_password?email=...
+// @access  public
+export const forgottPassword = asyncHandler(async (req, res) => {
+  const { email } = req.query;
+  const user = await User.findOne({ email });
+  if(!user){    
+    return res.status(400).json({ message: "User not found" });
+  }
+  if (user.isBlocked) {
+    return res
+      .status(400)
+      .json({ message: "User is Blocked!, Not Allowed to continued" });
+  }
+  const otp = generateOTP();
+  user.otp = otp;
+  console.log("otp : ", otp);
+  await user.save();
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your OTP for Reset Password",
+    text: `Your OTP for Reset Password is ${otp}`,
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+    setTimeout(async () => {
+      await User.findByIdAndUpdate(user._id, { $unset: { otp: "" } });
+    }, 1 * 60 * 1000);
+
+    res.status(200).json({ message: "OTP resent successfully" });
+  } catch (err) {
+    console.error("Error sending OTP:", err);
+    res.status(400).json({ message: "Error sending OTP", error: err.message });
+  }
+});
+
+// @desc    Reset password
+// @route   PATCH /api/user/reset_password/
+// @access  private
+export const resetPassword = asyncHandler(async (req, res) => {
+  try {
+    const { newPassword, confirmPassword, email } = req.body;
+
+    const user = await User.findOne({email});
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const passwordRegex =
+      /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[^\s])[A-Za-z\d!@#$%^&*]{6,25}$/;
+
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        message:
+          "Password must be 6-25 characters, contain at least one number, one special character, and no whitespace.",
+      });
+    }
+    if (newPassword !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ message: "New password and confirm password do not match" });
+    }
+
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Error updating password:", err);
+    res.status(500).json({ message: "Server error while updating password" });
   }
 });

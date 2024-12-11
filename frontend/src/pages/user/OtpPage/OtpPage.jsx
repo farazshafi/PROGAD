@@ -36,8 +36,18 @@ const OtpPage = () => {
 
   const handleVerify = async () => {
     setLoading(true);
+    const forgettPassEmail = JSON.parse(
+      localStorage.getItem("passForgetEmail")
+    );
+    let userEmail;
+    if (forgettPassEmail) {
+      userEmail = forgettPassEmail;
+    } else {
+      userEmail = user.email;
+    }
+
     const otpDetails = {
-      email: user.email,
+      email: userEmail,
       otp: Number(otp.join("")),
     };
     const data = await verifyOtpApi(otpDetails);
@@ -47,8 +57,15 @@ const OtpPage = () => {
       return;
     }
     toast.success(data.message);
-    dispatch(verifyUser());
+    if (!forgettPassEmail) {
+      dispatch(verifyUser());
+    }
     setLoading(false);
+    const passForget = JSON.parse(localStorage.getItem("passForget"));
+    if (passForget) {
+      navigate("/forgott_password");
+      return;
+    }
     navigate("/");
   };
 
@@ -65,7 +82,16 @@ const OtpPage = () => {
 
   const handleResendOtp = async () => {
     try {
-      const result = await resendOtpApi(user.email);
+      const forgettPassEmail = JSON.parse(
+        localStorage.getItem("passForgetEmail")
+      );
+      let userEmail;
+      if (forgettPassEmail) {
+        userEmail = forgettPassEmail;
+      } else {
+        userEmail = user.email;
+      }
+      const result = await resendOtpApi(userEmail);
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -78,14 +104,19 @@ const OtpPage = () => {
         setVerifyDisabled(false);
       }
     } catch (error) {
-      console.log("error", error)
+      console.log("error", error);
       toast.error("Failed to resend OTP");
     }
   };
 
   useEffect(() => {
-    if (user?.isVerified) {
-      navigate("/");
+    const forgettPassEmail = JSON.parse(
+      localStorage.getItem("passForgetEmail")
+    );
+    if (!forgettPassEmail) {
+      if (user?.isVerified) {
+        return navigate("/");
+      }
     }
   }, [user, navigate]);
 

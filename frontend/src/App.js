@@ -26,6 +26,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, selectedUser } from "./features/user/userSlice";
 import TestingComponent from "./components/TestingComponent";
+import ForgottPassword from "./pages/user/ForgottPassword";
 
 function App() {
   const user = useSelector(selectedUser);
@@ -67,8 +68,9 @@ function App() {
           />
           <Route path="/coupons" element={<CouponsPage />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/forgott_password" element={<ForgottPassword />} />
 
-          {/* admin route */}
+          {/* admin route -------------------------------------*/}
           <Route path="/admin_login" element={<AdminLogin />} />
           <Route path="/admin_dashboard" element={<AdminDashboard />} />
           <Route

@@ -37,7 +37,6 @@ const RegisterPage = () => {
   const [phoneNumber, setPhoneNumber] = useState(Number);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [googleId, setGoogleId] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
@@ -50,12 +49,10 @@ const RegisterPage = () => {
       toast.error("Passwords do not match");
       return;
     }
-
     if (!name || !phoneNumber || !email || !password || !confirmPassword) {
       toast.error("Please fill all the fields");
       return;
     }
-
     if(phoneNumber.length < 10 || phoneNumber.length > 10){
       toast.error("Invalid Phone Number");
       return;
