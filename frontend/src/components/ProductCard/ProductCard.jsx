@@ -125,9 +125,16 @@ const ProductCard = ({ page }) => {
                     )}
                     <CardContent sx={{ textAlign: "center" }}>
                       <Rating
-                        sx={{ color: "#FF7F11" }}
-                        name={"wow"}
-                        defaultValue={3.5}
+                        sx={{
+                          "& .MuiRating-iconFilled": {
+                            color: "#FF7F11",
+                          },
+                          "& .MuiRating-iconEmpty": {
+                            color: "white",
+                          },
+                        }}
+                        value={product.avgRating > 0 ? product.avgRating : 0}
+                        name="half-rating-read"
                         precision={0.5}
                         readOnly
                         size="small"
@@ -168,7 +175,8 @@ const ProductCard = ({ page }) => {
                         color: "white",
                       }}
                     >
-                      ₹{product.hasVariants
+                      ₹
+                      {product.hasVariants
                         ? product.variants[0].originalPrice
                         : product.originalPrice}
                     </Typography>

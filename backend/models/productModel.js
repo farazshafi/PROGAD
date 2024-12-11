@@ -1,11 +1,16 @@
 import mongoose from "mongoose";
 
-// Rating Schema
-const ratingSchema = mongoose.Schema(
+// review Schema
+const reviewSchema = mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
       required: true,
     },
     rating: {
@@ -14,8 +19,9 @@ const ratingSchema = mongoose.Schema(
       min: 1,
       max: 5,
     },
-    comment: {
+    review: {
       type: String,
+      required:true
     },
   },
   { timestamps: true }
@@ -149,10 +155,6 @@ const productSchema = mongoose.Schema(
         return !this.hasVariants
       },
     },
-    ratings: {
-      type: [ratingSchema],
-      default: [],
-    },
     hasVariants: {
       type: Boolean,
       default: false,
@@ -252,6 +254,6 @@ productSchema.pre("save", function (next) {
 
 // Models
 const Product = mongoose.model("Product", productSchema);
-const Rating = mongoose.model("Rating", ratingSchema);
+const Review = mongoose.model("Review", reviewSchema);
 export default Product;
-export { Product, Rating };
+export { Product, Review };

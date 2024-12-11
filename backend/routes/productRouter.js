@@ -2,7 +2,9 @@ import express from "express";
 import {
   checkCartProductValid,
   createProduct,
+  createProductReview,
   getAllProduct,
+  getAllProductReviews,
   getAllPublicProducts,
   getFilteredProducts,
   getProductDetails,
@@ -37,5 +39,9 @@ router.get("/public_products", protect, admin, getAllPublicProducts);
 router.get("/filter_products", getFilteredProducts);
 router.get("/best_selling",getTopSellingProduct);
 router.post("/check_cart_products", protect, checkCartProductValid);
+
+// Review routes---------------------------------------------------
+router.post("/create_review", protect, createProductReview);
+router.get("/get_product_reviews/:id", getAllProductReviews);
 
 export default router;

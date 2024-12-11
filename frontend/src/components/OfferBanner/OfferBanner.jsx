@@ -48,11 +48,14 @@ const OfferBanner = ({ hide }) => {
             ${offer.categoryIds.map((category) => " " + category.name + "")}`,
           duration: 4.1,
           ease: "none",
+          repeat: -1,
+          yoyo: true,
+          repeatDelay:1
           },
         
       );
     }
-  }, [offer]);
+  },[offer]);
 
   useEffect(() => {
     if (offer) {

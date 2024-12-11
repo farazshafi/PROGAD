@@ -154,3 +154,33 @@ export const getTopSellingProductApi = async (limit) => {
     }
   }
 };
+
+
+// product review api----------------------------------------------------------
+
+export const createProductReviewApi = async (reviewData) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user")).token;
+    const config = {
+      headers:{
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    }
+    const response = await axios.post(`${API_URL}/create_review`, reviewData, config);
+    return response;
+  } catch (err) {
+    console.log("Error creating product review:", err);
+    return err;
+  }
+};
+
+export const getProductReviewsApi = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/get_product_reviews/${id}`);
+    return response;
+  } catch (err) {
+    console.log("Error creating product review:", err);
+    return err;
+  }
+};

@@ -135,7 +135,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
         <FormGroup>
           {allCategories?.map((category) => (
             <FormControlLabel
-              key={category.id}
+              key={category._id}
               control={
                 <Checkbox
                   value={category._id}
@@ -156,7 +156,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
         <FormGroup>
           {allBrands?.map((brand) => (
             <FormControlLabel
-              key={brand.id}
+              key={brand._id}
               control={
                 <Checkbox
                   value={brand._id}

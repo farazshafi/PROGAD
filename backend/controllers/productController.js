@@ -2,7 +2,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
 import { promisify } from "util";
 import asyncHandler from "express-async-handler";
-import { Product } from "../models/productModel.js";
+import { Product, Review } from "../models/productModel.js";
 import Offer from "../models/offerModel.js";
 import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
@@ -244,7 +244,7 @@ export const getAllProduct = asyncHandler(async (req, res) => {
       .skip(skip)
       .populate("category", "_id name");
 
-    const transformedProducts = products.map((product) => {
+    const transformedProducts = products.map(async (product) => {
       const relevantOffer = activeOffers.find(
         (offer) =>
           (offer.applyToProducts && offer.productIds.includes(product._id)) ||
@@ -328,7 +328,6 @@ export const getProductDetails = asyncHandler(async (req, res) => {
       .select("-sold")
       .populate("category", "_id name")
       .populate("brand", "_id name");
-
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -355,12 +354,30 @@ export const getProductDetails = asyncHandler(async (req, res) => {
       }
     }
 
+    // get total ratings from reviews
+    const averageRating = await Review.aggregate([
+      { $match: { productId: new mongoose.Types.ObjectId(id) } },
+      {
+        $group: {
+          _id: null,
+          avgRating: { $avg: "$rating" },
+          reviewsCount: { $sum: 1 },
+        },
+      },
+    ]);
+    const totalRatings =
+      averageRating.length > 0 ? averageRating[0].avgRating : 0;
+    const totalReviews =
+      averageRating.length > 0 ? averageRating[0].reviewsCount : 0;
+
     res.status(200).json({
       ...product.toObject(),
       discount:
         discountType === "percentage" ? `${discountValue}` : discountValue,
       discountType,
       discountPrice: discountPrice.toFixed(2),
+      totalRatings,
+      totalReviews,
     });
   } catch (err) {
     console.error("Error getting product details:", err.message);
@@ -490,12 +507,10 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
 
     const filterCriteria = { isPublished: true };
 
-    // Search by product name (case-insensitive)
     if (search) {
       filterCriteria.name = { $regex: search, $options: "i" };
     }
 
-    // Filter by categories
     if (categories) {
       const categoryArray = categories
         .split(",")
@@ -503,58 +518,53 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       filterCriteria.category = { $in: categoryArray };
     }
 
-    // Filter by price range
     if (minPrice || maxPrice) {
       filterCriteria.discountPrice = {};
       if (minPrice) filterCriteria.discountPrice.$gte = Number(minPrice);
       if (maxPrice) filterCriteria.discountPrice.$lte = Number(maxPrice);
     }
 
-    // Filter by brand
     if (brands) {
       const brandArray = brands
         .split(",")
-        .map((brand) => new mongoose.Types.ObjectId(brand)); // Ensure ObjectId parsing
+        .map((brand) => new mongoose.Types.ObjectId(brand));
       filterCriteria.brand = { $in: brandArray };
     }
 
-    // sorting criteria
+    // 5. Sorting criteria
     let sortCriteria = {};
     if (sortBy) {
       switch (sortBy) {
         case "lowToHigh":
-          sortCriteria = { discountPrice: 1 }; // Ascending price
+          sortCriteria = { discountPrice: 1 }; 
           break;
         case "highToLow":
-          sortCriteria = { discountPrice: -1 }; // Descending price
+          sortCriteria = { discountPrice: -1 }; 
           break;
         case "Aa-Zz":
-          sortCriteria = { name: 1 }; // Alphabetical A-Z
+          sortCriteria = { name: 1 }; 
           break;
         case "zZ-aA":
-          sortCriteria = { name: -1 }; // Alphabetical Z-A
-          break;
+          sortCriteria = { name: -1 }; 
+
         case "newArrival":
-          sortCriteria = { createdAt: -1 }; // Newest first
+          sortCriteria = { createdAt: -1 }; 
           break;
         case "featured":
-          sortCriteria = { isFeatured: -1 }; // Featured products first
+          sortCriteria = { isFeatured: -1 }; 
           break;
         default:
-          sortCriteria = {}; // Default sorting (no sorting applied)
+          sortCriteria = {};
       }
     }
 
-    // Fetch active offers
     const activeOffers = await Offer.find({
       status: "active",
       expirationDate: { $gte: new Date() },
     });
 
-    // Get total product count for pagination
     const totalProducts = await Product.countDocuments(filterCriteria);
 
-    // Fetch filtered, sorted, and paginated products
     const products = await Product.find(filterCriteria)
       .sort(sortCriteria)
       .skip(skip)
@@ -562,45 +572,61 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       .populate("category", "_id name")
       .populate("brand", "_id name");
 
-    // Transform product data (applying relevant offers and discount calculations)
-    const transformedProducts = products.map((product) => {
-      const relevantOffer = activeOffers.find(
-        (offer) =>
-          (offer.applyToProducts && offer.productIds.includes(product._id)) ||
-          (offer.applyToCategories &&
-            offer.categoryIds.includes(product.category._id))
-      );
+    const productIds = products.map((product) => product._id);
 
-      let discountPrice = product.discountPrice;
-      let discountValue = null;
-      let discountType = null;
+    const ratings = await Review.aggregate([
+      { $match: { productId: { $in: productIds } } },
+      { $group: { _id: "$productId", avgRating: { $avg: "$rating" } } },
+    ]);
 
-      if (relevantOffer) {
-        discountType = relevantOffer.discountType;
-        if (discountType === "percentage") {
-          discountValue = `${relevantOffer.discount}%`;
-          discountPrice =
-            product.discountPrice * (1 - relevantOffer.discount / 100);
-        } else if (discountType === "fixed") {
-          discountValue = `${relevantOffer.discount}`;
-          discountPrice = Math.max(
-            0,
-            product.discountPrice - relevantOffer.discount
-          );
+    const ratingsMap = ratings.reduce((acc, item) => {
+      acc[item._id.toString()] = item.avgRating;
+      return acc;
+    }, {});
+
+    const transformedProducts = await Promise.all(
+      products.map((product) => {
+        const avgRating = ratingsMap[product._id.toString()] || 0;
+
+        const relevantOffer = activeOffers.find(
+          (offer) =>
+            (offer.applyToProducts && offer.productIds.includes(product._id)) ||
+            (offer.applyToCategories &&
+              offer.categoryIds.includes(product.category._id))
+        );
+
+        let discountPrice = product.discountPrice;
+        let discountValue = null;
+        let discountType = null;
+
+        if (relevantOffer) {
+          discountType = relevantOffer.discountType;
+          if (discountType === "percentage") {
+            discountValue = `${relevantOffer.discount}%`;
+            discountPrice =
+              product.discountPrice * (1 - relevantOffer.discount / 100);
+          } else if (discountType === "fixed") {
+            discountValue = `${relevantOffer.discount}`;
+            discountPrice = Math.max(
+              0,
+              product.discountPrice - relevantOffer.discount
+            );
+          }
         }
-      }
 
-      return {
-        _id: product._id,
-        name: product.name,
-        stock: product.totalStock,
-        image: product.images[0] || null,
-        discountPrice: discountPrice.toFixed(2),
-        originalPrice: product.originalPrice,
-        discount: discountValue,
-        discountType: discountType,
-      };
-    });
+        return {
+          _id: product._id,
+          name: product.name,
+          stock: product.totalStock,
+          image: product.images[0] || null,
+          discountPrice: discountPrice.toFixed(2),
+          originalPrice: product.originalPrice,
+          discount: discountValue,
+          discountType: discountType,
+          avgRating: avgRating.toFixed(1),
+        };
+      })
+    );
 
     res.json({
       products: transformedProducts,
@@ -618,7 +644,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
 // @route   GET /api/product/best_selling
 // @access  public
 export const getTopSellingProduct = asyncHandler(async (req, res) => {
-  const {limit=10} = req.query
+  const { limit = 10 } = req.query;
   const topProductsAggregation = await Order.aggregate([
     { $unwind: "$items" },
     {
@@ -657,7 +683,6 @@ export const getTopSellingProduct = asyncHandler(async (req, res) => {
 export const checkCartProductValid = asyncHandler(async (req, res) => {
   const { cartItems } = req.body;
 
-
   if (!cartItems || cartItems.length === 0) {
     return res.status(400).json({ message: "Cart is empty." });
   }
@@ -682,4 +707,68 @@ export const checkCartProductValid = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json({ message: "All products are available." });
+});
+
+// PRODUCT REVIEW--------------------------------------------------------------------------------------------
+
+// @desc    Create a product review
+// @route   POST /api/product/create_review
+// @access  private
+export const createProductReview = asyncHandler(async (req, res) => {
+  const { productId, rating, review, userId } = req.body;
+  // validation
+  if (!productId || !rating || !review) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    const existingReview = await Review.findOne({
+      userId,
+      productId,
+    });
+    if (existingReview) {
+      return res.status(400).json({ message: "Review already exist." });
+    }
+
+    const newReview = new Review({
+      userId,
+      productId,
+      rating,
+      review,
+    });
+    await newReview.save();
+    res.status(200).json({ message: "Review created" });
+  } catch (er) {
+    console.error("Error creating product review:", er.message);
+    return res
+      .status(500)
+      .json({ message: "Server error while creating review" });
+  }
+});
+
+// @desc    Get all product reviews
+// @route   GET /api/product/get_product_reviews/:id
+// @access  public
+export const getAllProductReviews = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const reviews = await Review.find({ productId: id }).populate(
+      "userId",
+      "name"
+    );
+
+    if (!reviews) {
+      return res.status(20).json({ reviews: [], isUserReviwed });
+    }
+
+    res.status(200).json({ reviews });
+  } catch (error) {
+    console.error("Error getting product reviews:", error.message);
+  }
 });

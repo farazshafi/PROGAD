@@ -1,27 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import "./ProductDetail.css";
 import { Divider, Rating, Typography } from "@mui/material";
 import OurButton from "../OurButton/OurButton";
-import QtyCounterInput from "../QtyCounterInput/QtyCounterInput";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import { useDispatch, useSelector } from "react-redux";
-import { addToCart, selectedCart } from "../../features/user/cartSlice";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../features/user/cartSlice";
 import addedTOcartAnimation from "../../assets/animations/addToCart.json";
 import Lottie from "lottie-react";
-import { toast } from "react-toastify";
 
 const ProductDetail = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
-  const cartItems = useSelector(selectedCart);
+
 
   const dispatch = useDispatch();
 
   const [showAddToCartAnimation, setShowAddToCartAnimation] = useState(false);
 
   const handleAddToCart = () => {
-
     const cartItem = {
       id: product._id,
       name: product.name,
@@ -149,8 +146,10 @@ const ProductDetail = ({ product }) => {
                 <Divider sx={{ height: "1px", backgroundColor: "white" }} />
                 <div className="rating-box">
                   <Rating
-                    name="read-only"
-                    value={4}
+                    name="half-rating-read"
+                    value={product.totalRatings}
+                    defaultValue={2.5}
+                    precision={0.5}
                     readOnly
                     sx={{
                       "& .MuiRating-iconFilled": {
@@ -170,7 +169,7 @@ const ProductDetail = ({ product }) => {
                       marginTop: "22px",
                     }}
                   >
-                    16
+                    ({product.totalReviews > 0 ? product.totalReviews : 0}) <span className="ml-[2px]">Reviews</span>
                   </Typography>
                 </div>
                 <Typography
@@ -232,7 +231,9 @@ const ProductDetail = ({ product }) => {
                     </div>
                   </>
                 )}
-                <div className={`action-button ${product.totalStock < 1 ? "invisible" : ""}`}>
+                <div
+                  className={`action-button ${product.totalStock < 1 ? "invisible" : ""}`}
+                >
                   <div
                     onClick={() => handleAddToCart(product)}
                     style={{ width: "100%" }}
