@@ -56,7 +56,7 @@ const Header = ({ navbar = true }) => {
                 </Box>
 
                 <Box id="box2" className="relative">
-                  <div className="hidden lg:flex bg-white rounded-3xl mt-2 px-4 py-1 gap-3 py-2">
+                  <div className="hidden lg:flex bg-white rounded-3xl mt-2 px-4 gap-3 py-2">
                     <Link
                       to="/"
                       className=" text-black font-poppins text-lg py-1"
@@ -129,61 +129,66 @@ const Header = ({ navbar = true }) => {
                       icon={<FaUser className="text-black" />}
                     />
                     <MenuList>
-                      <MenuItem
-                        as={Link}
-                        to="/profile"
-                        disabled={!user}
-                        _hover={{
-                          backgroundColor: "#262626",
-                          color: "#FF7F11",
-                        }}
-                      >
-                        Profile
-                      </MenuItem>
-                      <MenuItem
-                        as={Link}
-                        to="/profile/orders"
-                        disabled={!user}
-                        _hover={{
-                          backgroundColor: "#262626",
-                          color: "#FF7F11",
-                        }}
-                      >
-                        Orders
-                      </MenuItem>
-                      <MenuItem
-                        as={Link}
-                        to="/profile/address"
-                        disabled={!user}
-                        _hover={{
-                          backgroundColor: "#262626",
-                          color: "#FF7F11",
-                        }}
-                      >
-                        Address
-                      </MenuItem>
-                      <MenuItem
-                        as={Link}
-                        to="/profile/wishlist"
-                        disabled={!user}
-                        _hover={{
-                          backgroundColor: "#262626",
-                          color: "#FF7F11",
-                        }}
-                      >
-                        Wishlist
-                      </MenuItem>
-                      <MenuItem
-                        as={Link}
-                        to="/profile/wallet"
-                        disabled={!user}
-                        _hover={{
-                          backgroundColor: "#262626",
-                          color: "#FF7F11",
-                        }}
-                      >
-                        Wallet
-                      </MenuItem>
+                      {user && (
+                        <>
+                          <MenuItem
+                            as={Link}
+                            to="/profile"
+                            disabled={!user}
+                            _hover={{
+                              backgroundColor: "#262626",
+                              color: "#FF7F11",
+                            }}
+                          >
+                            Profile
+                          </MenuItem>
+                          <MenuItem
+                            as={Link}
+                            to="/profile/orders"
+                            disabled={!user}
+                            _hover={{
+                              backgroundColor: "#262626",
+                              color: "#FF7F11",
+                            }}
+                          >
+                            Orders
+                          </MenuItem>
+                          <MenuItem
+                            as={Link}
+                            to="/profile/address"
+                            disabled={!user}
+                            _hover={{
+                              backgroundColor: "#262626",
+                              color: "#FF7F11",
+                            }}
+                          >
+                            Address
+                          </MenuItem>
+                          <MenuItem
+                            as={Link}
+                            to="/profile/wishlist"
+                            disabled={!user}
+                            _hover={{
+                              backgroundColor: "#262626",
+                              color: "#FF7F11",
+                            }}
+                          >
+                            Wishlist
+                          </MenuItem>
+                          <MenuItem
+                            as={Link}
+                            to="/profile/wallet"
+                            disabled={!user}
+                            _hover={{
+                              backgroundColor: "#262626",
+                              color: "#FF7F11",
+                            }}
+                          >
+                            Wallet
+                          </MenuItem>
+                        </>
+                      )}
+
                       <MenuItem
                         onClick={handleLogout}
                         _hover={{

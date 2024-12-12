@@ -16,8 +16,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 import { getPublishedCategoriesApi } from "../../api/categoryApi";
 import { getAllPublicBrandsApi } from "../../api/brandApi";
+import { useDispatch, useSelector } from "react-redux";
+import { selectedKeyword, setKeyword } from "../../features/product/productSlice";
 
 const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
+  const dispatch = useDispatch()
+
   const [allCategories, setAllCategories] = useState([]);
   const [allBrands, setAllBrands] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -92,13 +96,22 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
 
   // Apply filters when the sidebar closes or updates
   const applyFilters = () => {
-    onFilterChange({ categories, priceRange , brands});
-    toggleSidebar(); 
+    onFilterChange({ categories, priceRange, brands });
+    toggleSidebar();
   };
+
+  const cancelFilter = () => {
+    setCategories([]);
+    setBrands([]);
+    setPriceRange({ min: 0, max: 50000 });
+    toggleSidebar();
+    onFilterChange({ categories, priceRange, brands });
+    dispatch(setKeyword(""))
+  }
 
   useEffect(() => {
     fetchCategories();
-    fetchBrands()
+    fetchBrands();
   }, []);
 
   return (
@@ -126,7 +139,6 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
         >
           Filter
         </Typography>
-        <TextField label="Search" variant="outlined" fullWidth />
 
         {/* Categories Section */}
         <Typography sx={{ mb: "20px", mt: "30px" }} variant="h6" gutterBottom>
@@ -158,10 +170,7 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
             <FormControlLabel
               key={brand._id}
               control={
-                <Checkbox
-                  value={brand._id}
-                  onChange={handleBrandChange}
-                />
+                <Checkbox value={brand._id} onChange={handleBrandChange} />
               }
               label={brand.name}
             />
@@ -206,21 +215,21 @@ const FilterSideBar = ({ isOpen, toggleSidebar, onFilterChange }) => {
         />
 
         <Divider sx={{ border: "1px solid black", mt: "10px", mb: "20px" }} />
-
-        {/* Apply Filters Button */}
-        <button
-          onClick={applyFilters}
-          style={{
-            marginTop: "20px",
-            padding: "10px",
-            backgroundColor: "#FF7F11",
-            color: "white",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Apply Filters
-        </button>
+        <div className="flex gap-2">
+          <button
+          className="mt-[20px] p-2.5 bg-gray-800 rounded text-white text-sm"
+            onClick={cancelFilter}
+          >
+            Clear Filters
+          </button>
+          {/* Apply Filters Button */}
+          <button
+          className="mt-[20px] p-2.5 bg-[#ff7f11] rounded text-white text-sm"
+            onClick={applyFilters}
+          >
+            Apply Filters
+          </button>
+        </div>
       </div>
     </Drawer>
   );

@@ -18,6 +18,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import {
+  selectedKeyword,
   selectedProduct,
   selectedProductPage,
   setPage,
@@ -27,8 +28,8 @@ import { toast } from "react-toastify";
 import { Stack } from "@chakra-ui/react";
 
 const ProductsPage = () => {
-  const products = useSelector(selectedProduct);
   const page = useSelector(selectedProductPage);
+  const keyword = useSelector(selectedKeyword)
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [sortOption, setSortOption] = useState("default");
@@ -64,7 +65,8 @@ const ProductsPage = () => {
         priceRange: priceRange,
         brands: selectedBrands,
         page,
-        sort:sortOption
+        sort:sortOption,
+        search:keyword
       });
 
       if (data.response) {
@@ -84,7 +86,7 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts(page);
-  }, [selectedCategories, priceRange, page, selectedBrands, sortOption]);
+  }, [selectedCategories, priceRange, page, selectedBrands, sortOption, keyword]);
 
   return (
     <React.Fragment>
