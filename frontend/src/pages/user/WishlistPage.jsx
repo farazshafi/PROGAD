@@ -26,8 +26,8 @@ const WishlistPage = () => {
           return;
         }
       }
-      toast.success("Item removed successfully");
       fetchWishlist(user._id);
+      toast.success("Item removed successfully");
     } catch (err) {
       toast.error("Failed to remove item");
     }

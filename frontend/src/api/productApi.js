@@ -117,7 +117,7 @@ export const getAllPublicProductsForAdminApi = async (id) => {
 
 export const getFilteredProductsApi = async (filters) => {
   try {
-    const { categories, priceRange, brands, sort ,page, search} = filters;
+    const { categories, priceRange, brands, sort ,page, search, userId} = filters;
     const params = new URLSearchParams();
 
     if (categories.length > 0) {
@@ -132,7 +132,7 @@ export const getFilteredProductsApi = async (filters) => {
     }
 
     const response = await axios.get(
-      `${API_URL}/filter_products?${params.toString()}&sortBy=${sort}&page=${page}&search=${search}`
+      `${API_URL}/filter_products?${params.toString()}&sortBy=${sort}&page=${page}&search=${search}&userId=${userId}`
     );
 
     return response.data;

@@ -1,17 +1,6 @@
 import React, { useState } from "react";
-import {
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Rating,
-  Typography,
-} from "@mui/material";
-import { Row, Col, Container } from "react-bootstrap";
-import OurButton from "../OurButton/OurButton";
 import { useDispatch, useSelector } from "react-redux";
-import { selectedProduct } from "../../features/product/productSlice";
+import { selectedProduct, selectedProductPage } from "../../features/product/productSlice";
 import { selectedUser } from "../../features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
@@ -19,9 +8,10 @@ import { toast } from "react-toastify";
 import { createWishlistApi } from "../../api/wishlistApi";
 import { addToCart } from "../../features/user/cartSlice";
 
-const ProductCard = ({ page }) => {
+const ProductCard = ({fetchProducts }) => {
   const user = useSelector(selectedUser);
   const products = useSelector(selectedProduct);
+  const page = useSelector(selectedProductPage)
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,7 +41,7 @@ const ProductCard = ({ page }) => {
       }
       toast.success(result.data.message);
     } catch (err) {
-      toast.error("Failed when adding to whishlist");
+      toast.error("Failed when adding to wishlist");
       console.log(err);
     }
   };
@@ -69,147 +59,97 @@ const ProductCard = ({ page }) => {
     };
 
     dispatch(addToCart(cartItem));
+    fetchProducts(page)
     toast.success("Product added to cart");
-    // setShowAddToCartAnimation(true);
-    // setTimeout(() => setShowAddToCartAnimation(false), 2300);
   };
 
   return (
-    <React.Fragment>
-      <Container>
-        <Row>
-          {products.length > 0 ? (
-            products.map((product, i) => (
-              <Col
-                key={i}
-                className="mb-5"
-                xs={6}
-                sm={6}
-                md={4}
-                lg={page === "products" ? 3 : 3}
+    <div className="container mx-auto px-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {products.length > 0 ? (
+          products.map((product, i) => (
+            <div
+              key={i}
+              className="relative rounded-lg p-4 transition-transform transform hover:scale-105"
+              onMouseEnter={() => setHoveredProductId(product._id)}
+              onMouseLeave={() => setHoveredProductId(null)}
+            >
+              <div
+                onClick={handleNavigate(product._id)}
+                className="cursor-pointer"
               >
-                <Card
-                  sx={{
-                    maxWidth: 345,
-                    backgroundColor: "transparent",
-                    position: "relative",
-                    transition: "transform 0.3s ease",
-                    "&:hover": {
-                      transform: "scale(1.05)",
-                    },
-                  }}
-                  onMouseEnter={() => setHoveredProductId(product._id)}
-                  onMouseLeave={() => setHoveredProductId(null)}
-                >
-                  {hoveredProductId === product._id && (
-                    <FaHeart
-                      onClick={() => handleAddToWishlist(product._id)}
-                      className="text-black text-3xl absolute top-3 right-3 cursor-pointer z-10"
-                    />
-                  )}
-
-                  <CardActionArea>
-                    <CardMedia
-                      onClick={handleNavigate(product._id)}
-                      component="img"
-                      height="140"
-                      image={product.image}
-                      alt="Product Image"
-                    />
-                    {product.discount && (
-                      <div className="text-white absolute top-3 left-3 z-1 bg-black p-1 px-2 text-sm font-semibold skew-x-[-17deg] skew-y-0 rounded-md">
-                        {product.discountType === "percentage"
-                          ? product.discount
-                          : "₹-" + product.discount}
-                      </div>
-                    )}
-                    <CardContent sx={{ textAlign: "center" }}>
-                      <Rating
-                        sx={{
-                          "& .MuiRating-iconFilled": {
-                            color: "#FF7F11",
-                          },
-                          "& .MuiRating-iconEmpty": {
-                            color: "white",
-                          },
-                        }}
-                        value={product.avgRating > 0 ? product.avgRating : 0}
-                        name="half-rating-read"
-                        precision={0.5}
-                        readOnly
-                        size="small"
-                      />
-                      <Typography
-                        sx={{
-                          color: "#fff",
-                          fontFamily: "Istok Web",
-                          fontSize: {
-                            xs: "15px",
-                            sm: "16px",
-                            md: "18px",
-                            lg: "20px",
-                          },
-                        }}
-                        variant="h6"
-                        component="div"
-                      >
-                        {product.name}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                  <CardActions sx={{ justifyContent: "center", gap: "10px" }}>
-                    <OurButton
-                      isRupees={true}
-                      text={Number(
-                        product.hasVariants
-                          ? product.variants[0].discountPrice
-                          : product.discountPrice
-                      )}
-                    />
-                    <Typography
-                      sx={{
-                        fontSize: { sm: "5px", md: "1px", lg: "20PX" },
-                        fontFamily: "Istok Web",
-                        textDecoration: "line-through",
-                        marginLeft: 2,
-                        color: "white",
-                      }}
-                    >
-                      ₹
-                      {product.hasVariants
-                        ? product.variants[0].originalPrice
-                        : product.originalPrice}
-                    </Typography>
-                  </CardActions>
-                  <div className="mt-2 py-3 px-2">
-                    {product.stock < 1 ? (
-                      <button
-                        disabled
-                        onClick={() => handleAddToCart(product)}
-                        className="text-red-600 font-poppins w-full bg-gray-300 rounded p-2"
-                      >
-                        Out of Stock
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className="text-black font-poppins w-full bg-white hover:bg-gray-400 rounded p-2"
-                      >
-                        Add to Cart
-                      </button>
-                    )}
+                <img
+                  src={product.image}
+                  alt="Product Image"
+                  className="w-full h-40 object-cover rounded-md"
+                />
+                {product.discount && (
+                  <div className="absolute top-3 left-3 bg-black text-white text-xs font-semibold px-2 py-1 rounded-md">
+                    {product.discountType === "percentage"
+                      ? product.discount
+                      : `₹-${product.discount}`}
                   </div>
-                </Card>
-              </Col>
-            ))
-          ) : (
-            <div style={{ textAlign: "center" }}>
-              <h2 style={{ color: "white" }}>No Products Found</h2>
+                )}
+              </div>
+              <div className="text-center mt-3">
+                <div className="text-yellow-400 text-sm">
+                  {Array.from({
+                    length: Math.floor(product.avgRating),
+                  }).map((_, index) => (
+                    <span key={index}>&#9733;</span>
+                  ))}
+                  {product.avgRating % 1 !== 0 && <span>&#9734;</span>}
+                </div>
+                <h3 className="text-white text-sm font-medium">
+                  {product.name}
+                </h3>
+              </div>
+              <div className="flex justify-center items-center gap-2 mt-2">
+                <span className="text-white font-semibold">
+                  ₹
+                  {product.hasVariants
+                    ? product.variants[0].discountPrice
+                    : product.discountPrice}
+                </span>
+                <span className="text-gray-400 line-through text-sm">
+                  ₹
+                  {product.hasVariants
+                    ? product.variants[0].originalPrice
+                    : product.originalPrice}
+                </span>
+              </div>
+              <div className="mt-2 flex items-center gap-2">
+                {product.stock < 1 ? (
+                  <button
+                    disabled
+                    className="flex-grow bg-gray-400 text-red-600 py-2 rounded-md cursor-not-allowed"
+                  >
+                    Out of Stock
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="flex-grow bg-white text-black py-2 rounded-md hover:bg-gray-300"
+                  >
+                    Add to Cart
+                  </button>
+                )}
+                <div className="bg-[#ff7f11] p-2 rounded">
+                  <FaHeart
+                    onClick={() => handleAddToWishlist(product._id)}
+                    className={`${product.isWishlisted ? "text-black" : "text-white"} text-lg cursor-pointer`}
+                  />
+                </div>
+              </div>
             </div>
-          )}
-        </Row>
-      </Container>
-    </React.Fragment>
+          ))
+        ) : (
+          <div className="text-center col-span-full">
+            <h2 className="text-white">No Products Found</h2>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

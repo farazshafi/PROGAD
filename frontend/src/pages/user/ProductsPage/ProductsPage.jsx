@@ -12,9 +12,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import {
-  getFilteredProductsApi,
-} from "../../../api/productApi";
+import { getFilteredProductsApi } from "../../../api/productApi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 import {
@@ -26,10 +24,12 @@ import {
 } from "../../../features/product/productSlice";
 import { toast } from "react-toastify";
 import { Stack } from "@chakra-ui/react";
+import { selectedUser } from "../../../features/user/userSlice";
 
 const ProductsPage = () => {
+  const user = useSelector(selectedUser);
   const page = useSelector(selectedProductPage);
-  const keyword = useSelector(selectedKeyword)
+  const keyword = useSelector(selectedKeyword);
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [sortOption, setSortOption] = useState("default");
@@ -58,15 +58,16 @@ const ProductsPage = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  const fetchProducts = async (page) => {   
+  const fetchProducts = async (page) => {
     try {
       const data = await getFilteredProductsApi({
         categories: selectedCategories,
         priceRange: priceRange,
         brands: selectedBrands,
         page,
-        sort:sortOption,
-        search:keyword
+        sort: sortOption,
+        search: keyword,
+        userId: user ? user._id : null,
       });
 
       if (data.response) {
@@ -86,7 +87,14 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts(page);
-  }, [selectedCategories, priceRange, page, selectedBrands, sortOption, keyword]);
+  }, [
+    selectedCategories,
+    priceRange,
+    page,
+    selectedBrands,
+    sortOption,
+    keyword,
+  ]);
 
   return (
     <React.Fragment>
@@ -151,20 +159,11 @@ const ProductsPage = () => {
         </Button>
       </div>
 
-      <Typography
-        sx={{
-          color: "white",
-          fontFamily: "Poppins",
-          textAlign: "center",
-          fontWeight: 400,
-          fontSize: { xs: "22px", md: "28px", sm: "25px", lg: "30px" },
-          marginBottom: "50px",
-        }}
-      >
+      <p className="text-white text-center font-poppins mx-4 text-2xl">
         Find Your Perfect Match
-      </Typography>
+      </p>
 
-      <ProductCard page={"products"} />
+      <ProductCard fetchProducts={fetchProducts} />
       <Stack spacing={2} alignItems="center" marginTop={4}>
         <Pagination
           shape="rounded"

@@ -6,6 +6,7 @@ import { Product, Review } from "../models/productModel.js";
 import Offer from "../models/offerModel.js";
 import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
+import Wishlist from "../models/wishlistModel.js"
 
 // Initialize S3 client
 const s3 = new S3Client({ region: process.env.AWS_REGION });
@@ -499,6 +500,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       sortBy,
       page = 1,
       limit = 8,
+      userId,
     } = req.query;
 
     const pageInt = parseInt(page);
@@ -531,27 +533,27 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       filterCriteria.brand = { $in: brandArray };
     }
 
-    // 5. Sorting criteria
+    // Sorting criteria
     let sortCriteria = {};
     if (sortBy) {
       switch (sortBy) {
         case "lowToHigh":
-          sortCriteria = { discountPrice: 1 }; 
+          sortCriteria = { discountPrice: 1 };
           break;
         case "highToLow":
-          sortCriteria = { discountPrice: -1 }; 
+          sortCriteria = { discountPrice: -1 };
           break;
         case "Aa-Zz":
-          sortCriteria = { name: 1 }; 
+          sortCriteria = { name: 1 };
           break;
         case "zZ-aA":
-          sortCriteria = { name: -1 }; 
-
+          sortCriteria = { name: -1 };
+          break;
         case "newArrival":
-          sortCriteria = { createdAt: -1 }; 
+          sortCriteria = { createdAt: -1 };
           break;
         case "featured":
-          sortCriteria = { isFeatured: -1 }; 
+          sortCriteria = { isFeatured: -1 };
           break;
         default:
           sortCriteria = {};
@@ -573,6 +575,20 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       .populate("brand", "_id name");
 
     const productIds = products.map((product) => product._id);
+
+    // Find wishlisted products for the current user
+    let wishlistedProducts = [];
+    if (userId && userId !== "null") {
+      wishlistedProducts = await Wishlist.find({
+        user: userId,
+        products: { $in: productIds },
+      }).select("products");
+    }
+
+    const wishlistedProductIds =
+      wishlistedProducts.length > 0
+        ? wishlistedProducts[0].products.map((item) => item.toString())
+        : [];
 
     const ratings = await Review.aggregate([
       { $match: { productId: { $in: productIds } } },
@@ -624,6 +640,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
           discount: discountValue,
           discountType: discountType,
           avgRating: avgRating.toFixed(1),
+          isWishlisted: wishlistedProductIds.includes(product._id.toString()),
         };
       })
     );
@@ -639,6 +656,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while filtering products" });
   }
 });
+
 
 // @desc    Get top 10 best selling product
 // @route   GET /api/product/best_selling
