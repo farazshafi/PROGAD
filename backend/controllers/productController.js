@@ -498,7 +498,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
       brands,
       sortBy,
       page = 1,
-      limit = 10,
+      limit = 8,
     } = req.query;
 
     const pageInt = parseInt(page);

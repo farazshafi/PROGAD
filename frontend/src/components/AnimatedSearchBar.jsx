@@ -4,36 +4,52 @@ import { useDispatch } from "react-redux";
 import { setKeyword } from "../features/product/productSlice";
 
 const AnimatedSearchBar = () => {
-
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalRef = useRef(null);
 
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (!modalRef.current || !modalRef.current.contains(event.target)) {
+      if (isModalOpen && modalRef.current && !modalRef.current.contains(event.target)) {
         setIsModalOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener("mousedown", handleOutsideClick);
 
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, []);
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
 
   const handleSearchSubmit = () => {
-    dispatch(setKeyword(searchTerm))
-    setIsModalOpen(false); // Close the modal after submitting
+    dispatch(setKeyword(searchTerm));
+    setIsModalOpen(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearchSubmit();
+    }
   };
 
   return (
     <>
-      <div className="p-3 w-[50px] h-[50px] shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center">
+      <div className="p-3 w-[50px] h-[50px] hover:cursor-pointer shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center">
         <div className="flex items-center justify-center fill-white">
           <svg
             className="ps-0"
@@ -51,12 +67,18 @@ const AnimatedSearchBar = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-opacity-40 h-fit top-10 flex justify-center z-50" ref={modalRef}>
-          <div className="bg-white font-poppins w-[50%] p-6 flex gap-3 rounded-[10px] shadow-white shadow-md">
+        <div
+          className="fixed inset-0 bg-black/70 bg-opacity-40  h-screen z-50 flex justify-center items-start backdrop-blur-sm"
+        >
+          <div
+            className="bg-white font-poppins w-[60%] p-6 h-fit relative top-12 flex gap-3 rounded-[10px]"
+            ref={modalRef}
+          >
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Search products..."
               className="outline-none text-[20px] border border-gray-300 p-1 rounded-3xl px-3 w-full"
             />
