@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectedProduct, selectedProductPage } from "../../features/product/productSlice";
+import {
+  selectedProduct,
+  selectedProductPage,
+} from "../../features/product/productSlice";
 import { selectedUser } from "../../features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { createWishlistApi } from "../../api/wishlistApi";
 import { addToCart } from "../../features/user/cartSlice";
+import Rating from "@mui/material/Rating";
 
-const ProductCard = ({fetchProducts }) => {
+const ProductCard = ({ fetchProducts }) => {
   const user = useSelector(selectedUser);
   const products = useSelector(selectedProduct);
-  const page = useSelector(selectedProductPage)
+  const page = useSelector(selectedProductPage);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -59,7 +63,7 @@ const ProductCard = ({fetchProducts }) => {
     };
 
     dispatch(addToCart(cartItem));
-    fetchProducts(page)
+    fetchProducts(page);
     toast.success("Product added to cart");
   };
 
@@ -93,12 +97,22 @@ const ProductCard = ({fetchProducts }) => {
               </div>
               <div className="text-center mt-3">
                 <div className="text-yellow-400 text-sm">
-                  {Array.from({
-                    length: Math.floor(product.avgRating),
-                  }).map((_, index) => (
-                    <span key={index}>&#9733;</span>
-                  ))}
-                  {product.avgRating % 1 !== 0 && <span>&#9734;</span>}
+                  <Rating
+                    name="half-rating-read"
+                    value={product.avgRating}
+                    defaultValue={2.5}
+                    precision={0.5}
+                    readOnly
+                    size="small"
+                    sx={{
+                      "& .MuiRating-iconFilled": {
+                        color: "#FF7F11",
+                      },
+                      "& .MuiRating-iconEmpty": {
+                        color: "white",
+                      },
+                    }}
+                  />
                 </div>
                 <h3 className="text-white text-sm font-medium">
                   {product.name}
