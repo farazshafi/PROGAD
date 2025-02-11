@@ -1,6 +1,8 @@
 import express from "express";
 import {
   editUser,
+  faceLogin,
+  faceRegister,
   forgottPassword,
   login,
   moniteringUser,
@@ -26,5 +28,7 @@ router.get("/wallet/:userId", protect, getWalletDetails);
 router.get("/monitering_user/:id", moniteringUser);
 router.get("/forgott_password", forgottPassword);
 router.patch("/reset_password", resetPassword);
+router.post("/face_register", faceRegister);
+router.post("/face_login", faceLogin);
 
 export default router;

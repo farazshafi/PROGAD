@@ -18,6 +18,11 @@ const userSchema = mongoose.Schema(
         return !this.googleId;
       },
     },
+    faceData: {
+      type: Object,
+      unique: true,
+      default: null,
+    },
     isAdmin: {
       type: Boolean,
       default: false,
@@ -52,17 +57,12 @@ const userSchema = mongoose.Schema(
         ref: "Address",
       },
     ],
-    city:{
+    city: {
       type: String,
     },
-    country:{
+    country: {
       type: String,
     },
-
-    // profileImage: {
-    //   type: String,
-    //   default: null, //defautl iamge url ,
-    // },
   },
   { timestamps: true }
 );

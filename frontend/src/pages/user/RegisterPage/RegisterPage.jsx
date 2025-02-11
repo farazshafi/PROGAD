@@ -38,6 +38,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isFacePage, setIsFacePage] = useState(false);
 
   const navigate = useNavigate();
 
@@ -53,7 +54,7 @@ const RegisterPage = () => {
       toast.error("Please fill all the fields");
       return;
     }
-    if(phoneNumber.length < 10 || phoneNumber.length > 10){
+    if (phoneNumber.length < 10 || phoneNumber.length > 10) {
       toast.error("Invalid Phone Number");
       return;
     }
@@ -66,13 +67,20 @@ const RegisterPage = () => {
       const data = await userRegisterApi(userDetails);
 
       if (data && data.response) {
-        const {status} = data.response
-        toast.error(data.response.data.message || "server error! register error");
+        const { status } = data.response;
+        toast.error(
+          data.response.data.message || "server error! register error"
+        );
         setLoading(false);
         return;
       }
       dispatch(setUser({ ...data.user }));
       toast.success(data.message);
+
+      if(isFacePage){
+        navigate("/face_register")
+      }
+
       navigate("/otp");
       setLoading(false);
     } catch (error) {
@@ -91,7 +99,7 @@ const RegisterPage = () => {
       const email = user.email;
       const phoneNumber = user.phoneNumber || null;
 
-      const userDetails = { name, email, googleId, phoneNumber }; 
+      const userDetails = { name, email, googleId, phoneNumber };
       const data = await userRegisterApi(userDetails);
 
       if (
@@ -110,6 +118,30 @@ const RegisterPage = () => {
       console.log(err);
       setLoading(false);
     }
+  };
+
+  const validateForm = () => {
+    if (!name || !phoneNumber || !email || !password || !confirmPassword) {
+      toast.error("Please fill all the fields before registering with Face");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return false;
+    }
+    if (phoneNumber.length !== 10) {
+      toast.error("Invalid Phone Number");
+      return false;
+    }
+    return true;
+  };
+
+  const handleFaceRegister = (e) => {
+    setIsFacePage(true)
+    if (!validateForm()) {
+      e.preventDefault();
+    }
+    signUpHandler(e);
   };
 
   return (
@@ -225,6 +257,13 @@ const RegisterPage = () => {
                     width: "100%",
                   }}
                 />
+                {/* <div onClick={handleFaceRegister}>
+                  <div className="w-full bg-gray-900 text-white p-3 rounded mt-2 text-center hover:bg-gray-800">
+                    <p className="text-gray-300 text-sm font-poppins">
+                      Register With Face
+                    </p>
+                  </div>
+                </div> */}
               </form>
             </Box>
           </Box>

@@ -104,9 +104,29 @@ export const forgottPasswordApi = async (email) => {
 
 export const resetPasswordApi = async (password) => {
   try {
-    const { data } = await axios.patch(
-      `${API_URL}/reset_password`,
-      password,    );
+    const { data } = await axios.patch(`${API_URL}/reset_password`, password);
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+export const faceLoginApi = async (faceData) => {
+  try {
+    const { data } = await axios.post(`${API_URL}/face_login`, {
+      faceData,
+    });
+    return data;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
+
+export const faceRegisterApi = async (faceData) => {
+  try {
+    const { data } = await axios.post(`${API_URL}/face_register`, faceData);
     return data;
   } catch (e) {
     console.log(e);

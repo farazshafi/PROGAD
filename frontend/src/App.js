@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, selectedUser } from "./features/user/userSlice";
 import TestingComponent from "./components/TestingComponent";
 import ForgottPassword from "./pages/user/ForgottPassword";
+import FaceAuth from "./pages/user/FaceAuth";
 
 function App() {
   const user = useSelector(selectedUser);
@@ -51,6 +52,8 @@ function App() {
           {/* user route */}
           <Route exact path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/face_login" element={<FaceAuth mode='login'/>} />
+          <Route path="/face_register" element={<FaceAuth mode='register'/>} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/otp" element={<OtpPage />} />
           <Route path="/newarrivals" element={<NewArrivalsPage />} />

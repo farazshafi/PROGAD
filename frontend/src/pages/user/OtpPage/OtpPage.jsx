@@ -66,6 +66,11 @@ const OtpPage = () => {
       navigate("/forgott_password");
       return;
     }
+    if(user){
+      if(user.faceData)
+      navigate("/face_register")
+      return 
+    }
     navigate("/");
   };
 

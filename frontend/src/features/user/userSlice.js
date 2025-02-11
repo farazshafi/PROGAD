@@ -23,6 +23,7 @@ const userSlice = createSlice({
         city: action.payload.city,
         country: action.payload.country,
         token: action.payload.token,
+        faceData: action.payload.faceData || false,
       };
       localStorage.setItem("user", JSON.stringify(state.user));
     },

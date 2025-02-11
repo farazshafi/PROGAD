@@ -186,6 +186,17 @@ const Header = ({ navbar = true }) => {
                           >
                             Wallet
                           </MenuItem>
+                          <MenuItem
+                            as={Link}
+                            to="/face_register"
+                            disabled={!user}
+                            _hover={{
+                              backgroundColor: "#262626",
+                              color: "#FF7F11",
+                            }}
+                          >
+                            Register with face
+                          </MenuItem>
                         </>
                       )}
 

@@ -22,11 +22,19 @@ const generateOTP = () => {
   return Math.floor(1000 + Math.random() * 9000);
 };
 
+// Computes cosine similarity between two arrays of numbers.
+const cosineSimilarity = (vecA, vecB) => {
+  const dotProduct = vecA.reduce((acc, val, i) => acc + val * vecB[i], 0);
+  const magnitudeA = Math.sqrt(vecA.reduce((acc, val) => acc + val * val, 0));
+  const magnitudeB = Math.sqrt(vecB.reduce((acc, val) => acc + val * val, 0));
+  return dotProduct / (magnitudeA * magnitudeB);
+};
+
 // @desc    Register a new user or sign in with Google
 // @route   POST /api/user/register
 // @access  public
 export const userRegistration = asyncHandler(async (req, res) => {
-  const { name, email, password, phoneNumber, googleId } = req.body;
+  const { name, email, password, phoneNumber, googleId, faceData } = req.body;
 
   const userExist = await User.findOne({ email });
   if (userExist) {
@@ -74,9 +82,11 @@ export const userRegistration = asyncHandler(async (req, res) => {
     name,
     password,
     phoneNumber,
+    faceData: faceData ? faceData : null,
     otp,
     isVerified: false,
   });
+
   // Send OTP via email
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -99,6 +109,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
         role: user.role,
         isAdmin: user.isAdmin,
         isVerified: user.isVerified,
+        faceData: null,
         phoneNumber: user.phoneNumber,
         token: generateTokens(),
       },
@@ -111,12 +122,87 @@ export const userRegistration = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Register a new user With Face
+// @route   POST /api/user/register_face
+// @access  public
+export const faceRegister = asyncHandler(async (req, res) => {
+  const { faceData, email } = req.body;
+
+  // Find the user by email
+  const userExist = await User.findOne({ email });
+  if (!userExist) {
+    return res.status(400).json({ message: "User not found" });
+  }
+
+  // Prevent duplicate registration for the same user
+  if (userExist.faceData) {
+    return res
+      .status(400)
+      .json({ message: "User already registered with face" });
+  }
+
+  // Convert incoming faceData object to an array for similarity computation.
+  const inputFaceArray = Object.keys(faceData)
+    .sort((a, b) => a - b)
+    .map((key) => faceData[key]);
+
+  // Define a helper function for cosine similarity.
+  const cosineSimilarity = (vecA, vecB) => {
+    const dotProduct = vecA.reduce((acc, val, i) => acc + val * vecB[i], 0);
+    const magnitudeA = Math.sqrt(vecA.reduce((acc, val) => acc + val * val, 0));
+    const magnitudeB = Math.sqrt(vecB.reduce((acc, val) => acc + val * val, 0));
+    return dotProduct / (magnitudeA * magnitudeB);
+  };
+
+  // Retrieve all users with faceData registered.
+  const usersWithFaceData = await User.find({
+    faceData: { $exists: true, $ne: null },
+  });
+
+  const threshold = 0.95; // Set your similarity threshold (adjust as needed)
+
+  // Loop through existing users to check for similar face data.
+  for (const existingUser of usersWithFaceData) {
+    let storedFaceData = existingUser.faceData;
+    let storedFaceArray;
+
+    // If the stored data is already an array, use it; otherwise, convert from object.
+    if (Array.isArray(storedFaceData)) {
+      storedFaceArray = storedFaceData;
+    } else {
+      storedFaceArray = Object.keys(storedFaceData)
+        .sort((a, b) => a - b)
+        .map((key) => storedFaceData[key]);
+    }
+
+    // Ensure both embeddings have the same length.
+    if (storedFaceArray.length !== inputFaceArray.length) continue;
+
+    const similarity = cosineSimilarity(inputFaceArray, storedFaceArray);
+    if (similarity >= threshold) {
+      return res.status(400).json({
+        message: "Face data similar to an existing user. Registration denied.",
+      });
+    }
+  }
+
+  // If no similar face data is found, save the new face data.
+  // (You can store as the original object, or optionally store as an array)
+  userExist.faceData = faceData;
+  await userExist.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Face registered successfully!",
+  });
+});
+
 // @desc    Verify OTP
 // @route   POST /api/user/verify_otp
 // @access  public
 export const verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
-  
+
   const userExist = await User.findOne({ email });
 
   if (!userExist) {
@@ -206,7 +292,7 @@ export const login = asyncHandler(async (req, res) => {
 
   if (!userExist.isVerified) {
     const otp = generateOTP();
-    console.log("otp",otp)
+    console.log("otp", otp);
     userExist.otp = otp;
     await userExist.save();
     const mailOptions = {
@@ -272,6 +358,74 @@ export const login = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    User validation with face
+// @route   POST /api/user/face_login
+// @access  Public
+export const faceLogin = asyncHandler(async (req, res) => {
+  const { faceData } = req.body;
+
+  if (!faceData) {
+    return res.status(400).json({ message: "Face data is required" });
+  }
+
+  // Convert incoming faceData (object) to an array.
+  // Sorting keys numerically ensures consistent ordering.
+  const inputFaceArray = Object.keys(faceData)
+    .sort((a, b) => a - b)
+    .map((key) => faceData[key]);
+
+  const users = await User.find({ faceData: { $exists: true, $ne: null } });
+
+  let matchedUser = null;
+  let highestSimilarity = 0.0;
+  const threshold = 0.95; // Adjust this threshold based on your testing
+
+  for (const user of users) {
+    // Convert the stored faceData object into an array.
+    const storedFaceData = user.faceData;
+    const storedFaceArray = Object.keys(storedFaceData)
+      .sort((a, b) => a - b)
+      .map((key) => storedFaceData[key]);
+
+    if (storedFaceArray.length !== inputFaceArray.length) continue;
+
+    // Compute similarity
+    const similarity = cosineSimilarity(inputFaceArray, storedFaceArray);
+
+    if (similarity > highestSimilarity && similarity >= threshold) {
+      highestSimilarity = similarity;
+      matchedUser = user;
+    }
+  }
+
+  if (!matchedUser) {
+    return res.status(400).json({ message: "Face not registed" });
+  }
+
+  if (matchedUser.isBlocked) {
+    return res.status(403).json({ message: "User is blocked! Access denied" });
+  }
+
+  res.status(200).json({
+    message: "Login successful",
+    user: {
+      _id: matchedUser._id,
+      name: matchedUser.name,
+      email: matchedUser.email,
+      role: matchedUser.role,
+      isAdmin: matchedUser.isAdmin,
+      isVerified: matchedUser.isVerified,
+      faceData: true,
+      city: matchedUser.city,
+      country: matchedUser.country,
+      phone: matchedUser.phone,
+      isBlocked: matchedUser.isBlocked,
+      token: generateTokens(matchedUser._id),
+    },
+  });
+  console.log("response sended")
+});
+
 // @desc    Resend OTP
 // @route   POST /api/user/verify_otp
 // @access  public
@@ -290,7 +444,7 @@ export const resendOtp = asyncHandler(async (req, res) => {
   //   return res.status(400).json({ message: "User already verified" });
   // }
   const otp = generateOTP();
-  console.log("otp:",otp)
+  console.log("otp:", otp);
   userExist.otp = otp;
   await userExist.save();
   const mailOptions = {
@@ -432,7 +586,7 @@ export const moniteringUser = asyncHandler(async (req, res) => {
 export const forgottPassword = asyncHandler(async (req, res) => {
   const { email } = req.query;
   const user = await User.findOne({ email });
-  if(!user){    
+  if (!user) {
     return res.status(400).json({ message: "User not found" });
   }
   if (user.isBlocked) {
@@ -470,7 +624,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   try {
     const { newPassword, confirmPassword, email } = req.body;
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }

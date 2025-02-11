@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./LoginPage.css";
 import Header from "../../../components/Header/Header";
-import { Box, Center, ChakraProvider, Image, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  ChakraProvider,
+  Image,
+  Text,
+} from "@chakra-ui/react";
 import headphoneImg from "../../../assets/images/walpaper/headphone.jpeg";
 import Footer from "../../../components/Footer/Footer";
 import OurButton from "../../../components/OurButton/OurButton";
@@ -138,15 +144,25 @@ const LoginPage = () => {
                 >
                   <Link to={"/register"}>Create an Account</Link>
                 </Text>
+                <p className="font-poppins mt-3 text-gray-500 text-center">
+                  Sign in options
+                </p>
                 <GoogleButton
                   onClick={handleGoogleLogin}
                   type="light"
                   style={{
                     borderRadius: "5px",
-                    marginTop: "40px",
+                    marginTop: "20px",
                     width: "100%",
                   }}
                 />
+                <Link to={"/face_login"}>
+                  <div className="w-full bg-gray-900 text-white p-3 rounded mt-2 text-center hover:bg-gray-800">
+                    <p className="text-gray-300 text-sm font-poppins">
+                      Login With Face
+                    </p>
+                  </div>
+                </Link>
               </form>
             </Box>
           </Box>
