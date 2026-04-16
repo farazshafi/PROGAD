@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import cloudinary from "../config/cloudinary.js";
 import crypto from "crypto";
 import { promisify } from "util";
 import asyncHandler from "express-async-handler";
@@ -8,24 +8,23 @@ import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
 import Wishlist from "../models/wishlistModel.js"
 
-// Initialize S3 client
-const s3 = new S3Client({ region: process.env.AWS_REGION });
-const randomBytes = promisify(crypto.randomBytes);
-
-const uploadImageToS3 = async (file) => {
-  const rawBytes = await randomBytes(16);
-  const imageName = rawBytes.toString("hex") + file.originalname;
-
-  const uploadParams = {
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: `progad/${imageName}`,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  };
-
-  // Upload to S3
-  await s3.send(new PutObjectCommand(uploadParams));
-  return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/progad/${imageName}`;
+const uploadImageToCloudinary = async (file) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "progad",
+        resource_type: "auto",
+      },
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          return reject(error);
+        }
+        resolve(result.secure_url);
+      }
+    );
+    uploadStream.end(file.buffer);
+  });
 };
 
 // @desc    Create a new product
@@ -126,7 +125,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     // Process product images
     if (req.files && req.files["images"]) {
       for (const file of req.files["images"]) {
-        const imageUrl = await uploadImageToS3(file);
+        const imageUrl = await uploadImageToCloudinary(file);
         productImages.push(imageUrl);
       }
     }

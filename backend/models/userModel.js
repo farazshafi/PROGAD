@@ -22,6 +22,7 @@ const userSchema = mongoose.Schema(
       type: Object,
       unique: true,
       default: null,
+      sparse: true,
     },
     isAdmin: {
       type: Boolean,
@@ -50,6 +51,7 @@ const userSchema = mongoose.Schema(
       type: String,
       default: null,
       unique: true,
+      sparse: true,
     },
     addresses: [
       {
