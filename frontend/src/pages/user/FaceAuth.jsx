@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import * as faceapi from "face-api.js";
+import * as faceapi from "@vladmandic/face-api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { faceLoginApi, faceRegisterApi } from "../../api/userApi";
