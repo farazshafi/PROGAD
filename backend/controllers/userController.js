@@ -1,16 +1,17 @@
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
-import generageTokens from "../utils/generateToken.js";
+import generateTokens from "../utils/generateToken.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import generateTokens from "../utils/generateToken.js";
 import Address from "../models/addressModel.js";
 
 dotenv.config();
 
 // Setup Nodemailer transport
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
