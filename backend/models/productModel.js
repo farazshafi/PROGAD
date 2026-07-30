@@ -242,14 +242,13 @@ const productSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.pre("save", function (next) {
+productSchema.pre("save", async function () {
   if (this.hasVariants) {
     this.totalStock = this.variants.reduce(
       (acc, variant) => acc + variant.stock,
       0
     );
   }
-  next();
 });
 
 // Models

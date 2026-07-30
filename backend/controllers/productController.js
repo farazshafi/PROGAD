@@ -6,7 +6,7 @@ import { Product, Review } from "../models/productModel.js";
 import Offer from "../models/offerModel.js";
 import mongoose from "mongoose";
 import Order from "../models/orderModel.js";
-import Wishlist from "../models/wishlistModel.js"
+import Wishlist from "../models/wishlistModel.js";
 
 const uploadImageToCloudinary = async (file) => {
   return new Promise((resolve, reject) => {
@@ -21,7 +21,7 @@ const uploadImageToCloudinary = async (file) => {
           return reject(error);
         }
         resolve(result.secure_url);
-      }
+      },
     );
     uploadStream.end(file.buffer);
   });
@@ -73,7 +73,6 @@ export const createProduct = asyncHandler(async (req, res) => {
     const waterResistant = waterResistantString === "true";
     const touchControl = touchControlString === "true";
     const multiDevice = multiDeviceString === "true";
-
     // validation
     if (
       !name ||
@@ -154,6 +153,8 @@ export const createProduct = asyncHandler(async (req, res) => {
       isFeatured,
     };
 
+    console.log("Produt data recived", productData);
+
     if (isBluetoothSupported) {
       productData.batteryLife = batteryLife;
       productData.bluetoothVersion = bluetoothVersion;
@@ -195,18 +196,20 @@ export const createProduct = asyncHandler(async (req, res) => {
       // Calculate total stock for variant-based products
       productData.totalStock = productData.variants.reduce(
         (acc, variant) => acc + variant.stock,
-        0
+        0,
       );
     }
 
     // Create the product
+    console.log("data coming till here");
     const product = await Product.create(productData);
+    console.log("product", product);
     if (!product) {
       return res.status(400).json({ message: "Product creation failed" });
     }
     res.status(201).json({ message: "Product created successfully", product });
   } catch (error) {
-    console.error("Error creating product:", error.message);
+    console.error("Error creating product:", error);
     if (error.name === "ValidationError") {
       return res
         .status(400)
@@ -249,7 +252,7 @@ export const getAllProduct = asyncHandler(async (req, res) => {
         (offer) =>
           (offer.applyToProducts && offer.productIds.includes(product._id)) ||
           (offer.applyToCategories &&
-            offer.categoryIds.includes(product.category._id))
+            offer.categoryIds.includes(product.category._id)),
       );
 
       let discountPrice = product.discountPrice;
@@ -305,7 +308,7 @@ export const handlePublicChange = asyncHandler(async (req, res) => {
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { isPublished },
-      { new: true }
+      { new: true },
     );
     if (updatedProduct) {
       res.status(200).json({ product: updatedProduct });
@@ -607,7 +610,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
           (offer) =>
             (offer.applyToProducts && offer.productIds.includes(product._id)) ||
             (offer.applyToCategories &&
-              offer.categoryIds.includes(product.category._id))
+              offer.categoryIds.includes(product.category._id)),
         );
 
         let discountPrice = product.discountPrice;
@@ -624,7 +627,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
             discountValue = `${relevantOffer.discount}`;
             discountPrice = Math.max(
               0,
-              product.discountPrice - relevantOffer.discount
+              product.discountPrice - relevantOffer.discount,
             );
           }
         }
@@ -641,7 +644,7 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
           avgRating: avgRating.toFixed(1),
           isWishlisted: wishlistedProductIds.includes(product._id.toString()),
         };
-      })
+      }),
     );
 
     res.json({
@@ -655,7 +658,6 @@ export const getFilteredProducts = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Server error while filtering products" });
   }
 });
-
 
 // @desc    Get top 10 best selling product
 // @route   GET /api/product/best_selling
@@ -685,13 +687,45 @@ export const getTopSellingProduct = asyncHandler(async (req, res) => {
           firstImage: productDetails?.images?.[0] || null,
         },
       };
-    })
+    }),
   );
   if (topProducts.length === 0) {
-    res.status(404).json({ message: "No best selling products found" });
+    res.status(200).json([]);
     return;
   }
   res.status(200).json(topProducts);
+});
+
+// @desc    Get 5 latest new arrivals
+// @route   GET /api/product/new_arrival
+// @access  public
+export const getNewArrivalProduct = asyncHandler(async (req, res) => {
+  const { limit = 5 } = req.query;
+
+  let products = await Product.find({ isNewArrival: true })
+    .sort({ createdAt: -1 })
+    .limit(5);
+
+  if (products.length < 5) {
+    const remaining = 5 - products.length;
+
+    const latestProducts = await Product.find({
+      _id: { $nin: products.map((p) => p._id) },
+    })
+      .sort({ createdAt: -1 })
+      .limit(remaining);
+
+    products.push(...latestProducts);
+  }
+
+  res.json(
+    products.map((item) => ({
+      id: item._id,
+      name: item.name,
+      image: item.images[0],
+      price: item.discountPrice,
+    })),
+  );
 });
 
 // @desc    before order making sure cart items are listed
@@ -711,7 +745,7 @@ export const checkCartProductValid = asyncHandler(async (req, res) => {
     const product = products.find((p) => p._id.toString() === item);
     if (!product || !product.isPublished) {
       unAvailableProducts.push(
-        product ? product.name : `Unknown product (${item})`
+        product ? product.name : `Unknown product (${item})`,
       );
     }
   }
@@ -777,7 +811,7 @@ export const getAllProductReviews = asyncHandler(async (req, res) => {
 
     const reviews = await Review.find({ productId: id }).populate(
       "userId",
-      "name"
+      "name",
     );
 
     if (!reviews) {

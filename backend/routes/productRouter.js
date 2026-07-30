@@ -7,6 +7,7 @@ import {
   getAllProductReviews,
   getAllPublicProducts,
   getFilteredProducts,
+  getNewArrivalProduct,
   getProductDetails,
   getRelatedProduct,
   getTopSellingProduct,
@@ -38,6 +39,7 @@ router.get("/related_product/:id", getRelatedProduct);
 router.get("/public_products", protect, admin, getAllPublicProducts);
 router.get("/filter_products", getFilteredProducts);
 router.get("/best_selling",getTopSellingProduct);
+router.get("/new_arrival",getNewArrivalProduct);
 router.post("/check_cart_products", protect, checkCartProductValid);
 
 // Review routes---------------------------------------------------

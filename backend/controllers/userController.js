@@ -43,7 +43,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
   }
   const passwordRegex =
     /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[^\s])[A-Za-z\d!@#$%^&*]{6,25}$/;
-  if (!passwordRegex.test(password)) {
+  if (!googleId && !passwordRegex.test(password)) {
     return res.status(400).json({
       message:
         "Password must be 6-25 characters, contain at least one number, one special character, and no whitespace.",
@@ -57,6 +57,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
       email,
       name,
       googleId,
+      faceData: undefined,
       phoneNumber: phoneNumber || null,
       isVerified: true,
     });
@@ -83,7 +84,7 @@ export const userRegistration = asyncHandler(async (req, res) => {
     name,
     password,
     phoneNumber,
-    faceData: faceData ? faceData : null,
+    faceData: undefined,
     otp,
     isVerified: false,
   });
@@ -98,9 +99,12 @@ export const userRegistration = asyncHandler(async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    setTimeout(async () => {
-      await User.updateOne({ _id: user._id }, { $unset: { otp: "" } });
-    }, 1 * 60 * 1000);
+    setTimeout(
+      async () => {
+        await User.updateOne({ _id: user._id }, { $unset: { otp: "" } });
+      },
+      1 * 60 * 1000,
+    );
     res.status(201).json({
       message: "Please verify your OTP.",
       user: {
@@ -305,9 +309,12 @@ export const login = asyncHandler(async (req, res) => {
 
     try {
       await transporter.sendMail(mailOptions);
-      setTimeout(async () => {
-        await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
-      }, 1 * 60 * 1000);
+      setTimeout(
+        async () => {
+          await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
+        },
+        1 * 60 * 1000,
+      );
       res.status(201).json({
         message: "login success",
         warning: "Please verify your OTP.",
@@ -424,7 +431,7 @@ export const faceLogin = asyncHandler(async (req, res) => {
       token: generateTokens(matchedUser._id),
     },
   });
-  console.log("response sended")
+  console.log("response sended");
 });
 
 // @desc    Resend OTP
@@ -456,9 +463,12 @@ export const resendOtp = asyncHandler(async (req, res) => {
   };
   try {
     await transporter.sendMail(mailOptions);
-    setTimeout(async () => {
-      await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
-    }, 1 * 60 * 1000);
+    setTimeout(
+      async () => {
+        await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
+      },
+      1 * 60 * 1000,
+    );
 
     res.status(200).json({ message: "OTP resent successfully" });
   } catch (err) {
@@ -607,9 +617,12 @@ export const forgottPassword = asyncHandler(async (req, res) => {
   };
   try {
     await transporter.sendMail(mailOptions);
-    setTimeout(async () => {
-      await User.findByIdAndUpdate(user._id, { $unset: { otp: "" } });
-    }, 1 * 60 * 1000);
+    setTimeout(
+      async () => {
+        await User.findByIdAndUpdate(user._id, { $unset: { otp: "" } });
+      },
+      1 * 60 * 1000,
+    );
 
     res.status(200).json({ message: "OTP resent successfully" });
   } catch (err) {

@@ -32,5 +32,5 @@ export const admin = (req, res, next) => {
     next();
   } else {
     res.status(401).json({ message: "Not authorized, No Admin!" });
-}
+  }
 };

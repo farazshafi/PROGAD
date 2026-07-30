@@ -73,8 +73,8 @@ const importData = async () => {
         const users = [
             {
                 name: 'Admin User',
-                email: 'admin@example.com',
-                password: 'password123',
+                email: 'admin@gmail.com',
+                password: 'admin@123',
                 isAdmin: true,
                 role: 'admin',
                 isVerified: true,
