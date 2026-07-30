@@ -58,11 +58,6 @@ const NAVIGATION = [
     icon: <GroupIcon />,
     children: [
       {
-        segment: "add_user",
-        title: "Add User",
-        icon: <IoMdAdd />,
-      },
-      {
         segment: "",
         title: "List User",
         icon: <FaListUl />,

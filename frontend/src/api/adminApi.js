@@ -1,17 +1,11 @@
 import axios from "axios";
-
-const API_URL = `${process.env.REACT_APP_API_URL}/admin`
+import adminAxios from "./adminInterceptor";
 
 export const getAllUsers = async (page) => {
-  const token = JSON.parse(localStorage.getItem("admin")).token;
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
   try {
-    const { data } = await axios.get(`${API_URL}/get_users?page=${page}&limit=${10}`, config);
+    const { data } = await adminAxios.get(
+      `/get_users?page=${page}&limit=${10}`,
+    );
     return data;
   } catch (e) {
     console.log(e);
@@ -20,16 +14,10 @@ export const getAllUsers = async (page) => {
 };
 
 export const blockUnblockUser = async (id, isBlocked) => {
-  const token = JSON.parse(localStorage.getItem("admin")).token;
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
   try {
-    const { data } = await axios.patch(`${API_URL}/block_unblock_user/${id}`, {
+    const { data } = await adminAxios.patch(`/block_unblock_user/${id}`, {
       isBlocked,
-    },config);
+    });
     return data.user;
   } catch (e) {
     console.error("Error in block/unblock API:", e);
@@ -39,7 +27,7 @@ export const blockUnblockUser = async (id, isBlocked) => {
 
 export const deleteUserApi = async (id) => {
   try {
-    const { data } = await axios.delete(`${API_URL}/delete_user/${id}`);
+    const { data } = await adminAxios.delete(`/delete_user/${id}`);
     return data;
   } catch (e) {
     console.error("Error in deleting user API:", e);
@@ -48,14 +36,10 @@ export const deleteUserApi = async (id) => {
 };
 
 export const getAllProductsApi = async (page) => {
-  const token = JSON.parse(localStorage.getItem("admin")).token;
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
   try {
-    const response = await axios.get(`${API_URL}/all_products?page=${page}&limit=${5}`,config);
+    const response = await adminAxios.get(
+      `/all_products?page=${page}&limit=${5}`,
+    );
     return response;
   } catch (e) {
     console.error("Error in deleting user API:", e);
@@ -64,11 +48,5 @@ export const getAllProductsApi = async (page) => {
 };
 
 export const adminLoginApi = async (data) => {
-  try {
-    const response = await axios.post(`${API_URL}/admin_login`, data);
-    return response;
-  } catch (e) {
-    console.error("Error in deleting user API:", e);
-    return e;
-  }
+  return axios.post(`${process.env.REACT_APP_API_URL}/admin/admin_login`, data);
 };

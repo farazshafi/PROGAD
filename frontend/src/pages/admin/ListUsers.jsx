@@ -25,8 +25,7 @@ import {
 } from "@mui/material";
 import { IoMdMore } from "react-icons/io";
 import { getAllUsers, blockUnblockUser } from "../../api/adminApi";
-import { MdEdit, MdBlock } from "react-icons/md";
-import { FaEye } from "react-icons/fa";
+import { MdBlock } from "react-icons/md";
 import { moniteringUserApi } from "../../api/userApi";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -98,8 +97,8 @@ const ListUsers = () => {
       if (updatedUser) {
         setUsers((prevUser) =>
           prevUser.map((user) =>
-            user._id === selectedUser._id ? { ...user, isBlocked } : user
-          )
+            user._id === selectedUser._id ? { ...user, isBlocked } : user,
+          ),
         );
 
         const result = await moniteringUserApi(selectedUser._id);
@@ -122,18 +121,8 @@ const ListUsers = () => {
     }
   };
 
-  const handleEdit = () => {
-    handleClose();
-  };
-
   const handleChange = (event, value) => {
     setPage(value);
-  };
-
-  const handleView = async () => {
-    // const data = await deleteUserApi(selectedUser._id);
-    fetchUsers();
-    handleClose();
   };
 
   return (
@@ -302,22 +291,6 @@ const ListUsers = () => {
                       <MdBlock fontSize={"25px"} />
                       {selectedUser?.isBlocked ? "Unblock" : "Block"}
                     </MenuItem>
-                    <Divider sx={{ height: "1px", background: "black" }} />
-                    <MenuItem
-                      onClick={handleEdit}
-                      sx={{ color: "black", gap: "15px" }}
-                    >
-                      <MdEdit fontSize={"25px"} />
-                      Edit
-                    </MenuItem>
-                    <Divider sx={{ height: "1px", background: "black" }} />
-                    <MenuItem
-                      onClick={handleView}
-                      sx={{ color: "red", gap: "15px" }}
-                    >
-                      <FaEye fontSize={"25px"} />
-                      View
-                    </MenuItem>
                   </Menu>
                 </TableCell>
               </TableRow>
@@ -341,7 +314,7 @@ const ListUsers = () => {
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogContent>
           <Typography variant="h6">
-            Are you sure you want to 
+            Are you sure you want to
             {selectedUser?.isBlocked ? " Unblock" : " Block"}?
           </Typography>
         </DialogContent>
