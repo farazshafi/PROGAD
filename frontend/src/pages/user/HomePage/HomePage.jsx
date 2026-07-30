@@ -3,11 +3,11 @@ import Header from "../../../components/Header/Header";
 import OfferBanner from "../../../components/OfferBanner/OfferBanner";
 import HilightSection from "../../../components/HighlightSection/HilightSection";
 import ProductGrid from "../../../components/ProductGrid/ProductGrid";
-import ProductCard from "../../../components/ProductCard/ProductCard";
 import { Divider } from "@mui/material";
 import { toast } from "react-toastify";
 import { getTopSellingProductApi } from "../../../api/productApi";
 import Footer from "../../../components/Footer/Footer";
+import NewArrivals from "../../../components/NewArrival"
 
 const HomePage = () => { 
   const [topProducts, setTopProducts] = useState([]);
@@ -15,6 +15,7 @@ const HomePage = () => {
   const fetchTopProducts = async () => {
     try {
       const result = await getTopSellingProductApi(5);
+      
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -39,6 +40,7 @@ const HomePage = () => {
         <Header navbar={true}/>
         <Divider sx={{ marginTop: "80px" }} />
         <OfferBanner hide={"false"} brand={["Boat, JBL"]} title={"Eid Offer"} />
+        <NewArrivals />
         <HilightSection showMore={false} text={"Top Products"} />
         {topProducts.length > 0 && <ProductGrid products={topProducts} />}
         <Footer />

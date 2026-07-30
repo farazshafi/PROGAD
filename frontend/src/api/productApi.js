@@ -155,6 +155,19 @@ export const getTopSellingProductApi = async (limit) => {
   }
 };
 
+export const getNewArrivalsProductApi = async (limit) => {
+  try {
+    
+    const response = await axios.get(`${API_URL}/new_arrival?limit=${limit}`);
+    return response?.data;
+  } catch (err) {
+    console.error("Error fetching filtered products:", err);
+    if (err.response) {
+      toast.error(err.response.data.message);
+    }
+  }
+};
+
 
 // product review api----------------------------------------------------------
 

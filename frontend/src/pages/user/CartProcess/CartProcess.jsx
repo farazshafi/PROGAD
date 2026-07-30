@@ -52,7 +52,7 @@ const CartProcess = () => {
       <Header />
       <Box
         sx={{
-          backgroundColor: "#262626",
+          backgroundColor: "#0000",
           padding: 3,
           borderRadius: 2,
           margin: "0 auto",

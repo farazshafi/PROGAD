@@ -329,10 +329,10 @@ const AddProduct = () => {
         toast.error("Description must be at least 10 characters.");
         return;
       }
-      if (uploadedImages.length < 3 || uploadedImages.length > 5) {
-        toast.error("Please upload between 3 and 5 product images.");
-        return;
-      }
+      // if (uploadedImages.length < 3 || uploadedImages.length > 5) {
+      //   toast.error("Please upload between 3 and 5 product images.");
+      //   return;
+      // }
       if (!productData.category) {
         toast.error("Category is required.");
         return;

@@ -36,7 +36,7 @@ function App() {
 
   useEffect(() => {
     if (!user) {
-      toast.warning("Please Login");
+      // toast.warning("Please Login");
     }
     if (user && user.isBlocked) {
       dispatch(logoutUser());
@@ -49,14 +49,15 @@ function App() {
       <ToastContainer />
       <Router>
         <Routes>
+
           {/* user route */}
           <Route exact path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/face_login" element={<FaceAuth mode='login'/>} />
-          <Route path="/face_register" element={<FaceAuth mode='register'/>} />
+          <Route path="/face_login" element={<FaceAuth mode="login" />} />
+          <Route path="/face_register" element={<FaceAuth mode="register" />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/otp" element={<OtpPage />} />
-          <Route path="/newarrivals" element={<NewArrivalsPage />} />
+          <Route path="/new_arrivals" element={<NewArrivalsPage />} />
           <Route path="/topproducts" element={<TopProducts />} />
           <Route path="/offer" element={<OfferPage />} />
           <Route path="/products" element={<ProductsPage />} />

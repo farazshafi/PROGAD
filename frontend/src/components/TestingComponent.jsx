@@ -1,9 +1,10 @@
 import React from "react";
+import NewArrival from "./NewArrival"
 
 const TestingComponent = () => {
   return (
     <>
-      <p className="text-white text-5xl">Test component</p>
+      <NewArrival />
     </>
   );
 };

@@ -18,6 +18,7 @@ const ShippingSection = ({ selectedAddress }) => {
     if (Object.keys(address).length === 0) {
       return toast.error("Please select a address");
     }
+
     setAddress({
       id: address._id,
       type: address.type,
@@ -32,6 +33,7 @@ const ShippingSection = ({ selectedAddress }) => {
       street: address.street,
       zipCode: address.zip,
     });
+    
   };
 
   useEffect(() => {
