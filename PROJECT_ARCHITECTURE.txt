@@ -1,0 +1,150 @@
+================================================================================
+                        PROGAD - PROJECT ARCHITECTURE
+================================================================================
+
+1. EXECUTIVE SUMMARY & OVERVIEW
+--------------------------------------------------------------------------------
+PROGAD is an enterprise-grade, full-stack E-commerce platform developed using the 
+MERN stack (MongoDB, Express.js, React.js, Node.js). It supports end-to-end 
+shopping functionalities (catalog discovery, cart management, checkout, order 
+tracking, wallet, coupons) alongside administrative management (sales reporting, 
+product CRUD, inventory control, and discount operations).
+
+
+2. HIGH-LEVEL ARCHITECTURE & DESIGN PATTERNS
+--------------------------------------------------------------------------------
+The application uses a Client-Server Single-Page Application (SPA) architecture 
+operating over a RESTful API communication protocol.
+
+- Client Tier (Frontend): React 18 SPA built with Redux Toolkit for state 
+  management, Tailwind CSS & Chakra UI / MUI for UI styling, and integrated 
+  face-api.js for biometric authentication.
+- Server Tier (Backend): Express.js application following the MVC (Model-View-
+  Controller) pattern with modularized routing, middleware authorization, and 
+  controller-driven business logic.
+- Database Tier: MongoDB document database using Mongoose object data modeling (ODM).
+- Third-Party Services: AWS S3 & Cloudinary for media storage, Razorpay for payment 
+  processing, and Nodemailer / Firebase for notifications and social authentication.
+
+
+3. FRONTEND ARCHITECTURE (/frontend)
+--------------------------------------------------------------------------------
+3.1 Tech Stack & Libraries:
+- Core Framework: React 18 (react-router-dom v6)
+- State Management: Redux Toolkit (@reduxjs/toolkit, react-redux)
+- UI & Styling: Tailwind CSS, Chakra UI, Material UI (MUI), Bootstrap
+- Animations: GSAP (@gsap/react), Framer Motion, Lottie
+- Biometrics: @vladmandic/face-api for client-side face recognition
+- Data Visualization: Chart.js, Recharts (for Admin analytics)
+
+3.2 Directory Structure:
+frontend/
+├── public/                # Static assets & face-api models
+├── src/
+│   ├── assets/            # Logos, icons, site images
+│   ├── components/        # Reusable UI elements (Navbar, Footer, Modals, ProductCards)
+│   ├── pages/             # Page views (Home, Shop, Cart, Checkout, Admin Dashboard)
+│   ├── redux/             # Redux store configuration & state slices
+│   │   ├── slices/        # Auth, Cart, Product, Order, User slices
+│   │   └── store.js       # Store setup
+│   ├── utils/             # Helper functions, API instances (Axios wrappers)
+│   ├── App.js             # Route declarations & global providers
+│   └── index.js           # Main React DOM entry point
+
+3.3 State Management Architecture:
+- Auth Slice: Stores logged-in user details, JWT tokens, and session status.
+- Cart & Wishlist Slices: Tracks shopping selection, pricing totals, and item quantities.
+- Product & Order Slices: Manages catalog queries, filters, order history, and checkout state.
+
+
+4. BACKEND ARCHITECTURE (/backend)
+--------------------------------------------------------------------------------
+4.1 Tech Stack & Services:
+- Runtime & Framework: Node.js, Express.js (ES Module support)
+- Database ODM: Mongoose (mongoose)
+- Authentication: JSON Web Tokens (jsonwebtoken), bcryptjs
+- File Uploads: Multer (multer), AWS S3 SDK (@aws-sdk/client-s3), Cloudinary
+- Utilities: PDFKit (invoice generation), ExcelJS (xlsx for sales reporting), Nodemailer
+
+4.2 Directory Structure (MVC Pattern):
+backend/
+├── config/                # DB & Cloud connections (MongoDB, AWS, Razorpay)
+├── controllers/           # Business logic handlers
+│   ├── userController.js
+│   ├── productController.js
+│   ├── orderController.js
+│   ├── couponController.js
+│   ├── offerController.js
+│   ├── salesController.js
+│   ├── brandController.js
+│   ├── categoryController.js
+│   ├── addressController.js
+│   └── wishlistController.js
+├── middleware/            # Auth guard, Admin check, Error handling, Multer uploaders
+├── models/                # Mongoose Schemas & Data Models
+│   ├── userModel.js
+│   ├── productModel.js
+│   ├── orderModel.js
+│   ├── categoryModel.js
+│   ├── brandModel.js
+│   ├── couponModel.js
+│   ├── offerModel.js
+│   ├── addressModel.js
+│   ├── walletModel.js
+│   └── wishlistModel.js
+├── routes/                # Express API endpoint definitions
+├── seeder.js              # Database initial seeder script
+└── server.js              # Application entry point & Express server init
+
+
+5. DATA MODELS & DATABASE SCHEMA DESIGN
+--------------------------------------------------------------------------------
+- User (userModel.js): Name, Email, Password Hash, Biometric Descriptor Data, 
+  Role (user/admin), Status (active/blocked).
+- Product (productModel.js): Title, Description, Category ID, Brand ID, Variants, 
+  Price, Discount Price, Stock Quantity, Images (AWS S3/Cloudinary URLs), Ratings.
+- Order (orderModel.js): User ID, Ordered Items array, Shipping Address, Payment 
+  Method (Razorpay, COD, Wallet), Payment Status, Order Status (Pending, Processing, 
+  Shipped, Delivered, Cancelled), Total Amount.
+- Category & Brand (categoryModel.js, brandModel.js): Metadata, status flags, descriptions.
+- Coupon & Offer (couponModel.js, offerModel.js): Code, Discount Percentage/Amount, 
+  Min Purchase Criteria, Expiry Date, Applicable Categories/Products.
+- Wallet (walletModel.js): User ID, Balance, Transaction History (Debits/Credits).
+- Address (addressModel.js): User ID, Address details (Street, City, State, Pincode, Phone).
+- Wishlist (wishlistModel.js): User ID, Array of Product IDs.
+
+
+6. KEY WORKFLOWS & API INTERACTION
+--------------------------------------------------------------------------------
+6.1 Authentication & Security Flow:
+1. Standard Auth: User submits credentials -> Server verifies bcrypt hash -> Returns signed 
+   JWT token -> Client attaches JWT to request headers (Authorization: Bearer <token>).
+2. Biometric Auth: face-api.js captures face descriptors on client -> Matches with stored 
+   facial vector/descriptor upon login request -> Server verifies identity token.
+3. Authorization Middleware: Express middleware intercepts protected endpoints to check 
+   token validity and role privileges (isAdmin check for management endpoints).
+
+6.2 Checkout & Payment Processing Flow:
+1. Client initializes checkout -> Server calculates order total applying discounts/coupons.
+2. Server initiates Razorpay Order ID and sends to frontend.
+3. Client renders Razorpay Checkout UI -> User completes payment.
+4. Razorpay returns payment ID -> Server verifies signature HMAC hash.
+5. Order status updated to Paid -> Stock updated -> PDF invoice generated via pdfkit.
+
+6.3 Admin Sales Reporting & Analytics Flow:
+1. Admin selects date range (daily, weekly, monthly, custom).
+2. salesController.js performs MongoDB aggregation queries on completed orders.
+3. Express generates dynamic Excel files (xlsx) or PDF reports (pdfkit) and streams 
+   them back to the client.
+
+
+7. OPERATIONAL ENVIRONMENT CONFIGURATION
+--------------------------------------------------------------------------------
+Environment Variables Required (backend/.env):
+- PORT: Node server port (e.g., 2000)
+- MONGO_URI: MongoDB connection string
+- JWT_SECRET: Secret key for JWT signing
+- AWS_ACCESS_KEY & AWS_SECRET_KEY: Credentials for AWS S3 bucket uploads
+- RAZORPAY_KEY_ID & RAZORPAY_KEY_SECRET: Razorpay payment gateway credentials
+- EMAIL_USER & EMAIL_PASS: SMTP credentials for transactional emails
+================================================================================
