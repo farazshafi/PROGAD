@@ -48,5 +48,5 @@ export const getAllProductsApi = async (page) => {
 };
 
 export const adminLoginApi = async (data) => {
-  return axios.post(`${process.env.REACT_APP_API_URL}/admin/admin_login`, data);
+  return axios.post(`${import.meta.env.VITE_API_URL}/admin/admin_login`, data);
 };

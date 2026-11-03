@@ -220,16 +220,17 @@ const PlaceOrderSection = () => {
       )}
 
       <Box
+        className="checkout-place-order"
         sx={{
           padding: "20px",
           color: "#fff",
           minHeight: "100vh",
         }}
       >
-        <div className="w-full flex flex-col lg:flex-row">
+        <div className="checkout-review-columns w-full flex flex-col lg:flex-row">
           <div className="p-3 gap-3 font-poppins w-full flex flex-col lg:flex-row">
             {/* address */}
-            <div className="p-3 bg-gray-100 h-min text-black rounded">
+            <div className="checkout-review-card p-3 h-min rounded">
               <p className="text-lg font-semibold">Address</p>
               <p className="text-sm">
                 Country:{" "}
@@ -276,7 +277,7 @@ const PlaceOrderSection = () => {
             </div>
             {/* user and payment */}
             <div className="flex flex-col gap-3">
-              <div className="p-3 bg-gray-100 h-min text-black rounded">
+              <div className="checkout-review-card p-3 h-min rounded">
                 <p className="text-lg font-semibold">User</p>
                 <p className="text-sm">
                   Name: <span className="font-semibold">{user.name}</span>
@@ -285,7 +286,7 @@ const PlaceOrderSection = () => {
                   Email: <span className="font-semibold">{user.email}</span>
                 </p>
               </div>
-              <div className="p-3 bg-gray-100 h-min text-black rounded">
+              <div className="checkout-review-card p-3 h-min rounded">
                 <p className="text-lg font-semibold">Payment Method</p>
                 <p className="text-sm">
                   Payment:{" "}
@@ -297,7 +298,7 @@ const PlaceOrderSection = () => {
             </div>
           </div>
           <div className=" font-poppins flex-1 flex-row">
-            <div className="bg-black flex flex-col gap-2 rounded p-3">
+            <div className="checkout-review-summary flex flex-col gap-2 rounded p-3">
               <CouponSection applyCoupon={handleApply} summary={orderDetails} />
               <div className="flex justify-between">
                 <p>Subtotal: </p>
@@ -330,7 +331,7 @@ const PlaceOrderSection = () => {
               <div className="text-center items-center">
                 <button
                   onClick={handlePayment}
-                  className={`w-full flex text-white rounded justify-between py-2 px-3 bg-[#ff7f11]`}
+                  className="checkout-confirm-button w-full flex text-white rounded justify-between py-2 px-3 bg-[#ff7f11]"
                 >
                   Proceed to Checkout
                   <svg
@@ -353,13 +354,13 @@ const PlaceOrderSection = () => {
           </div>
         </div>
 
-        <p className="font-semibold font-poppins text-lg mt-3">Order Items:</p>
+        <p className="checkout-order-items-title font-semibold font-poppins text-lg mt-3">Order Items:</p>
         {cartItems.length > 0 && (
-          <div className="space-y-4 mt-3 border-t border-white">
+          <div className="checkout-order-items space-y-4 mt-3 border-t border-white">
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg shadow-white shadow-[rgba(255,255,255,0.05)] shadow-md space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-200 !text-black sm:!text-white sm:bg-transparent"
+                className="checkout-order-item flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg space-y-4 sm:space-y-0 sm:space-x-4"
               >
                 {/* Image */}
                 <img

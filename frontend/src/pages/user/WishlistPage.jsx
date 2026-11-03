@@ -60,23 +60,23 @@ const WishlistPage = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-6">Your Wishlist</h1>
+    <div className="profile-wishlist-page w-full p-6">
+      <h1 className="profile-section-heading text-2xl font-bold mb-6">Your Wishlist</h1>
       {wishlistItems?.length < 1 ? (
         <>
-          <p>No items in your wishlist</p>
+          <p className="profile-empty-state">No items in your wishlist</p>
         </>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {wishlistItems.map((item) => (
             <div
               key={item._id}
-              className="rounded-lg shadow-md p-4 flex flex-col items-center text-center"
+              className="profile-wishlist-card rounded-lg p-4 flex flex-col items-center text-center"
             >
               <img
                 src={item.images[0]}
                 alt={item.name}
-                className="w-100 object-cover mb-2 rounded"
+                className="profile-wishlist-image w-full h-48 object-contain mb-2 rounded"
               />
               <h2 className="text-lg font-semibold">{item.name}</h2>
               <div className="flex w-full justify-between mt-3">
@@ -91,7 +91,7 @@ const WishlistPage = () => {
               >
                 <button
                   onClick={() => handleRemove(item._id)}
-                  className="bg-white font-semibold w-full text-black py-2 px-2	 hover:bg-gray-600 rounded transition-colors"
+                  className="profile-wishlist-remove font-semibold w-full py-2 px-2 rounded transition-colors"
                 >
                   Remove
                 </button>

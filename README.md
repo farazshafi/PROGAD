@@ -104,8 +104,10 @@ npm install
 ```
 Start the application:
 ```bash
-npm start
+npm run dev
 ```
+
+Create a production build with `npm run build`, then serve it locally with `npm run preview`.
 
 ---
 

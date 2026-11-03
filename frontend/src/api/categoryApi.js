@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const API_URL = `${process.env.REACT_APP_API_URL}/category`
+const API_URL = `${import.meta.env.VITE_API_URL}/category`
 
 export const getAllCategories = async () => {
   try {

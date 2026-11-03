@@ -9,6 +9,7 @@ const NewArrivalsPage = () => {
     <React.Fragment>
         <Header />
       <SectionHeader
+        className="new-arrivals-page-heading"
         text={"New Arrivals"}
         description={"Check out the latest additions to our collection!"}
       />

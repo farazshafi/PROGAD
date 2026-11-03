@@ -37,6 +37,7 @@ const ProfileHeader = ({ component }) => {
 
   return (
     <Box
+      className="profile-shell"
       sx={{
         backgroundColor: "#262626",
         color: "white",
@@ -46,6 +47,7 @@ const ProfileHeader = ({ component }) => {
     >
       {/* Profile Section */}
       <Box
+        className="profile-hero"
         sx={{
           paddingTop: "40px",
           position: "relative",
@@ -59,8 +61,9 @@ const ProfileHeader = ({ component }) => {
         alignItems="center"
         gap={2}
       >
-        <Box sx={{ color: "black", display: "flex", alignItems: "center" }}>
+        <Box className="profile-hero-user" sx={{ color: "black", display: "flex", alignItems: "center" }}>
           <Avatar
+            className="profile-avatar"
             sx={{
               width: 80,
               height: 80,
@@ -92,6 +95,7 @@ const ProfileHeader = ({ component }) => {
             onChange={handleProfileUpload}
           />
           <IconButton
+            className="profile-avatar-upload"
             sx={{ color: "black" }}
             aria-label="upload picture"
             component="span"
@@ -102,11 +106,11 @@ const ProfileHeader = ({ component }) => {
       </Box>
       <Box>
         <>
-          <div className="border-b pb-2 border-gray-600">
-            <ul className="flex flex-wrap -mb-px text-sm font-poppins text-center text-gray-100 dark:text-gray-400">
+          <div className="profile-nav-wrap">
+            <ul className="profile-section-nav flex flex-wrap text-sm font-poppins text-center">
               <li>
                 <button
-                  className={`inline-flex items-center p-4 ${
+                  className={`profile-nav-button inline-flex items-center p-4 ${
                     component === "details"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
@@ -119,7 +123,7 @@ const ProfileHeader = ({ component }) => {
               </li>
               <li>
                 <button
-                  className={`inline-flex items-center p-4 ${
+                  className={`profile-nav-button inline-flex items-center p-4 ${
                     component === "orders"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
@@ -132,7 +136,7 @@ const ProfileHeader = ({ component }) => {
               </li>
               <li>
                 <button
-                  className={`inline-flex items-center p-4 ${
+                  className={`profile-nav-button inline-flex items-center p-4 ${
                     component === "address"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
@@ -145,7 +149,7 @@ const ProfileHeader = ({ component }) => {
               </li>
               <li>
                 <button
-                  className={`inline-flex items-center p-4 ${
+                  className={`profile-nav-button inline-flex items-center p-4 ${
                     component === "wishlist"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
@@ -158,7 +162,7 @@ const ProfileHeader = ({ component }) => {
               </li>
               <li>
                 <button
-                  className={`inline-flex items-center p-4 ${
+                  className={`profile-nav-button inline-flex items-center p-4 ${
                     component === "wallet"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
@@ -171,7 +175,7 @@ const ProfileHeader = ({ component }) => {
               </li>
               <li>
                 <button
-                  className={`inline-flex items-center p-4 ${
+                  className={`profile-nav-button inline-flex items-center p-4 ${
                     component === "reset_password"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""

@@ -1,9 +1,10 @@
 import React from "react";
 
-const SectionHeader = ({text,description}) => {
+const SectionHeader = ({text,description,className = ""}) => {
   return (
     <React.Fragment>
       <div
+        className={`storefront-section-header ${className}`}
         style={{
           textAlign: "center",
           padding: "20px 0",

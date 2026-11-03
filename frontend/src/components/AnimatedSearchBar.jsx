@@ -49,8 +49,8 @@ const AnimatedSearchBar = () => {
 
   return (
     <>
-      <div className="p-3 w-[50px] h-[50px] hover:cursor-pointer shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center">
-        <div className="flex items-center justify-center fill-white">
+      <div className="storefront-search-trigger p-3 w-[50px] h-[50px] hover:cursor-pointer rounded-full flex group items-center">
+        <div className="storefront-search-trigger-icon flex items-center justify-center fill-white">
           <svg
             className="ps-0"
             xmlns="http://www.w3.org/2000/svg"
@@ -68,10 +68,10 @@ const AnimatedSearchBar = () => {
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black/70 bg-opacity-40  h-screen z-50 flex justify-center items-start backdrop-blur-sm"
+          className="storefront-search-backdrop fixed inset-0 bg-black/70 h-screen z-50 flex justify-center items-start backdrop-blur-sm"
         >
           <div
-            className="bg-white font-poppins w-[60%] p-6 h-fit relative top-12 flex gap-3 rounded-[10px]"
+            className="storefront-search-modal font-poppins w-[60%] p-6 h-fit relative top-12 flex gap-3 rounded-[10px]"
             ref={modalRef}
           >
             <input
@@ -80,10 +80,10 @@ const AnimatedSearchBar = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Search products..."
-              className="outline-none text-[20px] border border-gray-300 p-1 rounded-3xl px-3 w-full"
+              className="storefront-search-input outline-none text-[20px] p-1 rounded-3xl px-3 w-full"
             />
             <div className="flex justify-end">
-              <div className="bg-[#262626] p-3 rounded">
+              <div className="storefront-search-submit bg-[#262626] p-3 rounded">
                 <FaSearch
                   className="text-xl text-white"
                   onClick={handleSearchSubmit}

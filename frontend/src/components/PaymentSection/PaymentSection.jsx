@@ -65,6 +65,7 @@ const PaymentSection = () => {
 
   return (
     <Box
+      className="checkout-payment-card"
       sx={{
         backgroundColor: "#262626",
         padding: 3,
@@ -74,7 +75,7 @@ const PaymentSection = () => {
         color: "#FFFF",
       }}
     >
-      <Typography variant="h6" sx={{ marginBottom: 2, color: "#fff" }}>
+      <Typography className="checkout-section-title" variant="h6" sx={{ marginBottom: 2, color: "#fff" }}>
         Select Payment Method
       </Typography>
       <RadioGroup

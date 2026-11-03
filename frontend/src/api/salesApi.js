@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${process.env.REACT_APP_API_URL}/sales/`
+const API_URL = `${import.meta.env.VITE_API_URL}/sales/`
 
 export const getSalesReportApi = async (params) => {
   const adminToken = JSON.parse(localStorage.getItem("admin")).token;

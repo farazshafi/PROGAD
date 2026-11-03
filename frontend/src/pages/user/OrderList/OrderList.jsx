@@ -52,6 +52,7 @@ const OrderList = () => {
 
   return (
     <Box
+      className="profile-orders-page"
       sx={{
         padding: "20px",
         minHeight: "100vh",
@@ -65,8 +66,8 @@ const OrderList = () => {
       {orders?.length === 0 ? (
         <Typography variant="h6">No orders found.</Typography>
       ) : (
-        <TableContainer component={Paper} sx={{ backgroundColor: "#424242" }}>
-          <Table>
+        <TableContainer className="profile-orders-table-wrap" component={Paper} sx={{ backgroundColor: "#424242" }}>
+          <Table className="profile-orders-table">
             <TableHead>
               <TableRow>
                 <TableCell sx={{ color: "#fff" }}>Delivery Status</TableCell>
@@ -82,6 +83,7 @@ const OrderList = () => {
                 <TableRow key={order._id}>
                   <TableCell sx={{ color: "#fff" }}>
                     <span
+                      className="profile-order-status"
                       style={{
                         padding: "10px",
                         borderRadius: "5px",
@@ -110,6 +112,7 @@ const OrderList = () => {
                   </TableCell>
                   <TableCell sx={{ color: "#fff" }}>
                     <span
+                      className="profile-payment-status"
                       style={{
                         padding: "10px",
                         borderRadius: "5px",

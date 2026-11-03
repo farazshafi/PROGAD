@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const API_URL = `${process.env.REACT_APP_API_URL}/order/`
+const API_URL = `${import.meta.env.VITE_API_URL}/order/`
 
 export const makeOrderApi = async (OrderData) => {
   try {
@@ -56,7 +56,7 @@ export const handleRazorpayApi = async (totalPrice, user, shippingAddress) => {
 
     return new Promise((resolve, reject) => {
       const options = {
-        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: razorpayOrder.amount,
         currency: razorpayOrder.currency,
         name: "Progad",

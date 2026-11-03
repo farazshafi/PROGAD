@@ -5,11 +5,9 @@ import {
   PinInput,
   PinInputField,
   Text,
-  Flex,
-  Box,
   ChakraProvider,
 } from "@chakra-ui/react";
-import "./OtpPage.css";
+import AuthPageFrame from "../../../components/AuthPageFrame/AuthPageFrame";
 import OurButton from "../../../components/OurButton/OurButton";
 import { verifyOtpApi, resendOtpApi } from "../../../api/userApi"; // Add resendOtpApi for resend OTP
 import { useNavigate } from "react-router-dom";
@@ -127,20 +125,9 @@ const OtpPage = () => {
 
   return (
     <ChakraProvider>
-      <Flex
-        height={"100vh"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        direction={"column"}
-      >
-        <Box>
-          <Text
-            fontSize={{ base: "15px", md: "20px", lg: "20px" }}
-            mb={{ base: "30px", md: "50px", lg: "50px" }}
-            className="Otp-heading"
-          >
-            OTP VERIFICATION
-          </Text>
+      <AuthPageFrame variant="otp" showHeader={false}>
+          <Text className="Otp-heading">Verify your email</Text>
+          <p className="auth-subtitle">Enter the 4-digit code we sent to your email address.</p>
           <Center mb={"20px"}>
             <HStack spacing={"10px"}>
               <PinInput otp>
@@ -149,6 +136,7 @@ const OtpPage = () => {
                     key={index}
                     value={digit}
                     onChange={(e) => handleChange(e.target.value, index)}
+                    className="auth-otp-input"
                     width={{ base: "50px", md: "60px", lg: "70px" }}
                     height={{ base: "50px", md: "60px", lg: "70px" }}
                     bg={"white"}
@@ -158,25 +146,18 @@ const OtpPage = () => {
             </HStack>
           </Center>
 
-          <Text fontSize={"14px"} mb={"10px"} textAlign="right">
+          <Text className="auth-resend" textAlign="right">
             {canResend ? (
               <span
                 onClick={handleResendOtp}
-                style={{ color: "white", cursor: "pointer" }}
+                className="auth-resend-action"
+                style={{ cursor: "pointer" }}
               >
                 Resend OTP
               </span>
             ) : (
-              <p style={{ color: "white" }}>
-                <span
-                  style={{
-                    backgroundColor: "white",
-                    color: "black",
-                    padding: "3px",
-                    borderRadius: "4px",
-                    marginRight: "4px",
-                  }}
-                >
+              <p>
+                <span className="auth-timer">
                   {timer}
                 </span>
                 seconds remain
@@ -184,7 +165,7 @@ const OtpPage = () => {
             )}
           </Text>
 
-          <div onClick={handleVerify}>
+          <div className="auth-primary-action" onClick={handleVerify}>
             <OurButton
               isLoading={loading}
               page={"otp"}
@@ -192,8 +173,7 @@ const OtpPage = () => {
               disabled={verifyDisabled || loading}
             />
           </div>
-        </Box>
-      </Flex>
+      </AuthPageFrame>
     </ChakraProvider>
   );
 };

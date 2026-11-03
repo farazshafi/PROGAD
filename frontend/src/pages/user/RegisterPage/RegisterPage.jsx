@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Header from "../../../components/Header/Header";
+import React, { useState } from "react";
 import {
   Box,
   Button,
-  Center,
   ChakraProvider,
-  Image,
   Input,
   InputGroup,
   InputRightElement,
@@ -13,8 +10,7 @@ import {
 } from "@chakra-ui/react";
 import OurButton from "../../../components/OurButton/OurButton";
 import headphoneImg from "../../../assets/images/walpaper/boat.jpeg";
-import "./RegisterPage.css";
-import Footer from "../../../components/Footer/Footer";
+import AuthPageFrame from "../../../components/AuthPageFrame/AuthPageFrame";
 import { toast } from "react-toastify";
 import { userRegisterApi } from "../../../api/userApi";
 import { Link, useNavigate } from "react-router-dom";
@@ -146,30 +142,10 @@ const RegisterPage = () => {
 
   return (
     <ChakraProvider>
-      <Header />
-      <Box
-        className="signIn-main-div"
-        p={{ base: "0 10% 0 10%", md: "0 5% 0 5%", lg: "0 20% 0 20%" }}
-      >
-        <Text
-          fontSize={{ base: "15px", md: "20", lg: "20px" }}
-          mb={{ base: "50px", md: "50px", lg: "50px" }}
-          className="signIn-heading"
-        >
-          CREATE AN ACCOUNT
-        </Text>
-        <Center>
-          <Box
-            padding={{ lg: "5% 7%", md: "5% 7%", base: "10% 10%" }}
-            className="content-wrapper"
-          >
-            <Box
-              display={{ base: "none", lg: "inline", md: "inline" }}
-              width={{ lg: "50%", md: "50%", base: "80%" }}
-            >
-              <Image borderRadius={"20px"} src={headphoneImg} alt="sign-in" />
-            </Box>
-            <Box width={{ lg: "50%", md: "50%", base: "100%" }}>
+      <AuthPageFrame variant="register" image={headphoneImg}>
+        <Text className="signIn-heading">Create your account</Text>
+        <p className="auth-subtitle">A few details and you’re ready to listen.</p>
+        <Box>
               <form onSubmit={signUpHandler}>
                 <input
                   required
@@ -205,6 +181,7 @@ const RegisterPage = () => {
                 />
                 <InputGroup size="md">
                   <Input
+                    className="auth-chakra-input"
                     required
                     pr="4.5rem"
                     type={show ? "text" : "password"}
@@ -214,7 +191,7 @@ const RegisterPage = () => {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <InputRightElement width="4.5rem">
-                    <Button h="1.75rem" size="sm" onClick={handleClick}>
+                    <Button h="1.75rem" size="sm" type="button" onClick={handleClick}>
                       {show ? "Hide" : "Show"}
                     </Button>
                   </InputRightElement>
@@ -225,6 +202,7 @@ const RegisterPage = () => {
                   size="md"
                 >
                   <Input
+                    className="auth-chakra-input"
                     required
                     pr="4.5rem"
                     type={show ? "text" : "password"}
@@ -234,29 +212,25 @@ const RegisterPage = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                   <InputRightElement width="4.5rem">
-                    <Button h="1.75rem" size="sm" onClick={handleClick}>
+                    <Button h="1.75rem" size="sm" type="button" onClick={handleClick}>
                       {show ? "Hide" : "Show"}
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-                <button style={{ width: "100%" }} type="submit">
+                <button className="auth-primary-action" type="submit">
                   <OurButton w={"100"} isLoading={loading} text={"SIGN UP"} />
                 </button>
-                <Text
-                  fontSize={{ base: "10px", md: "20px", lg: "15px" }}
-                  mt={"10px"}
-                >
-                  <Link to={"/login"}> Already have Account?</Link>
+                <Text className="auth-form-foot">
+                  Already have an account? <Link className="auth-text-link" to={"/login"}>Sign in</Link>
                 </Text>
-                <GoogleButton
-                  onClick={handleGoogleLogin}
-                  type="light"
-                  style={{
-                    borderRadius: "5px",
-                    marginTop: "10px",
-                    width: "100%",
-                  }}
-                />
+                <div className="auth-divider">or sign up with</div>
+                <div className="auth-google-action">
+                  <GoogleButton
+                    onClick={handleGoogleLogin}
+                    type="light"
+                    style={{ borderRadius: "5px", marginTop: "0", width: "100%" }}
+                  />
+                </div>
                 {/* <div onClick={handleFaceRegister}>
                   <div className="w-full bg-gray-900 text-white p-3 rounded mt-2 text-center hover:bg-gray-800">
                     <p className="text-gray-300 text-sm font-poppins">
@@ -265,11 +239,8 @@ const RegisterPage = () => {
                   </div>
                 </div> */}
               </form>
-            </Box>
-          </Box>
-        </Center>
-      </Box>
-      {/* <Footer /> */}
+        </Box>
+      </AuthPageFrame>
     </ChakraProvider>
   );
 };

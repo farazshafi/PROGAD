@@ -70,6 +70,7 @@ const ResetPassword = () => {
 
   return (
     <Box
+      className="profile-reset-password"
       sx={{
         width: 400,
         padding: 4,
@@ -80,11 +81,12 @@ const ResetPassword = () => {
         marginTop: "10vh",
       }}
     >
-      <Typography variant="h5" gutterBottom>
+      <Typography className="profile-section-heading" variant="h5" gutterBottom>
         Reset Password
       </Typography>
 
       <TextField
+        className="profile-password-field"
         type="password"
         label="Current Password"
         name="currentPassword"
@@ -100,6 +102,7 @@ const ResetPassword = () => {
       />
 
       <TextField
+        className="profile-password-field"
         type="password"
         label="New Password"
         name="newPassword"
@@ -115,6 +118,7 @@ const ResetPassword = () => {
       />
 
       <TextField
+        className="profile-password-field"
         type="password"
         label="Confirm New Password"
         name="confirmPassword"
@@ -130,6 +134,7 @@ const ResetPassword = () => {
       />
 
       <Button
+        className="profile-primary-button"
         variant="contained"
         fullWidth
         onClick={handleResetPassword}

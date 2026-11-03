@@ -62,7 +62,7 @@ const UserProfileCard = ({ user }) => {
       {user && (
         <>
           <Card
-            className="mt-5"
+            className="profile-details-card mt-5"
             variant="outlined"
             sx={{
               display: "flex",
@@ -152,6 +152,7 @@ const UserProfileCard = ({ user }) => {
             aria-labelledby="edit-profile-modal"
           >
             <div
+              className="profile-edit-modal"
               style={{
                 backgroundColor: "#1e1e1e",
                 color: "#ffffff",

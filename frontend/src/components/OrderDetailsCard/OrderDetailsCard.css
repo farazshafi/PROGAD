@@ -1,0 +1,64 @@
+.order-details-page.MuiBox-root {
+  width: min(1120px, calc(100% - 32px));
+  min-height: 70vh !important;
+  margin: 0 auto;
+  padding: 22px 0 64px !important;
+  background: transparent !important;
+  color: #fff;
+}
+.order-details-heading.MuiTypography-root { margin: 12px 0 18px !important; color: #fff; font-size: clamp(25px, 3.5vw, 34px); font-weight: 700; letter-spacing: -.035em; text-align: left !important; }
+.order-details-card.MuiCard-root { margin-top: 8px !important; padding: clamp(16px, 3vw, 30px) !important; border: 1px solid rgba(255,255,255,.09); border-radius: 22px !important; background: radial-gradient(ellipse at 100% 0%, rgba(255,127,17,.07), transparent 35%), linear-gradient(150deg, #191919, #111) !important; color: #fff !important; box-shadow: 0 24px 70px rgba(0,0,0,.27); }
+.order-details-toolbar { align-items: center; gap: 14px; }
+.order-details-id { margin: 0 !important; color: #fff; font-size: clamp(16px, 2.5vw, 21px) !important; font-weight: 700; overflow-wrap: anywhere; }
+.order-invoice-button { min-height: 40px; border: 1px solid rgba(255,127,17,.28); border-radius: 10px; background: rgba(255,127,17,.11); color: #ffad64; font-size: 12px; font-weight: 700; transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.order-invoice-button:hover { transform: translateY(-1px); border-color: rgba(255,127,17,.55); background: rgba(255,127,17,.19); }
+.order-details-divider.MuiDivider-root { margin: 18px 0 !important; border-color: rgba(255,255,255,.09); background: transparent !important; }
+.order-details-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.order-details-summary-line.MuiTypography-root { display: flex; min-height: 46px; align-items: center; gap: 8px; margin: 0 !important; padding: 10px 13px; border: 1px solid rgba(255,255,255,.06); border-radius: 11px; background: rgba(255,255,255,.025); color: rgba(255,255,255,.64); font-size: 12px; overflow-wrap: anywhere; }
+.order-details-summary-line strong { color: rgba(255,255,255,.42); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.order-details-summary-line.order-details-grand-total { border-color: rgba(255,127,17,.17); background: rgba(255,127,17,.055); color: #ffad64; font-size: 16px; font-weight: 700; }
+.order-status-badge { display: inline-flex; align-items: center; margin-left: 3px; padding: 5px 9px; border: 1px solid transparent; border-radius: 999px; font-size: 10px; font-weight: 700; line-height: 1.2; text-transform: capitalize; }
+.order-status-pending { border-color: rgba(251,191,36,.24); background: rgba(251,191,36,.11); color: #fcd34d; }
+.order-status-shipped { border-color: rgba(96,165,250,.23); background: rgba(96,165,250,.1); color: #93c5fd; }
+.order-status-delivered { border-color: rgba(74,222,128,.22); background: rgba(74,222,128,.1); color: #86efac; }
+.order-status-returned { border-color: rgba(167,139,250,.24); background: rgba(167,139,250,.1); color: #c4b5fd; }
+.order-status-cancelled { border-color: rgba(251,113,133,.23); background: rgba(251,113,133,.1); color: #fda4af; }
+.payment-status-paid { border-color: rgba(74,222,128,.22); background: rgba(74,222,128,.1); color: #86efac; }
+.payment-status-unpaid { border-color: rgba(251,191,36,.24); background: rgba(251,191,36,.1); color: #fcd34d; }
+.payment-status-refunded { border-color: rgba(96,165,250,.23); background: rgba(96,165,250,.1); color: #93c5fd; }
+.order-pay-button { min-height: 44px; border: 1px solid rgba(255,255,255,.09); border-radius: 11px; background: #242424; color: #ffad64; font-size: 13px !important; font-weight: 700; transition: border-color .18s ease, background .18s ease; }
+.order-pay-button:hover { border-color: rgba(255,127,17,.35); background: #2a211a; }
+.order-section-title.MuiTypography-root { margin-bottom: 12px; color: #fff; font-size: 15px; font-weight: 700; }
+.order-items-section { padding: 2px 0; }
+.order-item-row.MuiGrid-container { margin: 0 0 10px !important; padding: 13px 8px; border: 1px solid rgba(255,255,255,.065); border-radius: 14px; background: rgba(255,255,255,.025); }
+.order-item-row .MuiGrid-item img { border: 1px solid rgba(255,255,255,.08); background: radial-gradient(circle, #292929, #181818 70%); object-fit: contain; padding: 6px; }
+.order-item-name.MuiTypography-root { color: #fff; font-size: 13px; font-weight: 600; }
+.order-item-meta.MuiTypography-root { margin-top: 4px; color: rgba(255,255,255,.46); font-size: 11px; }
+.order-item-subtotal.MuiTypography-root { color: #ffad64; font-size: 12px; font-weight: 700; }
+.order-shipping-address { padding: 16px; border: 1px solid rgba(255,255,255,.07); border-radius: 14px; background: rgba(255,255,255,.025); }
+.order-address-copy.MuiTypography-root { margin-top: 5px; color: rgba(255,255,255,.57); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.order-action-button { margin-top: 16px !important; }
+.order-action-button .chakra-button { min-height: 44px; border-radius: 11px; color: #17120e !important; font-size: 12px; font-weight: 700; }
+.order-action-dialog-paper.MuiPaper-root { width: min(480px, calc(100vw - 30px)); border: 1px solid rgba(255,255,255,.1); border-radius: 18px; background: #171717; color: #fff; box-shadow: 0 28px 90px rgba(0,0,0,.55); }
+.order-action-dialog-content .MuiTypography-root { color: #fff; font-size: 16px; font-weight: 600; }
+.order-action-reason .MuiOutlinedInput-root { border-radius: 10px; background: #202020; color: #fff; }
+.order-action-reason .MuiOutlinedInput-notchedOutline { border-color: rgba(255,255,255,.13); }
+.order-action-reason .MuiInputLabel-root { color: rgba(255,255,255,.5); }
+.order-action-reason .MuiInputBase-input { color: #fff; }
+.order-action-dialog-actions { padding: 8px 20px 18px; gap: 8px; }
+.order-dialog-cancel-button, .order-dialog-confirm-button { min-height: 38px; border: 1px solid rgba(255,255,255,.1); border-radius: 9px; font-size: 12px; font-weight: 700; }
+.order-dialog-cancel-button { background: rgba(255,255,255,.06); color: rgba(255,255,255,.72); }
+.order-dialog-cancel-button:hover { background: rgba(255,255,255,.1); }
+.order-dialog-confirm-button { border-color: rgba(255,127,17,.3); background: #ff7f11; color: #19120c; }
+.order-dialog-confirm-button:hover { background: #ff9841; }
+
+@media (max-width: 640px) {
+  .order-details-page.MuiBox-root { width: calc(100% - 20px); padding: 12px 0 40px !important; }
+  .order-details-summary { grid-template-columns: 1fr; gap: 7px; }
+  .order-details-toolbar { align-items: stretch; flex-direction: column; }
+  .order-invoice-button { width: 100%; }
+  .order-item-row.MuiGrid-container { align-items: flex-start; }
+  .order-item-row .MuiGrid-item img { width: 58px !important; height: 58px !important; }
+  .order-item-row .MuiGrid-item:nth-of-type(3) { text-align: left !important; }
+}
+@media (prefers-reduced-motion: reduce) { .order-invoice-button, .order-pay-button, .order-action-button, .order-item-row { transition: none !important; } }

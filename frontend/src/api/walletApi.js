@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${process.env.REACT_APP_API_URL}/user`
+const API_URL = `${import.meta.env.VITE_API_URL}/user`
 
 export const getWalletDetailsApi = async (id) => {
   try {

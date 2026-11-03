@@ -46,8 +46,8 @@ const ShippingSection = ({ selectedAddress }) => {
   }, [address]);
 
   return (
-    <Box sx={{ padding: { sm: "0px 10px", lg: "0px 80px", xs: "0px 7px" } }}>
-      <Typography variant="h6" sx={{ marginTop: 4, textAlign: "center" }}>
+    <Box className="checkout-shipping-section" sx={{ padding: { sm: "0px 10px", lg: "0px 80px", xs: "0px 7px" } }}>
+      <Typography className="checkout-section-title" variant="h6" sx={{ marginTop: 4, textAlign: "center" }}>
         SHIPPING ADDRESS
       </Typography>
 
@@ -62,7 +62,7 @@ const ShippingSection = ({ selectedAddress }) => {
         }}
       />
       {Object.keys(address).length !==0  && (
-        <form>
+        <form className="checkout-address-form">
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField

@@ -92,10 +92,10 @@ const ProductReviews = ({ id, totalReviews }) => {
 
   return (
     <>
-      <Box sx={{ padding: "20px", backgroundColor: "#262626", color: "#fff" }}>
+      <Box className="product-reviews" sx={{ padding: "20px", color: "#fff" }}>
         {/* Review Form */}
         {!isProductReviewed && (
-          <Box sx={{ marginBottom: "30px", textAlign: "center" }}>
+          <Box className="product-review-form" sx={{ marginBottom: "30px" }}>
             <Typography
               variant="h6"
               sx={{ fontWeight: "bold", marginBottom: "10px" }}
@@ -126,14 +126,19 @@ const ProductReviews = ({ id, totalReviews }) => {
               variant="outlined"
               sx={{
                 marginTop: "10px",
-                backgroundColor: "#fff",
-                borderRadius: "5px",
+                  backgroundColor: "#171717",
+                  borderRadius: "12px",
+                  color: "#fff",
+                  "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,.14)" },
+                  "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,127,17,.65)" },
+                  "& textarea": { color: "#fff" },
+                  "& textarea::placeholder": { color: "rgba(255,255,255,.42)", opacity: 1 },
               }}
             />
             <Button
               onClick={handleSubmitReview}
               variant="contained"
-              sx={{ marginTop: "10px", backgroundColor: "#FF7F11" }}
+              sx={{ marginTop: "12px", backgroundColor: "#FF7F11", color: "#18120d", fontWeight: 700, borderRadius: "10px", textTransform: "none", boxShadow: "none", "&:hover": { backgroundColor: "#ff9841", boxShadow: "none" } }}
             >
               Submit
             </Button>
@@ -146,10 +151,14 @@ const ProductReviews = ({ id, totalReviews }) => {
             {reviews.map((review, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card
+                  className="product-review-card"
                   sx={{
                     padding: "20px",
-                    backgroundColor: "#333",
+                    backgroundColor: "#171717",
                     color: "#fff",
+                    border: "1px solid rgba(255,255,255,.08)",
+                    borderRadius: "16px",
+                    boxShadow: "none",
                   }}
                 >
                   <Box display="flex" alignItems="center" marginBottom="10px">
@@ -186,7 +195,7 @@ const ProductReviews = ({ id, totalReviews }) => {
           </Grid>
         ) : (
           <>
-            <div>
+            <div className="product-reviews-empty">
               <p>No Reviews Found!</p>
             </div>
           </>

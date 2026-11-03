@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { getNewArrivalsProductApi } from "../api/productApi";
 
@@ -45,6 +45,7 @@ export default function NewArrivalSection() {
   const others = newArrivals.slice(1);
 
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
 
   async function getNewArrivals() {
     const response = await getNewArrivalsProductApi(5);
@@ -63,44 +64,50 @@ export default function NewArrivalSection() {
     getNewArrivals();
   }, []);
 
-  console.log("new arrival lenght", newArrivals.length);
   if (newArrivals.length > 0) {
     return (
-      <section className="mx-auto  max-w-full px-4 lg:px-8">
-        <div className="rounded-[32px] border border-white/10 bg-zinc-900/60 p-4 backdrop-blur-xl lg:p-7">
-          <div className="mb-10 flex items-center justify-between">
+      <motion.section
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.12 }}
+        transition={{ duration: 0.65, ease: "easeOut" }}
+        className="home-arrivals mx-auto max-w-[1240px] px-4 lg:px-8"
+      >
+        <div className="home-arrivals-shell rounded-[24px] border border-white/10 bg-gradient-to-br from-[#17191c] to-[#101113] p-4 shadow-[0_20px_65px_rgba(0,0,0,.25)] lg:p-6">
+          <div className="mb-6 flex items-center justify-between">
             <div>
-              <p className="text-orange-500 font-medium">Featured</p>
-              <h2 className="mt-2 text-3xl font-bold text-white">
+              <p className="font-medium uppercase tracking-[.22em] text-orange-400 text-xs">Featured collection</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-white md:text-3xl">
                 New Arrivals
               </h2>
             </div>
 
             <button
               onClick={() => navigate("/new_arrivals")}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-white transition hover:bg-orange-500"
+              className="home-arrivals-view-all flex items-center gap-2 rounded-full border border-white/10 bg-white/[.04] px-4 py-2.5 text-sm text-white transition-colors hover:border-orange-400/50 hover:bg-orange-500"
             >
               View All
               <ArrowRight size={18} />
             </button>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <div className="grid gap-4 lg:grid-cols-[.9fr_1.1fr]">
             {/* Featured */}
 
             <motion.div
               onClick={handleFeatureNavigate}
               whileHover={{ y: -5 }}
-              className="group overflow-hidden rounded-3xl bg-zinc-800"
+              className="home-arrivals-feature group overflow-hidden rounded-2xl bg-zinc-800"
             >
-              <div className="aspect-[5/5] overflow-hidden">
+              <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={featured.image}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                alt={featured.name}
+                  className="h-full w-full object-contain p-5 transition duration-500 group-hover:scale-105"
                 />
               </div>
 
-              <div className="space-y-2 p-6">
+              <div className="space-y-1 p-4">
                 <h3 className="text-xl font-semibold text-white">
                   {featured.name}
                 </h3>
@@ -111,22 +118,23 @@ export default function NewArrivalSection() {
 
             {/* Grid */}
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               {others.map((product) => (
                 <motion.div
                   onClick={() => navigate(`/product_details/${product.id}`)}
                   key={product.id}
                   whileHover={{ y: -5 }}
-                  className="group overflow-hidden rounded-3xl bg-zinc-800"
+                  className="home-arrivals-card group overflow-hidden rounded-2xl bg-zinc-800"
                 >
-                  <div className="aspect-square overflow-hidden">
+                  <div className="aspect-[4/3] overflow-hidden">
                     <img
                       src={product.image}
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                    alt={product.name}
+                      className="h-full w-full object-contain p-3 transition duration-500 group-hover:scale-105"
                     />
                   </div>
 
-                  <div className="space-y-1 p-4">
+                  <div className="space-y-1 px-3 pb-3 pt-2">
                     <h3 className="truncate text-white font-medium">
                       {product.name}
                     </h3>
@@ -140,7 +148,7 @@ export default function NewArrivalSection() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
     );
   } else {
     return <>There is no new arrivals</>;

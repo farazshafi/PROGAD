@@ -6,13 +6,15 @@ const BreadCrums = ({ path, isAdmin }) => {
   return (
     <div role="presentation">
       <Breadcrumbs
+        className="storefront-breadcrumbs"
         aria-label="breadcrumb"
-        sx={{ color: "white", padding: "5px 0px 5px 20px" }} 
+        sx={{ color: "white", padding: "5px 0px 5px 20px" }}
       >
         {path.map((crumb, index) => (
           index < path.length - 1 ? (
             <Link
               key={index}
+              className="storefront-breadcrumb-link"
               underline="hover"
               color="white"
               component={RouterLink}
@@ -21,7 +23,7 @@ const BreadCrums = ({ path, isAdmin }) => {
               {crumb.label}
             </Link>
           ) : (
-            <Typography key={index} color="white">
+            <Typography key={index} className="storefront-breadcrumb-current" color="white">
               {crumb.label}
             </Typography>
           )

@@ -128,7 +128,7 @@ const CartPage = () => {
     <>
       <Header />
       <Box className="cart-container">
-        <p className="font-poppins text-white text-xl">
+        <p className="cart-page-title font-poppins text-white text-xl">
           {cartItems.length > 0
             ? `Your shopping cart (${cartItems.length})`
             : "Your shopping cart is empty"}
@@ -138,17 +138,17 @@ const CartPage = () => {
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg shadow-white shadow-[rgba(255,255,255,0.32)] shadow-md space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-200 !text-black sm:!text-white sm:bg-transparent"
+                className="cart-product-row flex flex-col sm:flex-row items-center font-poppins p-4 rounded-lg space-y-4 sm:space-y-0 sm:space-x-4"
               >
                 {/* Image */}
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-24 h-24 object-cover rounded"
+                  className="cart-product-image w-24 h-24 object-cover rounded"
                 />
 
                 {/* Details */}
-                <div className="flex-grow">
+                <div className="cart-product-details flex-grow">
                   <h2 className="text-lg font-semibold">{item.name}</h2>
                   <p className="text-gray-700 sm:text-gray-400">
                     Price: ₹{item.price}
@@ -156,9 +156,9 @@ const CartPage = () => {
                 </div>
 
                 {/* Quantity */}
-                <div className="flex items-center space-x-2">
+                <div className="cart-quantity-control flex items-center space-x-2">
                   <button
-                    className="py-2 px-3 rounded bg-white text-black"
+                    className="cart-quantity-button py-2 px-3 rounded"
                     style={{
                       backgroundColor: item.quantity === 1 ? "gray" : "",
                     }}
@@ -182,7 +182,7 @@ const CartPage = () => {
                   </Typography>
 
                   <button
-                    className="py-2 px-3 rounded bg-white text-black"
+                    className="cart-quantity-button py-2 px-3 rounded"
                     style={{
                       backgroundColor: item.quantity === 10 ? "gray" : "",
                     }}
@@ -196,16 +196,16 @@ const CartPage = () => {
 
                 {/* Subtotal */}
                 <div>
-                  <p className="text-lg font-semibold">
+                  <p className="cart-product-total text-lg font-semibold">
                     Total:{" "}
                     <span className="text-[#ff7f11]">
                       ₹{item.subTotal.toFixed(2)}
                     </span>
                   </p>
                 </div>
-                <div className="bg-[#ff7f11] sm:bg-transparent text-white rounded p-2">
+                <div className="cart-remove-wrap text-white rounded p-2">
                   <span
-                    className="flex items-center"
+                    className="cart-remove-button flex items-center"
                     onClick={() => handleDelete(item)}
                   >
                     <p className="block lg:hidden">Delete</p>
@@ -226,9 +226,10 @@ const CartPage = () => {
           </div>
         )}
 
-        <Row style={{ marginTop: "30px" }}>
+        <Row className="cart-summary-row" style={{ marginTop: "30px" }}>
           {cartItems.length > 0 && (
             <Col
+              className="cart-summary-card"
               style={{
                 backgroundColor: "#333",
                 padding: "20px",
@@ -236,15 +237,15 @@ const CartPage = () => {
               }}
             >
               <div className="w-full">
-                <div className="flex text-lg text-white font-poppins justify-between">
+                <div className="cart-summary-line flex text-lg text-white font-poppins justify-between">
                   <p>Subtotal:</p>
                   <p>₹{summary.subTotal}</p>
                 </div>
-                <div className="flex text-lg text-white font-poppins justify-between">
+                <div className="cart-summary-line flex text-lg text-white font-poppins justify-between">
                   <p>Tax:</p>
                   <p>{summary.taxPercent}%</p>
                 </div>
-                <div className="flex text-lg text-white font-poppins justify-between">
+                <div className="cart-summary-line flex text-lg text-white font-poppins justify-between">
                   <p>Delivery fee:</p>
                   {summary.total > 500 ? (
                     <p>Free</p>
@@ -252,7 +253,7 @@ const CartPage = () => {
                     <p>{summary.delivery}</p>
                   )}
                 </div>
-                <div className="flex text-lg text-white font-poppins justify-between">
+                <div className="cart-summary-line cart-summary-total flex text-lg text-white font-poppins justify-between">
                   <p>Total:</p>
                   <p>{summary.total}</p>
                 </div>

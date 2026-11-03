@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
-import "./LoginPage.css";
-import Header from "../../../components/Header/Header";
-import {
-  Box,
-  Center,
-  ChakraProvider,
-  Image,
-  Text,
-} from "@chakra-ui/react";
+import { Box, ChakraProvider, Text } from "@chakra-ui/react";
 import headphoneImg from "../../../assets/images/walpaper/headphone.jpeg";
-import Footer from "../../../components/Footer/Footer";
+import AuthPageFrame from "../../../components/AuthPageFrame/AuthPageFrame";
 import OurButton from "../../../components/OurButton/OurButton";
 import { loginApi } from "../../../api/userApi";
 import { Link, useNavigate } from "react-router-dom";
@@ -90,27 +82,14 @@ const LoginPage = () => {
 
   return (
     <ChakraProvider>
-      <Header />
-      <Box className="signIn-main-div">
+      <AuthPageFrame variant="login" image={headphoneImg}>
         <Text
-          fontSize={{ base: "30px", md: "20", lg: "30px" }}
-          mb={{ base: "50px", md: "50px", lg: "50px" }}
           className="signIn-heading"
         >
-          SignIn
+          Sign in
         </Text>
-        <Center>
-          <Box
-            padding={{ lg: "5% 7%", md: "5% 7%", base: "5% 10%" }}
-            className="content-wrapper"
-          >
-            <Box
-              display={{ base: "none", lg: "inline", md: "inline" }}
-              width={{ lg: "50%", md: "50%", base: "80%" }}
-            >
-              <Image borderRadius={"20px"} src={headphoneImg} alt="sign-in" />
-            </Box>
-            <Box width={{ lg: "50%", md: "50%", base: "100%" }}>
+        <p className="auth-subtitle">Sign in to your PROGAD account to continue.</p>
+        <Box>
               <form>
                 <input
                   style={{ marginBottom: "20px" }}
@@ -131,44 +110,30 @@ const LoginPage = () => {
                   name="passwrod"
                 />
                 <Link to={"/forgott_password"}>
-                  <p className="font-poppins my-2 text-sm text-gray-500 hover:text-gray-800 hover:underline">
+                  <p className="auth-forgot my-2 text-right">
                     Forgott Password?
                   </p>
                 </Link>
-                <div onClick={hanldeLogin}>
+                <div className="auth-primary-action" onClick={hanldeLogin}>
                   <OurButton w="100" text={"SIGN IN"} />
                 </div>
-                <Text
-                  fontSize={{ base: "10px", md: "20px", lg: "15px" }}
-                  mt={"10px"}
-                >
-                  <Link to={"/register"}>Create an Account</Link>
+                <Text className="auth-form-foot">
+                  New to PROGAD? <Link className="auth-text-link" to={"/register"}>Create an account</Link>
                 </Text>
-                <p className="font-poppins mt-3 text-gray-500 text-center">
-                  Sign in options
-                </p>
-                <GoogleButton
-                  onClick={handleGoogleLogin}
-                  type="light"
-                  style={{
-                    borderRadius: "5px",
-                    marginTop: "20px",
-                    width: "100%",
-                  }}
-                />
+                <div className="auth-divider">or continue with</div>
+                <div className="auth-google-action">
+                  <GoogleButton
+                    onClick={handleGoogleLogin}
+                    type="light"
+                    style={{ borderRadius: "5px", marginTop: "0", width: "100%" }}
+                  />
+                </div>
                 <Link to={"/face_login"}>
-                  <div className="w-full bg-gray-900 text-white p-3 rounded mt-2 text-center hover:bg-gray-800">
-                    <p className="text-gray-300 text-sm font-poppins">
-                      Login With Face
-                    </p>
-                  </div>
+                  <div className="auth-face-action">Login with face</div>
                 </Link>
               </form>
-            </Box>
-          </Box>
-        </Center>
-      </Box>
-      {/* <Footer /> */}
+        </Box>
+      </AuthPageFrame>
     </ChakraProvider>
   );
 };

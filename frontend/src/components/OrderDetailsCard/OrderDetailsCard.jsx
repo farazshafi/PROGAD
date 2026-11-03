@@ -27,6 +27,7 @@ import OurButton from "../OurButton/OurButton";
 import { useSelector } from "react-redux";
 import { selectedUser } from "../../features/user/userSlice";
 import { IoMdDownload } from "react-icons/io";
+import "./OrderDetailsCard.css";
 
 const OrderDetailsCard = ({ isAdmin }) => {
   const user = useSelector(selectedUser);
@@ -228,6 +229,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
     <>
       {!isAdmin && <Header />}
       <Box
+        className="order-details-page"
         sx={{
           padding: "20px",
           minHeight: "100vh",
@@ -235,11 +237,12 @@ const OrderDetailsCard = ({ isAdmin }) => {
           color: "#fff",
         }}
       >
-        <Typography variant="h4" sx={{ mb: 3, textAlign: "center" }}>
+        <Typography className="order-details-heading" variant="h4" sx={{ mb: 3, textAlign: "center" }}>
           Order Details
         </Typography>
         <BreadCrums isAdmin={true} path={breadcrumbPath} />
         <Card
+          className="order-details-card"
           sx={{
             padding: "20px",
             backgroundColor: "#333",
@@ -247,88 +250,53 @@ const OrderDetailsCard = ({ isAdmin }) => {
             marginTop: "10px",
           }}
         >
-          <div className="block sm:flex justify-between">
-            <p className="font-poppins text-xl mb-2">
+          <div className="order-details-toolbar block sm:flex justify-between">
+            <p className="order-details-id font-poppins text-xl mb-2">
               Order ID: {order.orderId}
             </p>
             <button
               onClick={handleDownloadInvoice}
-              className="btn flex items-center justify-center w-full sm:w-fit gap-1 bg-white text-black py-2 px-3 rounded hover:bg-gray-200"
+              className="order-invoice-button flex items-center justify-center w-full sm:w-fit gap-1 py-2 px-3 rounded"
             >
               <IoMdDownload className="text-center" />
               <span>Invoice</span>
             </button>
           </div>
-          <Divider sx={{ marginY: "10px", background: "white" }} />
+          <Divider className="order-details-divider" sx={{ marginY: "10px", background: "white" }} />
 
-          <Typography sx={{ marginBottom: "10px" }} variant="body1">
+          <div className="order-details-summary">
+          <Typography className="order-details-summary-line" sx={{ marginBottom: "10px" }} variant="body1">
             <strong>Status:</strong>
-            <span
-              style={{
-                marginLeft: "5px",
-                padding: "3px",
-                borderRadius: "5px",
-                color:
-                  order.status === "returned" || order.status === "pending"
-                    ? "black"
-                    : "white",
-                backgroundColor:
-                  order.status === "pending"
-                    ? "yellow"
-                    : order.status === "shipped"
-                      ? "blue"
-                      : order.status === "delivered"
-                        ? "green"
-                        : order.status === "returned"
-                          ? "white"
-                          : order.status === "cancelled"
-                            ? "red"
-                            : "gray",
-              }}
-            >
+            <span className={`order-status-badge order-status-${order.status}`}>
               {order.status}
             </span>
           </Typography>
-          <Typography variant="body1">
+          <Typography className="order-details-summary-line" variant="body1">
             <strong>Order Date:</strong>{" "}
             {new Date(order.orderDate).toLocaleDateString()}
           </Typography>
           {order.couponDiscount > 0 && (
-            <Typography variant="body1">
+            <Typography className="order-details-summary-line" variant="body1">
               <strong>Coupon Applied:</strong> -{order?.couponDiscount}%
             </Typography>
           )}
 
-          <Typography variant="body1">
+          <Typography className="order-details-summary-line order-details-grand-total" variant="body1">
             <strong>Total:</strong> ₹ {order.totalPrice}
           </Typography>
-          <Typography variant="body1">
+          <Typography className="order-details-summary-line" variant="body1">
             <strong>Payment Method:</strong> {order.paymentMethod}
           </Typography>
-          <Typography
+          <Typography className="order-details-summary-line"
             sx={{ marginBottom: "10px", marginTop: "5px" }}
             variant="body1"
           >
             <strong>Payment Status:</strong>
-            <span
-              style={{
-                marginLeft: "5px",
-                padding: "3px 5px",
-                borderRadius: "5px",
-                color: "white",
-                backgroundColor:
-                  order.paymentStatus === "refunded"
-                    ? "blue"
-                    : order.paymentStatus === "paid"
-                      ? "green"
-                      : order.paymentStatus === "unpaid"
-                        ? "red"
-                        : "gray",
-              }}
-            >
+            <span className={`order-status-badge payment-status-${order.paymentStatus}`}>
               {order.paymentStatus}
             </span>
           </Typography>
+          </div>
 
           {!isAdmin &&
             order.status !== "cancelled" &&
@@ -337,23 +305,24 @@ const OrderDetailsCard = ({ isAdmin }) => {
               <div>
                 <button
                   onClick={handlePayment}
-                  className="btn text-white font-poppins text-xl w-full my-2 bg-[#262626] hover:bg-slate-900"
+                  className="order-pay-button font-poppins w-full my-2"
                 >
                   Pay Now
                 </button>
               </div>
             )}
 
-          <Divider sx={{ marginY: "10px", background: "white" }} />
+          <Divider className="order-details-divider" sx={{ marginY: "10px", background: "white" }} />
 
-          <Box>
-            <Typography variant="h6">Items:</Typography>
+          <Box className="order-items-section">
+            <Typography className="order-section-title" variant="h6">Items</Typography>
             {order?.items?.map((item) => (
               <Grid
                 container
                 key={item.id._id}
                 spacing={2}
                 alignItems="center"
+                className="order-item-row"
                 sx={{ marginY: "10px" }}
               >
                 <Grid item xs={2}>
@@ -362,21 +331,21 @@ const OrderDetailsCard = ({ isAdmin }) => {
                     alt={item.id.name}
                     style={{
                       width: "80px",
-                      height: "auto",
+                      height: "80px",
                       borderRadius: "5px",
                     }}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body1">{item.id.name}</Typography>
-                  <Typography variant="body2">
+                  <Typography className="order-item-name" variant="body1">{item.id.name}</Typography>
+                  <Typography className="order-item-meta" variant="body2">
                     Quantity: {item.quantity}
                   </Typography>
-                  <Typography variant="body2">Price: {item.price}</Typography>
+                  <Typography className="order-item-meta" variant="body2">Price: ₹{item.price}</Typography>
                 </Grid>
 
                 <Grid item xs={4} textAlign="right">
-                  <Typography variant="body1">
+                  <Typography className="order-item-subtotal" variant="body1">
                     Subtotal: ₹ {item.subTotal}
                   </Typography>
                 </Grid>
@@ -384,22 +353,23 @@ const OrderDetailsCard = ({ isAdmin }) => {
             ))}
           </Box>
 
-          <Divider sx={{ marginY: "10px", background: "white" }} />
+          <Divider className="order-details-divider" sx={{ marginY: "10px", background: "white" }} />
 
-          <Box>
-            <Typography variant="h6">Shipping Address:</Typography>
-            <Typography variant="body1">
+          <Box className="order-shipping-address">
+            <Typography className="order-section-title" variant="h6">Shipping Address</Typography>
+            <Typography className="order-address-copy" variant="body1">
               {order?.shippingAddress?.street}, {order?.shippingAddress?.city},
               {order?.shippingAddress?.state}, {order?.shippingAddress?.zip},{" "}
               {order?.shippingAddress?.country}
             </Typography>
-            <Typography variant="body1">
+            <Typography className="order-address-copy" variant="body1">
               Phone: {order?.shippingAddress?.phoneNumber}
             </Typography>
           </Box>
           {!isAdmin && order.status === "pending" && (
             <div
               onClick={() => handleOpenDialog("Cancel")}
+              className="order-action-button"
               style={{ marginTop: "20px" }}
             >
               <OurButton w={"100"} text={"Cancel Order"} />
@@ -408,6 +378,7 @@ const OrderDetailsCard = ({ isAdmin }) => {
           {!isAdmin && order.status === "delivered" && isReturnEligible && (
             <div
               onClick={() => handleOpenDialog("Return")}
+              className="order-action-button"
               style={{ marginTop: "20px" }}
             >
               <OurButton w={"100"} text={"Return Product"} />
@@ -415,12 +386,13 @@ const OrderDetailsCard = ({ isAdmin }) => {
           )}
         </Card>
       </Box>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogContent>
+      <Dialog open={openDialog} onClose={handleCloseDialog} PaperProps={{ className: "order-action-dialog-paper" }}>
+        <DialogContent className="order-action-dialog-content">
           <Typography variant="h6">
             Are you sure you want to {status} this order?
           </Typography>
           <TextField
+            className="order-action-reason"
             label={`Reason for ${status === "Return" ? "Returning" : "Cancellation"}`}
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
@@ -428,15 +400,15 @@ const OrderDetailsCard = ({ isAdmin }) => {
             margin="normal"
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions className="order-action-dialog-actions">
           <button
-            className="text-white py-2 px-3 rounded bg-black opacity-80"
+            className="order-dialog-cancel-button py-2 px-3 rounded"
             onClick={handleCloseDialog}
           >
             No
           </button>
           <button
-            className="text-white py-2 px-3 rounded bg-[#ff7f11]"
+            className="order-dialog-confirm-button py-2 px-3 rounded"
             onClick={() => handleCancelOrder(status)}
           >
             Yes, Cancel

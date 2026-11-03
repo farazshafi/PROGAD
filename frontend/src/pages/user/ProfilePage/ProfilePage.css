@@ -1,0 +1,124 @@
+.profile-page { width: min(1240px, calc(100% - 32px)); margin: 0 auto; padding: 4px 0 60px; }
+.profile-shell.MuiBox-root { margin: 8px 0 0; padding: clamp(14px, 2vw, 24px) !important; border: 1px solid rgba(255,255,255,.08); border-radius: 24px !important; background: radial-gradient(ellipse at 95% 0%, rgba(255,127,17,.08), transparent 32%), linear-gradient(150deg, #171717, #101010) !important; box-shadow: 0 26px 70px rgba(0,0,0,.25); }
+.profile-hero.MuiBox-root { min-height: 150px; margin-bottom: 20px !important; padding: 24px 28px !important; border: 1px solid rgba(255,255,255,.08); border-radius: 18px !important; background: radial-gradient(ellipse at 92% 15%, rgba(255,127,17,.14), transparent 34%), linear-gradient(110deg, #202020, #151515) !important; }
+.profile-hero-user.MuiBox-root { gap: 16px; color: white !important; }
+.profile-hero-user .MuiAvatar-root { position: static !important; width: 82px !important; height: 82px !important; margin: 0 !important; border: 2px solid rgba(255,127,17,.65); background: linear-gradient(145deg, #3a2414, #1b1b1b); color: #ffb373; box-shadow: 0 0 28px rgba(255,127,17,.12); }
+.profile-hero-user .MuiTypography-root { color: #fff !important; }
+.profile-hero-user .MuiTypography-h5 { font-size: clamp(20px, 3vw, 27px); font-weight: 700; letter-spacing: -.025em; }
+.profile-hero-user .MuiTypography-subtitle1 { color: rgba(255,255,255,.5) !important; font-size: 13px; }
+.profile-avatar-upload.MuiIconButton-root { top: 14px !important; right: 14px !important; border: 1px solid rgba(255,255,255,.1); background: rgba(0,0,0,.25); color: #ffad64 !important; }
+.profile-avatar-upload.MuiIconButton-root:hover { background: rgba(255,127,17,.12); }
+.profile-nav-wrap { margin-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.profile-section-nav { gap: 5px; margin: 0; padding: 0 0 7px; }
+.profile-section-nav > li { list-style: none; }
+.profile-nav-button { min-height: 43px; gap: 8px; padding: 10px 14px !important; border: 1px solid transparent; border-radius: 11px; background: transparent; color: rgba(255,255,255,.53); font-size: 12px; font-weight: 600; transition: color .18s ease, border-color .18s ease, background .18s ease; }
+.profile-nav-button:hover { color: #fff; background: rgba(255,255,255,.045); }
+.profile-nav-button.border-b-2 { border-color: rgba(255,127,17,.25) !important; background: rgba(255,127,17,.09); color: #ffad64 !important; }
+.profile-nav-button svg { font-size: 14px; }
+.profile-section-heading { color: #fff !important; font-size: clamp(21px, 2.6vw, 28px) !important; font-weight: 700 !important; letter-spacing: -.03em; }
+.profile-empty-state { padding: 34px 18px; border: 1px dashed rgba(255,255,255,.13); border-radius: 16px; color: rgba(255,255,255,.5); text-align: center; }
+
+.profile-details-card.MuiCard-root { display: flex; max-width: 760px; align-items: center; gap: 18px; margin: 24px 0 0 !important; padding: clamp(16px, 3vw, 26px) !important; border: 1px solid rgba(255,255,255,.09); border-radius: 18px; background: radial-gradient(ellipse at 100% 0%, rgba(255,127,17,.08), transparent 36%), linear-gradient(145deg, #191919, #111); color: white; box-shadow: 0 18px 50px rgba(0,0,0,.2); }
+.profile-details-card .MuiAvatar-root { width: 88px; height: 88px; border: 2px solid rgba(255,127,17,.4); background: #242424; color: #ffad64; }
+.profile-details-card .MuiBox-root { min-width: 0; }
+.profile-details-card .MuiTypography-root { color: rgba(255,255,255,.68); }
+.profile-details-card .MuiTypography-h6 { color: #fff; font-size: 19px; font-weight: 700; }
+.profile-details-card .MuiCardContent-root { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 20px; padding: 12px 16px !important; }
+.profile-details-card .MuiCardActions-root { gap: 9px; padding: 0 16px 4px; }
+.profile-details-card .MuiButton-root { min-height: 38px; border-radius: 10px; color: #19120c; font-size: 12px; font-weight: 700; text-transform: none; box-shadow: none; }
+.profile-details-card .MuiButton-root:last-child { background: rgba(255,255,255,.08) !important; color: rgba(255,255,255,.75); }
+.profile-edit-modal { width: min(460px, calc(100vw - 32px)) !important; max-height: 84vh; overflow-y: auto; margin: 8vh auto 0 !important; padding: 24px !important; border: 1px solid rgba(255,255,255,.12); border-radius: 18px !important; background: #171717 !important; box-shadow: 0 28px 90px rgba(0,0,0,.55); }
+.profile-edit-modal h2 { margin: 0 0 18px; font-size: 20px; }
+.profile-edit-modal label { display: block; margin: 10px 0 5px; color: rgba(255,255,255,.56); font-size: 12px; }
+.profile-edit-modal input { min-height: 42px; border: 1px solid rgba(255,255,255,.1) !important; border-radius: 10px !important; background: #202020 !important; color: #fff !important; }
+.profile-edit-modal input:focus { outline: 2px solid rgba(255,127,17,.45); }
+.profile-edit-modal button { border-radius: 10px !important; font-weight: 700; }
+
+.profile-orders-page.MuiBox-root { min-height: auto !important; padding: clamp(12px, 2vw, 24px) !important; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: #141414 !important; color: white; }
+.profile-orders-page > .MuiTypography-h4 { margin-bottom: 18px; color: #fff; font-size: 23px; font-weight: 700; }
+.profile-orders-table-wrap.MuiPaper-root { overflow-x: auto; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; background: #171717 !important; color: #fff; box-shadow: none; }
+.profile-orders-table { min-width: 760px; }
+.profile-orders-table .MuiTableCell-root { border-bottom-color: rgba(255,255,255,.07); color: rgba(255,255,255,.72) !important; font-size: 12px; }
+.profile-orders-table thead .MuiTableCell-root { background: rgba(255,255,255,.035); color: rgba(255,255,255,.48) !important; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.profile-orders-table tbody .MuiTableRow-root { transition: background .18s ease; }
+.profile-orders-table tbody .MuiTableRow-root:hover { background: rgba(255,255,255,.025); }
+.profile-order-status, .profile-payment-status { display: inline-flex; align-items: center; padding: 6px 10px !important; border: 1px solid rgba(255,255,255,.1); border-radius: 999px !important; font-size: 10px; font-weight: 700; text-transform: capitalize; filter: saturate(.65); }
+.profile-orders-table .MuiIconButton-root { border: 1px solid rgba(255,127,17,.18); border-radius: 9px; background: rgba(255,127,17,.08); }
+.profile-orders-table .MuiIconButton-root:hover { background: rgba(255,127,17,.17); }
+
+.profile-wallet-page { width: 100%; max-width: 940px; min-height: auto; align-items: stretch; margin: 0 auto; padding: 12px 0 24px !important; }
+.profile-wallet-page > .profile-section-heading { margin-bottom: 14px; text-align: left; }
+.profile-wallet-balance.MuiBox-root { max-width: 100%; margin: 0 0 24px; padding: clamp(22px, 4vw, 34px); border: 1px solid rgba(255,127,17,.19); border-radius: 18px; background: radial-gradient(ellipse at 95% 0%, rgba(255,127,17,.19), transparent 43%), linear-gradient(125deg, #24180f, #171717 60%, #111) !important; box-shadow: 0 18px 48px rgba(0,0,0,.22); }
+.profile-wallet-balance .MuiTypography-root { color: rgba(255,255,255,.64) !important; }
+.profile-wallet-balance .MuiTypography-h3 { color: #ffad64 !important; font-size: clamp(34px, 5vw, 50px); font-weight: 700; }
+.profile-wallet-transactions.MuiBox-root { max-width: 100%; }
+.profile-wallet-transactions > .MuiTypography-root { margin-bottom: 12px; color: rgba(255,255,255,.5) !important; font-size: 13px; }
+.profile-wallet-transaction.MuiCard-root { margin-bottom: 10px; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; background: linear-gradient(145deg, #191919, #111); color: white; box-shadow: none; transition: border-color .18s ease, transform .18s ease; }
+.profile-wallet-transaction.MuiCard-root:hover { transform: translateY(-2px); border-color: rgba(255,127,17,.25); }
+.profile-wallet-transaction .MuiCardContent-root { gap: 12px; }
+.profile-wallet-transaction .MuiTypography-root { color: rgba(255,255,255,.78); }
+.profile-wallet-transaction .MuiTypography-caption { color: rgba(255,255,255,.4); }
+.profile-wallet-transaction .text-green-500 { color: #4ade80 !important; font-weight: 700; }
+.profile-wallet-transaction .text-red-500 { color: #fb7185 !important; font-weight: 700; }
+.profile-wallet-transaction svg { color: #ffad64; transition: transform .18s ease; }
+.profile-wallet-transaction svg:hover { transform: translateX(3px); }
+
+.profile-wishlist-page { min-height: auto; padding: 12px 0 24px !important; }
+.profile-wishlist-page > .profile-section-heading { margin-bottom: 16px; }
+.profile-wishlist-card { align-items: stretch; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; background: linear-gradient(155deg, #191919, #111); text-align: left; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.profile-wishlist-card:hover { transform: translateY(-3px); border-color: rgba(255,127,17,.28); box-shadow: 0 16px 38px rgba(0,0,0,.25); }
+.profile-wishlist-image { height: 210px; border-radius: 11px; background: radial-gradient(circle, #292929, #181818 70%); padding: 12px; }
+.profile-wishlist-card h2 { min-height: 48px; margin-top: 8px; color: #fff; font-size: 14px; line-height: 1.5; }
+.profile-wishlist-card > .flex.w-full.justify-between { align-items: baseline; gap: 10px; }
+.profile-wishlist-card > .flex.w-full.justify-between p:first-child { color: #ffad64; font-weight: 700; }
+.profile-wishlist-card > .flex.w-full.justify-between p:last-child { color: rgba(255,255,255,.4); font-size: 12px; }
+.profile-wishlist-remove { min-height: 39px; border: 1px solid rgba(248,113,113,.2); border-radius: 10px; background: rgba(248,113,113,.08); color: #fda4af; font-size: 12px; transition: background .18s ease, border-color .18s ease; }
+.profile-wishlist-remove:hover { border-color: rgba(248,113,113,.4); background: rgba(248,113,113,.15); }
+
+.profile-reset-password.MuiBox-root { width: min(500px, 100%) !important; margin: 12px auto 24px !important; padding: clamp(20px, 4vw, 34px) !important; border: 1px solid rgba(255,255,255,.09); border-radius: 18px !important; background: radial-gradient(ellipse at 100% 0%, rgba(255,127,17,.1), transparent 40%), linear-gradient(145deg, #191919, #111) !important; box-shadow: 0 20px 54px rgba(0,0,0,.22); }
+.profile-reset-password .profile-section-heading { margin-bottom: 16px; }
+.profile-password-field.MuiFormControl-root { margin-bottom: 16px; }
+.profile-password-field .MuiOutlinedInput-root { min-height: 52px; border-radius: 11px; background: rgba(255,255,255,.035) !important; }
+.profile-password-field .MuiOutlinedInput-notchedOutline { border-color: rgba(255,255,255,.12); }
+.profile-password-field .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline { border-color: rgba(255,127,17,.4); }
+.profile-password-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline { border-color: #ff7f11; }
+.profile-password-field .MuiInputLabel-root { color: rgba(255,255,255,.48) !important; }
+.profile-password-field .MuiInputLabel-root.Mui-focused { color: #ffad64 !important; }
+.profile-password-field .MuiInputBase-input { color: #fff !important; }
+.profile-primary-button.MuiButton-root { min-height: 46px; border-radius: 11px; background: #ff7f11; color: #19120c; font-weight: 700; text-transform: none; box-shadow: none; }
+.profile-primary-button.MuiButton-root:hover { background: #ff9841; box-shadow: none; }
+
+/* Chakra renders account menus in a portal, so style its menu classes directly. */
+.profile-menu-list { z-index: 1400 !important; border: 1px solid rgba(255,255,255,.1) !important; border-radius: 16px !important; background: linear-gradient(150deg, #1b1b1b, #111) !important; padding: 8px !important; box-shadow: 0 24px 72px rgba(0,0,0,.55), 0 0 32px rgba(255,127,17,.06) !important; }
+.profile-menu-heading { overflow: hidden; }
+.profile-menu-name { overflow: hidden; color: #fff !important; font-size: 14px !important; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.profile-menu-email { overflow: hidden; margin-top: 3px; color: rgba(255,255,255,.43) !important; font-size: 11px !important; text-overflow: ellipsis; white-space: nowrap; }
+.profile-menu-divider { border-color: rgba(255,255,255,.08) !important; }
+.profile-menu-item { display: flex !important; min-height: 40px; align-items: center; gap: 11px; border-radius: 9px !important; color: rgba(255,255,255,.72) !important; font-size: 12px; transition: color .16s ease, background .16s ease; }
+.profile-menu-list [role="menuitem"] { background: transparent !important; color: rgba(255,255,255,.82) !important; }
+.profile-menu-list [role="menuitem"]:hover, .profile-menu-list [role="menuitem"]:focus { background: rgba(255,127,17,.1) !important; color: #fff !important; }
+.profile-menu-item svg, .profile-menu-logout-mark { width: 15px; color: #ffad64; font-size: 13px; }
+.profile-menu-item:hover, .profile-menu-item:focus { background: rgba(255,127,17,.1) !important; color: #fff !important; }
+.profile-menu-logout { margin-top: 3px; border-top: 1px solid rgba(255,255,255,.07) !important; border-radius: 0 0 9px 9px !important; }
+.profile-menu-logout-mark { display: inline-flex; justify-content: center; font-weight: 700; }
+
+@media (max-width: 767px) {
+  .profile-page { width: calc(100% - 20px); padding-bottom: 34px; }
+  .profile-shell.MuiBox-root { padding: 12px !important; border-radius: 18px !important; }
+  .profile-hero.MuiBox-root { min-height: 126px; padding: 20px 16px !important; border-radius: 14px !important; }
+  .profile-hero-user.MuiBox-root { gap: 12px; }
+  .profile-hero-user .MuiAvatar-root { width: 62px !important; height: 62px !important; }
+  .profile-section-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+  .profile-nav-button { width: 100%; min-height: 48px; justify-content: center; gap: 5px; padding: 8px 5px !important; font-size: 10px; }
+  .profile-nav-button svg { font-size: 12px; }
+  .profile-details-card.MuiCard-root { flex-direction: column; align-items: flex-start; }
+  .profile-details-card .MuiCardContent-root { grid-template-columns: 1fr; padding: 10px 0 !important; }
+  .profile-details-card .MuiCardActions-root { flex-wrap: wrap; padding: 0; }
+  .profile-orders-page.MuiBox-root { padding: 12px !important; }
+  .profile-wishlist-page { padding: 10px 0 !important; }
+  .profile-wishlist-image { height: 160px; }
+  .profile-wallet-transaction .MuiCardContent-root { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .profile-nav-button, .profile-details-card, .profile-orders-table tbody .MuiTableRow-root, .profile-wallet-transaction, .profile-wishlist-card, .profile-wishlist-remove, .profile-menu-item { transition: none !important; }
+}

@@ -206,12 +206,13 @@ const AddressCard = ({ onAddressClick }) => {
 
   return (
     <>
-      <Button sx={{ background: "white", color: "black", mt:"40px" }} onClick={handleOpen}>
+      <Button className="profile-add-address checkout-add-address" sx={{ background: "white", color: "black", mt:"40px" }} onClick={handleOpen}>
         Add Address
       </Button>
 
       <Modal open={open} onClose={handleClose} aria-labelledby="modal-title">
         <Box
+          className="checkout-address-modal"
           sx={{
             position: "absolute",
             top: "50%",
@@ -356,6 +357,7 @@ const AddressCard = ({ onAddressClick }) => {
         aria-labelledby="modal-title"
       >
         <Box
+          className="checkout-address-modal"
           sx={{
             position: "absolute",
             top: "50%",
@@ -491,7 +493,7 @@ const AddressCard = ({ onAddressClick }) => {
       </Modal>
 
       {user?.addresses && (
-        <Grid sx={{ marginTop: "20px" }} container spacing={2}>
+        <Grid className="profile-address-grid checkout-address-grid" sx={{ marginTop: "20px" }} container spacing={2}>
           {user.addresses.map((address) => (
             <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={address.id}>
               <div
@@ -501,6 +503,7 @@ const AddressCard = ({ onAddressClick }) => {
                 }}
               >
                 <Card
+                  className={`profile-address-card checkout-address-card ${selectedAddress === address._id ? "is-selected" : ""}`}
                   variant="outlined"
                   sx={{
                     border: selectedAddress === address._id ? "5px solid orange" : "",

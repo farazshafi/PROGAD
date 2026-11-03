@@ -75,14 +75,14 @@ const CouponSection = ({summary, applyCoupon}) => {
     <>
       {/* Coupon Input Section */}
       <div
-        className="cart-coupoun"
+        className="cart-coupoun checkout-coupon-row"
         style={{
           display: "flex",
           justifyContent: "space-between",
         }}
       >
         <input
-        className="text-black"
+        className="checkout-coupon-input text-black"
           type="text"
           placeholder="Enter coupon code"
           value={couponCode}
@@ -102,7 +102,7 @@ const CouponSection = ({summary, applyCoupon}) => {
       </div>
 
       {availableCoupon && (
-        <div className="my-4 bg-[#262626] w-full rounded py-4 px-3 flex items-center">
+        <div className="checkout-coupon-result my-4 bg-[#262626] w-full rounded py-4 px-3 flex items-center">
           <p className="text-black bg-white py-1 px-2 rounded text-md font-poppins w-fit">
             {availableCoupon.name}
             <span className="ml-2 font-poppins text-[#ff7f11]">
@@ -111,7 +111,7 @@ const CouponSection = ({summary, applyCoupon}) => {
           </p>
           <div
             onClick={handleApplyCoupon}
-            className="text-white w-fit ml-auto cursor-pointer font-poppins bg-[#ff7f11] px-[10px] py-1 rounded hover:bg-orange-600 transition"
+            className="checkout-coupon-apply text-white w-fit ml-auto cursor-pointer font-poppins bg-[#ff7f11] px-[10px] py-1 rounded hover:bg-orange-600 transition"
           >
             {isApplied ? <FaCheck /> : <>Apply</>}
           </div>

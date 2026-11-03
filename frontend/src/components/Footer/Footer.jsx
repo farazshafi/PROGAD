@@ -3,7 +3,7 @@ import "./Footer.css";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 font-poppins rounded-lg mt-5 text-black">
+    <footer className="footer-main-div bg-gray-100 font-poppins rounded-lg mt-5 text-black">
       <div className="mx-auto py-10 px-5 sm:px-10 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* About Us Section */}
         <div>

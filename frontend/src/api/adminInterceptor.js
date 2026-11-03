@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const adminAxios = axios.create({
-  baseURL: `${process.env.REACT_APP_API_URL}/admin`,
+  baseURL: `${import.meta.env.VITE_API_URL}/admin`,
 });
 
 adminAxios.interceptors.request.use((config) => {

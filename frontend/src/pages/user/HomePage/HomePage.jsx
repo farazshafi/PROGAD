@@ -1,21 +1,30 @@
-import React, { useEffect, useState } from "react";
-import Header from "../../../components/Header/Header";
-import OfferBanner from "../../../components/OfferBanner/OfferBanner";
-import HilightSection from "../../../components/HighlightSection/HilightSection";
-import ProductGrid from "../../../components/ProductGrid/ProductGrid";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Divider } from "@mui/material";
 import { toast } from "react-toastify";
+import Header from "../../../components/Header/Header";
+import OfferBanner from "../../../components/OfferBanner/OfferBanner";
 import { getTopSellingProductApi } from "../../../api/productApi";
-import Footer from "../../../components/Footer/Footer";
-import NewArrivals from "../../../components/NewArrival"
+import "./HomePage.css";
 
-const HomePage = () => { 
+const NewArrivals = lazy(() => import("../../../components/NewArrival"));
+const HilightSection = lazy(() => import("../../../components/HighlightSection/HilightSection"));
+const ProductGrid = lazy(() => import("../../../components/ProductGrid/ProductGrid"));
+const Footer = lazy(() => import("../../../components/Footer/Footer"));
+
+const SectionFallback = () => (
+  <div className="home-section-fallback" aria-hidden="true">
+    <span />
+    <span />
+  </div>
+);
+
+const HomePage = () => {
   const [topProducts, setTopProducts] = useState([]);
 
   const fetchTopProducts = async () => {
     try {
       const result = await getTopSellingProductApi(5);
-      
+
       if (result.response) {
         const { status } = result.response;
         if (status === 400 || status === 500) {
@@ -35,17 +44,20 @@ const HomePage = () => {
   }, []);
 
   return (
-    <React.Fragment>
-      <div style={{ padding: " 0% 2%" }}>
-        <Header navbar={true}/>
-        <Divider sx={{ marginTop: "80px" }} />
-        <OfferBanner hide={"false"} brand={["Boat, JBL"]} title={"Eid Offer"} />
-        <NewArrivals />
-        <HilightSection showMore={false} text={"Top Products"} />
-        {topProducts.length > 0 && <ProductGrid products={topProducts} />}
-        <Footer />
-      </div> 
-    </React.Fragment>
+    <main className="home-page">
+      <div className="home-page__inner">
+        <Header navbar />
+        <Divider className="home-divider" />
+        <OfferBanner hide="false" brand={["Boat, JBL"]} title="Eid Offer" />
+
+        <Suspense fallback={<SectionFallback />}>
+          <NewArrivals />
+          <HilightSection showMore={false} text="Top Products" />
+          {topProducts.length > 0 && <ProductGrid products={topProducts} />}
+          <Footer />
+        </Suspense>
+      </div>
+    </main>
   );
 };
 

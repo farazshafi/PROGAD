@@ -18,18 +18,18 @@ const ProductInformation = ({ product }) => {
   return (
     <>
       {Object.keys(product).length > 0 && (
-        <Box
-          sx={{ backgroundColor: "#262626", color: "#fff", padding: "20px" }}
-        >
+        <Box className="product-information" sx={{ color: "#fff", padding: "20px" }}>
           <Tabs
             value={value}
             onChange={handleChange}
             textColor="primary"
             indicatorColor="primary"
-            sx={{ marginBottom: "20px", borderBottom: "1px solid #fff" }}
+            className="product-information-tabs"
+            sx={{ marginBottom: "20px", borderBottom: "1px solid rgba(255,255,255,.1)" }}
           >
             <Tab
               label="Description"
+              className="product-information-tab"
               sx={{
                 color: "#fff",
                 fontFamily: "iStock, Arial, sans-serif", // Apply the custom font
@@ -38,6 +38,7 @@ const ProductInformation = ({ product }) => {
             />
             <Tab
               label={`Reviews ${totalReviews === 0 ? "" : "(" + totalReviews + ")"}`}
+              className="product-information-tab"
               sx={{
                 color: "#fff",
                 fontFamily: "iStock, Arial, sans-serif", // Apply the custom font
@@ -48,14 +49,14 @@ const ProductInformation = ({ product }) => {
 
           {/* Tab Panel for Description */}
           {value === 0 && (
-            <Box sx={{ padding: "10px" }}>
+            <Box className="product-information-panel" sx={{ padding: "10px" }}>
               <ProductDescription description={product.description} />
             </Box>
           )}
 
           {/* Tab Panel for Reviews */}
           {value === 1 && (
-            <Box sx={{ padding: "10px" }}>
+            <Box className="product-information-panel" sx={{ padding: "10px" }}>
               <ProductReviews
                 totalReviews={handleTotalReviews}
                 id={product._id}

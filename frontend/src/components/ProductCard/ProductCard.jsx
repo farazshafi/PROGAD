@@ -69,18 +69,18 @@ const ProductCard = ({ fetchProducts }) => {
 
   return (
     <div className="container mx-auto px-4">
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {products.length > 0 ? (
           products.map((product, i) => (
             <div
               key={i}
-              className="relative rounded-lg p-4 transition-transform transform hover:scale-105"
+              className="listing-product-card group cursor-pointer"
               onMouseEnter={() => setHoveredProductId(product._id)}
               onMouseLeave={() => setHoveredProductId(null)}
             >
               <div
                 onClick={handleNavigate(product._id)}
-                className="cursor-pointer"
+                className="listing-product-image-wrap cursor-pointer"
               >
                 <img
                   src={product.image}
@@ -88,15 +88,15 @@ const ProductCard = ({ fetchProducts }) => {
                   className="w-full h-40 object-cover rounded-md"
                 />
                 {product.discount && (
-                  <div className="absolute top-3 left-3 bg-black text-white text-xs font-semibold px-2 py-1 rounded-md">
+                  <div className="listing-discount-badge">
                     {product.discountType === "percentage"
                       ? product.discount
                       : `₹-${product.discount}`}
                   </div>
                 )}
               </div>
-              <div className="text-center mt-3">
-                <div className="text-yellow-400 text-sm">
+              <div className="mt-3">
+                <div className="product-card-rating text-yellow-400 text-sm">
                   <Rating
                     name="half-rating-read"
                     value={product.avgRating}
@@ -114,11 +114,11 @@ const ProductCard = ({ fetchProducts }) => {
                     }}
                   />
                 </div>
-                <h3 className="text-white text-sm font-medium">
+                <h3 className="product-card-name text-white text-sm font-medium">
                   {product.name}
                 </h3>
               </div>
-              <div className="flex justify-center items-center gap-2 mt-2">
+              <div className="product-card-price flex justify-center items-center gap-2 mt-2">
                 <span className="text-white font-semibold">
                   ₹
                   {product.hasVariants
@@ -132,23 +132,23 @@ const ProductCard = ({ fetchProducts }) => {
                     : product.originalPrice}
                 </span>
               </div>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="listing-product-actions mt-2 flex items-center gap-2">
                 {product.stock < 1 ? (
                   <button
                     disabled
-                    className="flex-grow bg-gray-400 text-red-600 py-2 rounded-md cursor-not-allowed"
+                    className="listing-card-out-of-stock flex-grow py-2 rounded-md cursor-not-allowed"
                   >
                     Out of Stock
                   </button>
                 ) : (
                   <button
                     onClick={() => handleAddToCart(product)}
-                    className="flex-grow bg-white text-black py-2 rounded-md hover:bg-gray-300"
+                    className="listing-card-add-button flex-grow py-2 rounded-md"
                   >
                     Add to Cart
                   </button>
                 )}
-                <div className="bg-[#ff7f11] p-2 rounded">
+                <div className={`listing-wishlist ${product.isWishlisted ? "is-wishlisted" : ""}`}>
                   <FaHeart
                     onClick={() => handleAddToWishlist(product._id)}
                     className={`${product.isWishlisted ? "text-black" : "text-white"} text-lg cursor-pointer`}

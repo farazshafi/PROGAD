@@ -13,6 +13,7 @@ import { selectedCart } from "../../../features/user/cartSlice";
 import { FaLocationCrosshairs } from "react-icons/fa6";
 import { MdOutlinePayments } from "react-icons/md";
 import { FaBoxOpen } from "react-icons/fa";
+import "./CartProcess.css";
 
 const CartProcess = () => {
   const user = useSelector(selectedUser);
@@ -51,6 +52,7 @@ const CartProcess = () => {
     <>
       <Header />
       <Box
+        className="cart-process-page"
         sx={{
           backgroundColor: "#0000",
           padding: 3,
@@ -60,15 +62,15 @@ const CartProcess = () => {
         }}
       >
         <>
-          <div className="border-b pb-2 border-gray-600">
-            <ul className="flex flex-wrap -mb-px text-sm font-poppins text-center text-gray-100 dark:text-gray-400">
+          <div className="checkout-stepper-wrap border-b pb-2 border-gray-600">
+            <ul className="checkout-stepper flex flex-wrap -mb-px text-sm font-poppins text-center text-gray-100 dark:text-gray-400">
               <li>
                 <button
                   className={`inline-flex text-[15px] items-center p-4 ${
                     component === "shipping"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
-                  }`}
+                  } checkout-step-button`}
                   onClick={() => navigate("/cart_process/shipping")}
                 >
                   <FaLocationCrosshairs className={`mr-2  ${
@@ -84,7 +86,7 @@ const CartProcess = () => {
                     component === "payment"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
-                  }`}
+                  } checkout-step-button`}
                   onClick={() => navigate("/cart_process/payment")}
                 >
                   <MdOutlinePayments
@@ -102,7 +104,7 @@ const CartProcess = () => {
                     component === "place_order"
                       ? "text-[#ff7f11] border-b-2 border-[#ff7f11]"
                       : ""
-                  }`}
+                  } checkout-step-button`}
                   onClick={() => navigate("/cart_process/place_order")}
                 >
                   <FaBoxOpen className={`mr-2  ${
@@ -114,11 +116,13 @@ const CartProcess = () => {
               </li>
             </ul>
           </div>
+          <div className="checkout-stage-content">
           {component === "shipping" && (
             <ShippingSection selectedAddress={handleSelectedAddress} />
           )}
           {component === "payment" && <PaymentSection />}
           {component === "place_order" && <PlaceOrderSection />}
+          </div>
         </>
       </Box>
     </>

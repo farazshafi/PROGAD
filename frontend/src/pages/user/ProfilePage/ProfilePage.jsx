@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { selectedUser } from "../../../features/user/userSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import "./ProfilePage.css";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const ProfilePage = () => {
   const breadcrumbPath = [
     { label: "Home", url: "/" },
     { label: "Profile", url: "/profile" },
-    { label: component, url: `/profile/${component}` },
+    { label: component || "Details", url: `/profile/${component || "details"}` },
   ];
   const user = useSelector(selectedUser);
 
@@ -34,7 +35,9 @@ const ProfilePage = () => {
     <>
       <Header />
       <BreadCrums path={breadcrumbPath}/>
-      <ProfileHeader component={component}/>
+      <main className="profile-page">
+        <ProfileHeader component={component || "details"} />
+      </main>
     </>
   );
 };

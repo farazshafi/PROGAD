@@ -8,12 +8,20 @@ import {
   MenuList,
   MenuItem,
   IconButton,
+  MenuDivider,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaSearch, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, selectedUser } from "../../features/user/userSlice";
 import AnimatedSearchBar from "../AnimatedSearchBar";
+import {
+  FaAddressBook,
+  FaClipboardList,
+  FaHeart,
+  FaUserCircle,
+  FaWallet,
+} from "react-icons/fa";
 
 const Header = ({ navbar = true }) => {
   const user = useSelector(selectedUser);
@@ -31,7 +39,7 @@ const Header = ({ navbar = true }) => {
         <Box
           mt={{ base: "10px", md: "20px", lg: "10px" }}
           mb={{ base: "50px", md: "30px", lg: "20px" }}
-          className="header"
+          className="header storefront-header"
         >
           <Link to={"/"}>
             <Text
@@ -46,7 +54,7 @@ const Header = ({ navbar = true }) => {
 
           {navbar && (
             <>
-              <div className="flex justify-between items-center px-4">
+              <div className="storefront-header-row flex justify-between items-center px-4">
                 <Box id="box1" className="text-left">
                   <Link to="/">
                     <Text className="font-semibold text-lg text-white font-poppins tracking-[5px]">
@@ -56,40 +64,25 @@ const Header = ({ navbar = true }) => {
                 </Box>
 
                 <Box id="box2" className="relative">
-                  <div className="hidden lg:flex bg-white rounded-3xl mt-2 px-4 gap-3 py-2">
-                    <Link
-                      to="/"
-                      className=" text-black font-poppins text-lg py-1"
-                    >
+                  <div className="storefront-nav-links hidden lg:flex">
+                    <Link to="/" className="storefront-nav-link">
                       Home
                     </Link>
-                    <Link
-                      to="/products"
-                      className=" text-black font-poppins text-lg py-1"
-                    >
+                    <Link to="/products" className="storefront-nav-link">
                       Products
                     </Link>
-                    <Link
-                      to="/cart"
-                      className=" text-black font-poppins text-lg py-1"
-                    >
+                    <Link to="/cart" className="storefront-nav-link">
                       Cart
                     </Link>
-                    <Link
-                      to="/about"
-                      className=" text-black font-poppins text-lg py-1"
-                    >
+                    <Link to="/about" className="storefront-nav-link">
                       About Us
                     </Link>
-                    <Link
-                      to="/coupons"
-                      className=" text-black font-poppins text-lg py-1"
-                    >
+                    <Link to="/coupons" className="storefront-nav-link">
                       Coupons
                     </Link>
                   </div>
 
-                  <div className="lg:hidden">
+                  <div className="storefront-mobile-menu lg:hidden">
                     <Menu>
                       <MenuButton
                         as={IconButton}
@@ -118,7 +111,10 @@ const Header = ({ navbar = true }) => {
                 </Box>
 
                 {/* Box 3: Right-aligned icons */}
-                <Box id="box3" className="flex items-center">
+                <Box
+                  id="box3"
+                  className="storefront-header-actions flex items-center"
+                >
                   {/* Search */}
                   <AnimatedSearchBar />
 
@@ -127,87 +123,131 @@ const Header = ({ navbar = true }) => {
                     <MenuButton
                       as={IconButton}
                       icon={<FaUser className="text-black" />}
+                      className="storefront-profile-trigger"
+                      aria-label="Open profile menu"
                     />
-                    <MenuList>
+                    <MenuList className="profile-menu-list" minW="250px" p={2}>
+                      {user && (
+                        <>
+                          <Box className="profile-menu-heading" px={3} py={3}>
+                            <Text className="profile-menu-name">
+                              {user.name}
+                            </Text>
+                            <Text className="profile-menu-email">
+                              {user.email}
+                            </Text>
+                          </Box>
+                          <MenuDivider className="profile-menu-divider" />
+                        </>
+                      )}
                       {user && (
                         <>
                           <MenuItem
                             as={Link}
                             to="/profile"
+                            className="profile-menu-item"
+                            bg="transparent"
+                            color="rgba(255,255,255,.82)"
                             disabled={!user}
                             _hover={{
                               backgroundColor: "#262626",
                               color: "#FF7F11",
                             }}
                           >
-                            Profile
+                            <FaUserCircle />
+                            <span>Profile</span>
                           </MenuItem>
                           <MenuItem
                             as={Link}
                             to="/profile/orders"
+                            className="profile-menu-item"
+                            bg="transparent"
+                            color="rgba(255,255,255,.82)"
                             disabled={!user}
                             _hover={{
                               backgroundColor: "#262626",
                               color: "#FF7F11",
                             }}
                           >
-                            Orders
+                            <FaClipboardList />
+                            <span>Orders</span>
                           </MenuItem>
                           <MenuItem
                             as={Link}
                             to="/profile/address"
+                            className="profile-menu-item"
+                            bg="transparent"
+                            color="rgba(255,255,255,.82)"
                             disabled={!user}
+                            
                             _hover={{
                               backgroundColor: "#262626",
                               color: "#FF7F11",
                             }}
                           >
-                            Address
+                            <FaAddressBook />
+                            <span>Address</span>
                           </MenuItem>
                           <MenuItem
                             as={Link}
                             to="/profile/wishlist"
+                            className="profile-menu-item"
+                            bg="transparent"
+                            color="rgba(255,255,255,.82)"
                             disabled={!user}
                             _hover={{
                               backgroundColor: "#262626",
                               color: "#FF7F11",
                             }}
                           >
-                            Wishlist
+                            <FaHeart />
+                            <span>Wishlist</span>
                           </MenuItem>
                           <MenuItem
                             as={Link}
                             to="/profile/wallet"
+                            className="profile-menu-item"
+                            bg="transparent"
+                            color="rgba(255,255,255,.82)"
                             disabled={!user}
                             _hover={{
                               backgroundColor: "#262626",
                               color: "#FF7F11",
                             }}
                           >
-                            Wallet
+                            <FaWallet />
+                            <span>Wallet</span>
                           </MenuItem>
                           <MenuItem
                             as={Link}
                             to="/face_register"
+                            className="profile-menu-item"
+                            bg="transparent"
+                            color="rgba(255,255,255,.82)"
                             disabled={!user}
                             _hover={{
                               backgroundColor: "#262626",
                               color: "#FF7F11",
                             }}
                           >
-                            Register with face
+                            <FaUserCircle />
+                            <span>Register with face</span>
                           </MenuItem>
                         </>
                       )}
 
                       <MenuItem
+                        className="profile-menu-item profile-menu-logout"
+                        bg="transparent"
+                        color="rgba(255,255,255,.82)"
                         onClick={handleLogout}
                         _hover={{
                           backgroundColor: "#262626",
                           color: "#FF7F11",
                         }}
                       >
-                        {user ? "Logout" : "Login"}
+                        <span className="profile-menu-logout-mark">↗</span>
+                        <span>{user ? "Logout" : "Login"}</span>
                       </MenuItem>
                     </MenuList>
                   </Menu>

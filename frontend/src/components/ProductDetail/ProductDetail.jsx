@@ -81,6 +81,7 @@ const ProductDetail = ({ product }) => {
             <Col className="product-details-col" xs={12} sm={12} lg={5}>
               <div className="details-box">
                 <Typography
+                  className="product-detail-brand"
                   sx={{
                     color: "white",
                     fontFamily: "Istok Web",
@@ -92,6 +93,7 @@ const ProductDetail = ({ product }) => {
                   {product.brand.name}
                 </Typography>
                 <Typography
+                  className="product-detail-title"
                   sx={{
                     color: "white",
                     fontFamily: "Istok Web",
@@ -104,8 +106,8 @@ const ProductDetail = ({ product }) => {
                 </Typography>
                 <div>
                   {product.discount && (
-                    <div className="bg-white w-fit px-2 py-1 rounded mb-2">
-                      <p className=" text-black text-xl">
+                    <div className="product-detail-offer">
+                      <p>
                         Offer -
                         {product.discountType === "percentage"
                           ? product.discount + "%"
@@ -172,15 +174,6 @@ const ProductDetail = ({ product }) => {
                     ({product.totalReviews > 0 ? product.totalReviews : 0}) <span className="ml-[2px]">Reviews</span>
                   </Typography>
                 </div>
-                <Typography
-                  sx={{
-                    color: "white",
-                    fontFamily: "Istok Web",
-                    mt: { xs: "20px", lg: "10px" },
-                  }}
-                >
-                  {product.description}
-                </Typography>
                 <Divider
                   sx={{
                     backgroundColor: "white",

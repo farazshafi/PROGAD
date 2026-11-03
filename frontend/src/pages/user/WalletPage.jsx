@@ -43,16 +43,16 @@ const WalletPage = () => {
   }, []);
 
   return (
-    <div className=" flex flex-col items-center justify-center p-4">
-      <h1 className="text-center text-4xl font-bold mb-2">Wallet</h1>
+    <div className="profile-wallet-page flex flex-col items-center justify-center p-4">
+      <h1 className="profile-section-heading text-center text-4xl font-bold mb-2">Wallet</h1>
       {walletDetails?.transactions?.length < 1 && (
-        <p className="text-center font-poppins text-white opacity-50 mb-6">
+        <p className="profile-empty-state text-center font-poppins text-white opacity-50 mb-6">
           Wallet is Empty!. No Transaction Available
         </p>
       )}
       {walletDetails?.transactions?.length > 0 && walletDetails && (
         <>
-          <Box className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
+          <Box className="profile-wallet-balance w-full max-w-md mx-auto rounded-lg shadow-md p-6 mb-8">
             <Typography
               variant="h5"
               className="text-center text-black font-poppins font-semibold mb-4"
@@ -72,7 +72,7 @@ const WalletPage = () => {
           </Box>
 
           {/* Transaction History */}
-          <Box className="w-full max-w-md mx-auto">
+          <Box className="profile-wallet-transactions w-full max-w-md mx-auto">
             <Typography
               variant="h6"
               className="text-white opacity-50 font-semibold mb-4"
@@ -80,7 +80,7 @@ const WalletPage = () => {
               Recent Transactions
             </Typography>
             {walletDetails?.transactions?.map((transaction, index) => (
-              <Card key={index} className="mb-4">
+              <Card key={index} className="profile-wallet-transaction mb-4">
                 <CardContent className="flex justify-between items-center">
                   <div>
                     <Typography>{transaction.description}</Typography>

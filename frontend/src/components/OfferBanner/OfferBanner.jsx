@@ -1,136 +1,86 @@
 import React, { useEffect, useState } from "react";
-import { Box, ChakraProvider, Heading, Text } from "@chakra-ui/react";
-import OurButton from "../OurButton/OurButton";
+import { Box, ChakraProvider } from "@chakra-ui/react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import OurButton from "../OurButton/OurButton";
 import { activeOfferApi } from "../../api/offerApi";
-import { useRef } from "react";
 
-// animation
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { TextPlugin } from "gsap/TextPlugin";
-
-gsap.registerPlugin(ScrollTrigger, TextPlugin);
+const MotionBox = motion(Box);
 
 const OfferBanner = ({ hide }) => {
-  const headingRef = useRef();
-  const expirationRef = useRef();
-
   const [offer, setOffer] = useState(null);
-
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
 
-  const handleClick = () => {
-    navigate("/offerpage");
-  };
-
-  const fetchOffer = async () => {
-    try {
-      const result = await activeOfferApi();
-      setOffer(result.data);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to fetch offer details");
-    }
-  };
+  const handleClick = () => navigate("/offerpage");
 
   useEffect(() => {
-    if (offer) {
-      gsap.fromTo(
-        headingRef.current,
-        { text: "" },
-        {
-          text:
-            offer.name +
-            "!" +
-            ` Get ${offer.discount}% Off on
-            ${offer.categoryIds.map((category) => " " + category.name + "")}`,
-          duration: 4.1,
-          ease: "none",
-          repeat: -1,
-          yoyo: true,
-          repeatDelay:1
-          },
-        
-      );
-    }
-  },[offer]);
+    let mounted = true;
+    const fetchOffer = async () => {
+      try {
+        const result = await activeOfferApi();
+        if (mounted) setOffer(result.data);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to fetch offer details");
+      }
+    };
 
-  useEffect(() => {
-    if (offer) {
-      // Apply glow effect to expiration date
-      gsap.to(expirationRef.current, {
-        opacity: 0,
-        duration: 1.5, // Duration for fade
-        repeat: -1, // Repeat infinitely
-        yoyo: true, // Make it go back to fully visible after fading out
-        ease: "power1.inOut", 
-        delay: 1.5,
-      });
-    }
-  }, [offer]);
-  
-
-  useEffect(() => {
     fetchOffer();
+    return () => { mounted = false; };
   }, []);
 
-  return (
-    <>
-      {offer && (
-        <ChakraProvider>
-          <div className="px-[20px]">
-            <Box
-              bg="#ffff"
-              backgroundSize="cover"
-              backgroundPosition="center"
-              color="white"
-              borderRadius="md"
-              p={10}
-              mb={10}
-              textAlign="center"
-            >
-              <Heading ref={headingRef} as="h2" size="xl" mb={4} color="black">
-                {offer.name}! Get
-                {offer.discountType === "percentage"
-                  ? ` Off ${offer.discount}% `
-                  : ` ₹${offer.discount} Discount`}
-                {offer.applyToCategories === true ||
-                  (offer.applyToCategories === true && "Off on")}
-                {offer.applyToCategories && (
-                  <>
-                    on
-                    {offer.categoryIds.map(
-                      (category) => " " + category.name + ","
-                    )}
-                  </>
-                )}
-              </Heading>
-              <Text fontSize="lg" mb={4} color="black">
-                Offer expires on{" "}
-                <Text ref={expirationRef} as="span" color="#FF7F11" fontWeight="bold">
-                  {new Date(offer.expirationDate).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
-              </Text>
+  if (!offer) return null;
 
-              {hide === "false" && (
-                <>
-                  {(offer.applyToCategories || offer.applyToProducts) && (
-                    <span onClick={() => navigate("/offer")}>
-                      <OurButton handleClick={handleClick} text={"Shop Now"} />
-                    </span>
-                  )}
-                </>
+  const expiresOn = new Date(offer.expirationDate).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
+  const discount = offer.discountType === "percentage"
+    ? `${offer.discount}% off`
+    : `₹${offer.discount} discount`;
+  const categories = offer.applyToCategories
+    ? offer.categoryIds.map((category) => category.name).join(", ")
+    : "";
+  const eligible = offer.applyToCategories || offer.applyToProducts;
+
+  return (
+    <ChakraProvider>
+      <section className="offer-section" aria-label="Current offer">
+        <MotionBox
+          className="offer-card"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: "easeOut" }}
+        >
+          <div className="offer-card__glow" aria-hidden="true" />
+          <div className="offer-card__content">
+            <div className="offer-card__eyebrow"><Sparkles size={15} /> LIMITED TIME OFFER</div>
+            <h1 className="offer-card__title">
+              {offer.name}<span className="offer-card__punctuation">.</span>
+            </h1>
+            <p className="offer-card__description">
+              Get <strong>{discount}</strong>{categories ? <> on <span>{categories}</span></> : " on your next favorite"}.
+            </p>
+            <div className="offer-card__bottom">
+              <p className="offer-card__expiry">Offer expires <strong>{expiresOn}</strong></p>
+              {hide === "false" && eligible && (
+                <span className="offer-card__action" onClick={() => navigate("/offer")}>
+                  <OurButton handleClick={handleClick} text="Shop the offer" />
+                  <ArrowUpRight size={17} aria-hidden="true" />
+                </span>
               )}
-            </Box>
+            </div>
           </div>
-        </ChakraProvider>
-      )}
-    </>
+          <div className="offer-card__visual" aria-hidden="true">
+            <div className="offer-card__disc">{offer.discountType === "percentage" ? `${offer.discount}%` : "SAVE"}</div>
+            <span className="offer-card__visual-caption">SOUND BETTER. SPEND LESS.</span>
+          </div>
+        </MotionBox>
+      </section>
+    </ChakraProvider>
   );
 };
 
