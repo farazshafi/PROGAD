@@ -89,8 +89,8 @@ AWS_ACCESS_KEY=your_aws_key
 AWS_SECRET_KEY=your_aws_secret
 RAZORPAY_KEY_ID=your_razorpay_id
 RAZORPAY_KEY_SECRET=your_razorpay_secret
-EMAIL_USER=your_email
-EMAIL_PASS=your_email_password
+RESEND_API_KEY=re_your_api_key
+RESEND_FROM=Your App <no-reply@yourdomain.com>
 ```
 Start the server:
 ```bash

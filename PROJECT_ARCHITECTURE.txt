@@ -146,5 +146,5 @@ Environment Variables Required (backend/.env):
 - JWT_SECRET: Secret key for JWT signing
 - AWS_ACCESS_KEY & AWS_SECRET_KEY: Credentials for AWS S3 bucket uploads
 - RAZORPAY_KEY_ID & RAZORPAY_KEY_SECRET: Razorpay payment gateway credentials
-- EMAIL_USER & EMAIL_PASS: SMTP credentials for transactional emails
+- RESEND_API_KEY & RESEND_FROM: Resend HTTPS API credentials and verified sender for transactional emails
 ================================================================================
