@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const addressSchema = mongoose.Schema(
   {
@@ -57,6 +57,9 @@ const addressSchema = mongoose.Schema(
   },
   { timestapms: true }
 );
+
+// Address labels (home, work, etc.) only need to be unique for each user.
+addressSchema.index({ user: 1, type: 1 }, { unique: true });
 
 const Address = mongoose.model("Address", addressSchema);
 

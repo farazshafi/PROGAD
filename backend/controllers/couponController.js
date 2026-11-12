@@ -120,7 +120,7 @@ export const findCoupon = asyncHandler(async (req, res) => {
   console.log("req.query:", req.query);
 
   const coupon = await Coupon.findOne({ code })
-    .select("_id name discount minPurchasePrice expirationDate appliedUsers")
+    .select("_id name discount minPurchasePrice expirationDate appliedUsers categories")
     .populate("categories", "name");
 
   if (!coupon) {

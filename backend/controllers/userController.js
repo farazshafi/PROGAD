@@ -1,23 +1,34 @@
 import User from "../models/userModel.js";
 import asyncHandler from "express-async-handler";
 import generateTokens from "../utils/generateToken.js";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import Address from "../models/addressModel.js";
 
 dotenv.config();
 
-// Setup Nodemailer transport
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  timeout: 10000,
-});
+const sendOtpEmail = async (to, subject, text) => {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("Email service is not configured (RESEND_API_KEY is missing)");
+  }
+  if (!process.env.RESEND_FROM) {
+    throw new Error("Email service is not configured (RESEND_FROM is missing)");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from: process.env.RESEND_FROM, to: [to], subject, text }),
+  });
+
+  if (!response.ok) {
+    const details = await response.json().catch(() => ({}));
+    console.error("Resend email request failed:", response.status, details);
+    throw new Error(details.message || `Email provider returned HTTP ${response.status}`);
+  }
+};
 
 const generateOTP = () => {
   return Math.floor(1000 + Math.random() * 9000);
@@ -90,15 +101,12 @@ export const userRegistration = asyncHandler(async (req, res) => {
   });
 
   // Send OTP via email
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your OTP for account verification",
-    text: `Your OTP for verifying your account is ${otp}`,
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    await sendOtpEmail(
+      email,
+      "Your OTP for account verification",
+      `Your OTP for verifying your account is ${otp}`,
+    );
     setTimeout(
       async () => {
         await User.updateOne({ _id: user._id }, { $unset: { otp: "" } });
@@ -300,15 +308,12 @@ export const login = asyncHandler(async (req, res) => {
     console.log("otp", otp);
     userExist.otp = otp;
     await userExist.save();
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Your OTP for account verification",
-      text: `Your OTP for verifying your account is ${otp}`,
-    };
-
     try {
-      await transporter.sendMail(mailOptions);
+      await sendOtpEmail(
+        email,
+        "Your OTP for account verification",
+        `Your OTP for verifying your account is ${otp}`,
+      );
       setTimeout(
         async () => {
           await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
@@ -455,14 +460,12 @@ export const resendOtp = asyncHandler(async (req, res) => {
   console.log("otp:", otp);
   userExist.otp = otp;
   await userExist.save();
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your OTP for account verification",
-    text: `Your OTP for verifying your account is ${otp}`,
-  };
   try {
-    await transporter.sendMail(mailOptions);
+    await sendOtpEmail(
+      email,
+      "Your OTP for account verification",
+      `Your OTP for verifying your account is ${otp}`,
+    );
     setTimeout(
       async () => {
         await User.findByIdAndUpdate(userExist._id, { $unset: { otp: "" } });
@@ -609,14 +612,12 @@ export const forgottPassword = asyncHandler(async (req, res) => {
   user.otp = otp;
   console.log("otp : ", otp);
   await user.save();
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your OTP for Reset Password",
-    text: `Your OTP for Reset Password is ${otp}`,
-  };
   try {
-    await transporter.sendMail(mailOptions);
+    await sendOtpEmail(
+      email,
+      "Your OTP for Reset Password",
+      `Your OTP for Reset Password is ${otp}`,
+    );
     setTimeout(
       async () => {
         await User.findByIdAndUpdate(user._id, { $unset: { otp: "" } });

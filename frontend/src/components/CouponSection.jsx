@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { selectedCart } from "../features/user/cartSlice";
 import { selectedUser } from "../features/user/userSlice";
@@ -12,13 +12,11 @@ const CouponSection = ({summary, applyCoupon}) => {
   const cartItems = useSelector(selectedCart);
   const user = useSelector(selectedUser);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [availableCoupon, setAvailableCoupon] = useState(null);
   const [couponCode, setCouponCode] = useState("");
   const [isApplied, setIsApplied] = useState(false);
-  const [couponCategory, setCouponCategory] = useState([]);
 
   const handleApplyCoupon = () => {
     if (!availableCoupon) {
@@ -27,9 +25,16 @@ const CouponSection = ({summary, applyCoupon}) => {
     }
 
     if (availableCoupon.categories && availableCoupon.categories.length > 0) {
-      const isCategoryEligible = cartItems.some((item) =>
-        availableCoupon.categories.includes(item.category._id)
+      const couponCategoryIds = new Set(
+        availableCoupon.categories
+          .map((category) => category?._id ?? category?.id ?? category)
+          .filter(Boolean)
+          .map(String)
       );
+      const isCategoryEligible = cartItems.some((item) => {
+        const categoryId = item.category?._id ?? item.category?.id ?? item.category;
+        return categoryId != null && couponCategoryIds.has(String(categoryId));
+      });
 
       if (!isCategoryEligible) {
         toast.error("Coupon not applicable for items in your cart");
@@ -37,7 +42,7 @@ const CouponSection = ({summary, applyCoupon}) => {
       }
     }
 
-    if (availableCoupon.minPurchasePrice > summary.totalAmount) {
+    if (Number(availableCoupon.minPurchasePrice) > Number(summary.subTotal || 0)) {
       toast.error(
         `Minimum purchase price ${availableCoupon.minPurchasePrice} not met`
       );
@@ -52,6 +57,7 @@ const CouponSection = ({summary, applyCoupon}) => {
     if (!user) {
       toast.warning("Please Login to apply coupon");
       navigate("/login");
+      return;
     }
     try {
       setIsApplied(false);
@@ -64,7 +70,6 @@ const CouponSection = ({summary, applyCoupon}) => {
         }
       }
       setAvailableCoupon(result.data);
-      setCouponCategory(result.data?.categories);
     } catch (err) {
       console.error("Error applying coupon:", err);
       toast.error(err.message || "Error applying coupon");

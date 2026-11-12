@@ -387,7 +387,7 @@ const PlaceOrderSection = () => {
                   <p className="text-lg font-semibold">
                     Total:{" "}
                     <span className="text-[#ff7f11]">
-                      ₹{item.subTotal.toFixed(2)}
+                      ₹{(Number(item.price) * Number(item.quantity)).toFixed(2)}
                     </span>
                   </p>
                 </div>

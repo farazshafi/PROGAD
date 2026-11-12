@@ -199,7 +199,7 @@ const CartPage = () => {
                   <p className="cart-product-total text-lg font-semibold">
                     Total:{" "}
                     <span className="text-[#ff7f11]">
-                      ₹{item.subTotal.toFixed(2)}
+                      ₹{(Number(item.price) * Number(item.quantity)).toFixed(2)}
                     </span>
                   </p>
                 </div>
@@ -247,7 +247,7 @@ const CartPage = () => {
                 </div>
                 <div className="cart-summary-line flex text-lg text-white font-poppins justify-between">
                   <p>Delivery fee:</p>
-                  {summary.total > 500 ? (
+                  {summary.subTotal > 500 ? (
                     <p>Free</p>
                   ) : (
                     <p>{summary.delivery}</p>
